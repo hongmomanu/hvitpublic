@@ -86,7 +86,7 @@ define(function () {
                         var errorfunc = function () {
                             $.messager.alert('操作失败', '新增功能失败!');
                         };
-                        ajaxfrom.ajaxsend('post', 'json', 'ajax/addnewfunc.jsp', params, success, null, errorfunc);
+                        ajaxfrom.ajaxsend('post', 'json', '/auth/addnewfunc', params, success, null, errorfunc);
                     });
             }
         );

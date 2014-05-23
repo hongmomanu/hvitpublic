@@ -36,7 +36,7 @@ define(function () {
             collapsible: true,
             rownumbers: true,
             method:'post',
-            url:'ajax/getroles.jsp',
+            url:'/auth/getroles',
             remoteSort: false,
 
             fit:true,

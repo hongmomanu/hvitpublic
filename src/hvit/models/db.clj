@@ -50,6 +50,21 @@
     (limit limits)
     (offset start))
   )
+(defn getroles [keyword start limits]
+
+  (select roles
+    (where {:rolename [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (limit limits)
+    (offset start))
+
+  )
+(defn getrolenums [keyword]
+
+  (select roles
+    (where {:rolename [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (aggregate (count :id) :counts)
+    )
+  )
 (defn getusernums []
   (select users
     (aggregate (count :id) :counts)
@@ -103,6 +118,12 @@
     (set-fields fields)
     (where {:id funcid}))
 
+  )
+
+(defn addfunc [fields]
+  (insert functions
+    (values fields)
+    )
   )
 
 

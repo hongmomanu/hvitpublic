@@ -38,6 +38,13 @@
   (POST "/auth/editfunc" [funcname label funcid pid imgcss sortnum]
     (auth/editfunc funcname label funcid pid imgcss sortnum))
 
+  (POST "/auth/addnewfunc" [funcname label funcid  imgcss sortnum]
+    (auth/addfunc funcname label funcid  imgcss sortnum))
+
+
+  (POST "/auth/getroles" [start limit totalname rowsname keyword]
+    (auth/getroles start limit  totalname rowsname keyword))
+
 
 
   (GET "/logout" []

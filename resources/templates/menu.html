@@ -19,12 +19,16 @@
       <ul class="nav navbar-nav">
         <li class="dropdown">
           <form action="{{servlet-context}}/login" class="navbar-form" method="POST">
+              {% if login-error %}
+              <a class="alert alert-danger">{{login-error}}</a>
+              {% endif %}
             <input class="span2"
                    id="username"
                    name="username"
                    placeholder="用户名"
                    style="margin-right: 5px"
                    type="text"/>
+
             <input class="span2"
                    id="password"
                    name="password"
