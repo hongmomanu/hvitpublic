@@ -1,0 +1,41 @@
+{% extends "templates/base.html" %}
+{% block content  %}
+{% if user-id %}
+
+<div class="list-group">
+    {% for item in content.content %}
+
+    <a addr="{{item.label}}" roleid="{{item.roleid}}" class="list-group-item ">
+        {{item.funcname}}
+        <span class="glyphicon glyphicon-chevron-right"></span>
+    </a>
+
+    {% endfor %}
+
+
+</div>
+
+<script type="text/javascript">
+   $('a.list-group-item').click(function(){
+
+      var src=$(this).attr('addr')+"?roleid="+$(this).attr('roleid');
+      var container=$('div.list-group').parent();
+      container.html('');
+      container.append('<iframe src="'+src+'" frameborder="0" scrolling="no" ' +
+              'allowtransparency="true" height="100%" width="100%" ></iframe>');
+
+   })
+</script>
+
+{% ifequal  content.nums "1" %}
+
+{% else %}
+{% endifequal %}
+
+
+{% else %}
+
+{% include "templates/welcome.html" %}
+{% endif %}
+
+{% endblock %}
