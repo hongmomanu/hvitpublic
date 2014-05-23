@@ -35,17 +35,8 @@
         </form>
 
             </div>
-        <table id="rolefuncgrid"  title="角色功能配置"
-               data-options="rownumbers:true,singleSelect:false,url:'ajax/getrolefuncs.jsp',method:'post'">
-            <thead>
-            <tr>
-                <th data-options="field:'selected',checkbox:true"></th>
-                <th data-options="field:'funcname',width:80">功能名</th>
-                <th data-options="field:'functype',width:100">功能类型</th>
+        <ul id="rolefuncgrid"></ul>
 
-            </tr>
-            </thead>
-        </table>
             <div style="text-align:center;padding:5px" id="roleformbtns">
                 <a  class="easyui-linkbutton save" data-options="disabled:true" >保存</a>
                 <a  class="easyui-linkbutton del" data-options="disabled:true" >删除</a>

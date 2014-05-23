@@ -60,7 +60,7 @@
 (defn handle-login [username password]
   (let [user (db/get-user username)]
     (if (and user (crypt/compare password (:password user)))
-      (session/put! :user-id username)(session/put! :login-error "用户密码错误"))
+      (do (session/put! :user-id username) (session/put! :roleid (:roleid user)))(session/put! :login-error "用户密码错误"))
     (resp/redirect "/")))
 
 (defn logout []
@@ -89,20 +89,44 @@
     (resp/json (assoc {} rowsname results totalname nums))
     )
   )
-(defn functreeformat [item]
+(defn functreeformat [item funcids]
   (let [
          childnums (count (db/getfuncsbypid (:id item)))
          state (if (> childnums 0) "closed" "open")
-         formatitem (assoc item "state" state "textold" (:text item))
+         formatitem (assoc item "state" state "textold" (:text item) "checked" (some #(= (:id item) %) funcids))
          ]
+
     (if (> childnums 0) (conj  formatitem {:text (str (:text formatitem) "(" childnums ")")}) formatitem)
     )
 
   )
-(defn gettreefunc [node]
+
+(defn getroleid [roleid]
+  (if (nil? roleid) (session/get :roleid) roleid)
+  )
+
+(defn makerolefunc [roleid deleteid funcid]
+  (let[
+        delids (read-string deleteid)
+        funcids (read-string funcid)
+        roleid (getroleid roleid)
+        ]
+    (dorun (map #(db/delrolefucbyid roleid %) delids))
+    (dorun (map #(when (= (count (db/isrolehasfunc roleid %)) 0 ) (db/insertrolefucbyid roleid %)) funcids))
+    (resp/json {:success true})
+
+    )
+
+
+  )
+(defn gettreefunc [node roleid]
   (let [
+
          results (db/getfuncsbypid node)
-         resultsformat (map #(functreeformat %) results)
+         roleid (getroleid roleid)
+         funcids (into [](map #(:funcid %) (db/getfuncsbyid roleid)))
+         resultsformat (map #(functreeformat % funcids) results)
+
          ]
     (resp/json resultsformat)
     )
@@ -126,15 +150,13 @@
   )
 (defn getfuncsbyrole [type roleid]
   (let [
+         roleid (getroleid roleid)
          funcids (into [](map #(:funcid %) (db/getfuncsbyid roleid)))
 
          typepid (first (db/getfuncsbytype type))
          funcstype (if (nil? typepid) [] (db/getfuncsbypid (:id typepid)))
-         test1 (println funcids )
-         test2 (println funcstype )
          reuslts (filter (fn [x] (some #(= (:id x) %) funcids)) funcstype)
          ]
-    (println reuslts)
     (resp/json reuslts)
     )
 

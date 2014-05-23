@@ -9,25 +9,37 @@ define(function () {
             }
         );
 
-        $('#rolefuncgrid').datagrid({
+        $('#rolefuncgrid').tree({
 
-            pagination:true,
-            pageSize:10,
-            onBeforeLoad: function (params) {
-                var options = $('#rolefuncgrid').datagrid('options');
-                params.start = (options.pageNumber - 1) * options.pageSize;
-                params.limit = options.pageSize;
-                params.totalname = "total";
-                params.rowsname = "rows";
-            },
-            onLoadSuccess : function(data) {
-                if (data) {
-                    $.each(data.rows, function(index, item) {
-                        if (item.selected) {
-                            $('#rolefuncgrid').datagrid('selectRow',index);
-                        }
-                    });
+            method: 'post',
+            animate:true,
+            checkbox:true,
+            url: '/auth/gettreefunc',
+            treeField: 'text',
+            idField: 'id',
+            onBeforeLoad: function (row, params) {
+                if (!row)params.node = -2;
+                else params.node = row.id;
+                try{
+                    params.roleid=$('#rolemanagerpanel').datagrid('getSelected').id;
+                }catch (err){
                 }
+
+
+            },
+            onLoadSuccess: function (row, data) {
+                /*require(['commonfuncs/treegridtip'], function () {
+                 $("#funcmanagerpanel").treegrid('tooltip', ['text']);
+                 });*/
+
+            },
+            onClickRow: function (rowData) {
+                /*rowData.funcname = rowData.textold;
+                rowData.funcid = rowData.id;
+                rowData.label = rowData.value;
+                $('#funcinfoform').form('load', rowData);
+                $('#funcformbtns .save,#funcformbtns .del').linkbutton('enable');
+                $('#funcmanagerlayout').layout('expand', 'east');*/
             }
         });
 
@@ -52,9 +64,10 @@ define(function () {
             },
             onClickRow:function(index, rowData){
                 $('#roleinfoform').form('load',rowData);
-                $('#rolefuncgrid').datagrid('load', {
+                /*$('#rolefuncgrid').datagrid('load', {
                     roleid: rowData.roleid
-                });
+                });*/
+                $('#rolefuncgrid').tree('reload');
                 $('#roleformbtns .save,#roleformbtns .del').linkbutton('enable');
                 $('#rolemanagerlayout').layout('expand','east');
             }
@@ -89,20 +102,20 @@ define(function () {
 
                                var formitem=$('#roleinfoform').form("serialize");
 
-                                var selectItems=$('#rolefuncgrid').datagrid('getChecked');
-                                var rows=$('#rolefuncgrid').datagrid('getRows');
+                                var selectItems=$('#rolefuncgrid').tree('getChecked');
+                                var unselectItems=$('#rolefuncgrid').tree('getChecked','unchecked');
                                 var funcid_arr=[];
                                 var delete_arr=[];
                                 $.each(selectItems,function(index,item){
-                                    funcid_arr.push(item.funcid);
+                                    funcid_arr.push(item.id);
                                 });
-                                $.each(rows,function(index,item){
-                                    delete_arr.push(item.funcid);
+                                $.each(unselectItems,function(index,item){
+                                    delete_arr.push(item.id);
                                 });
                                 var params = {
-                                    roleid:formitem.roleid,
-                                    deleteid:delete_arr,
-                                    funcid:funcid_arr
+                                    roleid:$('#rolemanagerpanel').datagrid('getSelected').id,
+                                    deleteid:$.toJSON(delete_arr),
+                                    funcid:$.toJSON(funcid_arr)
 
                                 };
 
@@ -114,7 +127,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','配置角色功能失败!');
                             };
-                            ajaxfrom.ajaxsend('post','json','ajax/makerolefunc.jsp',params,success,null,errorfunc);
+                            ajaxfrom.ajaxsend('post','json','/auth/makerolefunc',params,success,null,errorfunc);
                         });
                     }
                 }

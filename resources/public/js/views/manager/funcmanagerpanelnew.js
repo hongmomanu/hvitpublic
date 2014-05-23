@@ -4,12 +4,14 @@ define(function () {
         $('#funcmanagerpanel').treegrid({
             rownumbers: true,
             method: 'post',
+
             url: '/auth/gettreefunc',
             treeField: 'text',
             idField: 'id',
             onBeforeLoad: function (row, params) {
                 if (!row)params.node = -2;
                 else params.node = row.id;
+                params.roleid=$.getUrlParam('roleid');
 
             },
             onLoadSuccess: function (row, data) {
@@ -56,7 +58,6 @@ define(function () {
                             , function (easyform, ajaxfrom) {
                                 var params = $('#funcinfoform').form("serialize");
                                 //testobj= $('#funcinfoform');
-                                console.log(params);
                                 var success = function () {
                                     $.messager.alert('操作成功', '修改功能成功!');
                                     $('#funcmanagerpanel').treegrid('reload', params.parentid);

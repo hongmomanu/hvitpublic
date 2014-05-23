@@ -90,6 +90,13 @@
     )
   )
 
+(defn delrolefucbyid [roleid funcid]
+  (delete functorole
+    (where {:roleid roleid :funcid funcid} )
+    )
+
+  )
+
 (defn getfuncsbyid [roleid]
 
   (select functorole
@@ -99,6 +106,19 @@
     (where {:roleid roleid} )
     )
   )
+(defn isrolehasfunc [roleid funcid]
+
+  (select functorole
+    (where {:roleid roleid :funcid funcid} )
+    )
+  )
+
+(defn insertrolefucbyid [roleid funcid]
+  (insert functorole
+    (values {:roleid roleid :funcid funcid})
+    )
+  )
+
 (defn getfuncsbytype [type]
 
   (select functions

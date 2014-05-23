@@ -32,14 +32,17 @@
   (POST "/auth/getusers" [start limit  totalname rowsname]
     (auth/getusers start limit  totalname rowsname))
 
-  (POST "/auth/gettreefunc" [node]
-    (auth/gettreefunc node))
+  (POST "/auth/gettreefunc" [node roleid]
+    (auth/gettreefunc node roleid))
 
   (POST "/auth/editfunc" [funcname label funcid pid imgcss sortnum]
     (auth/editfunc funcname label funcid pid imgcss sortnum))
 
   (POST "/auth/addnewfunc" [funcname label funcid  imgcss sortnum]
     (auth/addfunc funcname label funcid  imgcss sortnum))
+
+  (POST "/auth/makerolefunc" [roleid deleteid funcid]
+    (auth/makerolefunc roleid deleteid funcid))
 
 
   (POST "/auth/getroles" [start limit totalname rowsname keyword]
