@@ -1,0 +1,62 @@
+<div id="enummanagerlayout" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+
+    <div data-options="region:'center',title:'功能列表'">
+        <table id="enummanagerpanel" >
+            <thead>
+            <tr>
+                <th data-options="field:'enumeratelabel',width:100">枚举标识</th>
+                <th data-options="field:'enumeratetype',width:100">枚举类别</th>
+                <th data-options="field:'enumeratevalue',width:100">枚举值</th>
+
+            </tr>
+            </thead>
+
+
+        </table>
+    </div>
+
+    <div data-options="region:'east',split:true,collapsed:true" title="详细信息" style="width:300px;height: 100%;">
+
+        <div style="padding:10px 0 10px 60px">
+
+            <form id="enuminfoform" method="post">
+                <table>
+                    <tr>
+                        <td>枚举标识:</td>
+                        <td><input class="easyui-validatebox" type="text" name="enumeratelabel" data-options="required:true"></td>
+                    </tr>
+                    <tr>
+                        <td>枚举类型:</td>
+                        <td><input class="easyui-validatebox" type="text" name="enumeratetype" data-options="required:true"></td>
+                    </tr>
+                    <tr>
+                        <td>功能值:</td>
+                        <td><input class="easyui-validatebox" type="text" name="enumeratevalue" data-options="required:true"></td>
+                    </tr>
+
+                    <tr><td>
+                        <input type="text" name="enumid" style="display: none;">
+                    </td></tr>
+
+                </table>
+            </form>
+        </div>
+        <div style="text-align:center;padding:5px" id="enumformbtns">
+            <a  class="easyui-linkbutton save" data-options="disabled:true" >保存</a>
+            <a  class="easyui-linkbutton del" data-options="disabled:true" >删除</a>
+        </div>
+
+
+
+
+    </div>
+    <div id="enumpaneltb" style="padding:5px;height:auto;vertical-align: middle;">
+        <a>快速搜索: <input class="keyword" type="keyword" style="width:120px"></a>
+
+        <a class="easyui-linkbutton newenum" data-options="iconCls:'icon-new'">新增功能</a>
+
+    </div>
+
+
+</div>

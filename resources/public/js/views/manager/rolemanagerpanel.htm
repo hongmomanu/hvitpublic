@@ -1,0 +1,66 @@
+<div id="rolemanagerlayout" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+
+    <div data-options="region:'center',title:'功能列表'">
+        <table id="rolemanagerpanel" >
+            <thead>
+            <tr>
+                <th data-options="field:'rolename',width:100">角色名</th>
+
+            </tr>
+
+            </thead>
+
+
+        </table>
+    </div>
+
+    <div data-options="region:'east',split:true,collapsed:true" title="详细信息" style="width:500px;">
+
+            <div style="padding:10px 0 10px 60px;display:none;">
+
+            <form id="roleinfoform" method="post">
+            <table>
+                <tr>
+                    <td>功能名:</td>
+                    <td><input class="easyui-validatebox" type="text" name="rolename" data-options="required:true"></td>
+                </tr>
+
+                <tr><td>
+                    <input type="text" name="roleid" style="display: none;">
+                </td></tr>
+
+
+            </table>
+        </form>
+
+            </div>
+        <table id="rolefuncgrid"  title="角色功能配置"
+               data-options="rownumbers:true,singleSelect:false,url:'ajax/getrolefuncs.jsp',method:'post'">
+            <thead>
+            <tr>
+                <th data-options="field:'selected',checkbox:true"></th>
+                <th data-options="field:'funcname',width:80">功能名</th>
+                <th data-options="field:'functype',width:100">功能类型</th>
+
+            </tr>
+            </thead>
+        </table>
+            <div style="text-align:center;padding:5px" id="roleformbtns">
+                <a  class="easyui-linkbutton save" data-options="disabled:true" >保存</a>
+                <a  class="easyui-linkbutton del" data-options="disabled:true" >删除</a>
+            </div>
+
+
+
+
+    </div>
+    <div id="rolepaneltb" style="padding:5px;height:auto;vertical-align: middle;">
+        <a>快速搜索: <input class="keyword" type="keyword" style="width:120px"></a>
+
+        <a class="easyui-linkbutton newrole" data-options="iconCls:'icon-new'">新增角色</a>
+
+    </div>
+
+
+</div>

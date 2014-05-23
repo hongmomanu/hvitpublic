@@ -1,0 +1,77 @@
+<div id="divisionmanagerlayout" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+
+    <div data-options="region:'center',title:'功能列表'">
+        <table id="divisionmanagerpanel" >
+            <thead>
+            <tr>
+                <th data-options="field:'text',width:300,formatter:function(val,rowData,rowIndex){
+                     var signaturepath=rowData.signaturepath;
+                     return '<span signaturepath=&quot;'+signaturepath+'&quot; class=&quot;treedivision&quot;>' + val + '</span>';
+                }">行政区划名</th>
+
+            </tr>
+
+            </thead>
+
+
+        </table>
+    </div>
+
+    <div data-options="region:'east',split:true,collapsed:true" title="详细信息" style="width:500px;">
+
+            <div style="padding:10px 0 10px 60px;">
+
+            <form id="divisioninfoform" method="post">
+            <table class="formtable">
+                <tr>
+                    <td>行政区划名:</td>
+                    <td><input class="easyui-validatebox" type="text" name="divisionname" data-options="required:true"></td>
+                </tr>
+
+                <tr>
+                    <td>图章地址:</td>
+                    <td>
+                    <input type="text" name="signaturepath" >
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>重设图章:</td>
+                    <td>
+                        <a class="easyui-linkbutton resetchapter"  data-options="iconCls:'icon-edit'" >选择图片</a>
+                    </td>
+                </tr>
+
+
+
+
+
+                <tr style="display: none;">
+                    <td>
+                        <input type="text" name="divisionid" style="display: none;">
+                        <input type="text" name="parentid" style="display: none;">
+                        <input type="text" name="divisionpath" style="display: none;">
+                    </td>
+                </tr>
+
+
+            </table>
+        </form>
+
+            </div>
+
+            <div style="text-align:center;padding:5px" id="divisionformbtns">
+                <a  class="easyui-linkbutton save" data-options="disabled:true" >保存</a>
+                <a  class="easyui-linkbutton del" data-options="disabled:true" >删除</a>
+                <a  class="easyui-linkbutton new"  >新增</a>
+            </div>
+
+
+
+
+    </div>
+
+
+
+</div>

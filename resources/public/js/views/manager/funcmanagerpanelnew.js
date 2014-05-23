@@ -1,0 +1,122 @@
+define(function () {
+
+    function render(parameters) {
+        $('#funcmanagerpanel').treegrid({
+            rownumbers: true,
+            method: 'post',
+            url: '/auth/gettreefunc',
+            treeField: 'text',
+            idField: 'id',
+            onBeforeLoad: function (row, params) {
+                if (!row)params.node = -2;
+                else params.node = row.id;
+
+            },
+            onLoadSuccess: function (row, data) {
+                require(['commonfuncs/treegridtip'], function () {
+                    $("#funcmanagerpanel").treegrid('tooltip', ['text']);
+                });
+
+            },
+            onClickRow: function (rowData) {
+                rowData.funcname = rowData.text;
+                rowData.funcid = rowData.id;
+                $('#funcinfoform').form('load', rowData);
+                $('#funcformbtns .save,#funcformbtns .del').linkbutton('enable');
+                $('#funcmanagerlayout').layout('expand', 'east');
+            }
+
+        });
+
+        $('#funcformbtns .del').click(function () {
+            $.messager.confirm('确定要删除行政区划么?', '你正在试图删除行政区划?', function (r) {
+                if (r) {
+                    require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
+                        , function (easyuifrom, ajaxfrom) {
+                            var params = $('#funcinfoform').form("serialize");
+                            var success = function () {
+                                $.messager.alert('操作成功', '删除行政区划成功!');
+                                if (params.parentid == -1)$('#funcmanagerpanel').treegrid('reload');
+                                else $('#funcmanagerpanel').treegrid('reload', params.parentid);
+                            };
+                            var errorfunc = function () {
+                                $.messager.alert('操作失败', '删除行政区划失败!');
+                            }
+                            ajaxfrom.ajaxsend('post', 'json', 'ajax/delfunc.jsp', params, success, null, errorfunc)
+
+                        });
+                }
+            });
+        });
+        $('#funcformbtns .save').click(function () {
+            $.messager.confirm('确定要修改角色配置么?', '你正在试图角色配置?', function (r) {
+                    if (r) {
+                        require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
+                            , function (easyform, ajaxfrom) {
+                                var params = $('#funcinfoform').form("serialize");
+                                var success = function () {
+                                    $.messager.alert('操作成功', '修改行政区划成功!');
+                                    $('#funcmanagerpanel').treegrid('reload', params.parentid);
+                                };
+                                var errorfunc = function () {
+                                    $.messager.alert('操作失败', '修改行政区划失败!');
+                                };
+                                ajaxfrom.ajaxsend('post', 'json', 'ajax/editfunc.jsp', params, success, null, errorfunc);
+                            });
+                    }
+                }
+            );
+
+        });
+
+        $('#funcformbtns .new').click(function () {
+
+                require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
+                    , function (easyform, ajaxfrom) {
+                        var params = $('#funcinfoform').form("serialize");
+                        params.parentid = params.funcid;
+                        var success = function () {
+                            $.messager.alert('操作成功', '新增行政区划成功!');
+                            $('#funcmanagerpanel').treegrid('reload', params.funcid);
+                        };
+                        var errorfunc = function () {
+                            $.messager.alert('操作失败', '新增行政区划失败!');
+                        };
+                        ajaxfrom.ajaxsend('post', 'json', 'ajax/addnewfunc.jsp', params, success, null, errorfunc);
+                    });
+            }
+        );
+
+
+        $('#funcpaneltb .newfunc').click(function () {
+            if ($('#newfuncwin').length > 0) {
+                $('#newfuncwin').dialog('open');
+            } else {
+                require(['text!views/manager/newfuncwin.htm', 'views/manager/newfuncwin'],
+                    function (div, newfuncjs) {
+                        $('body').append(div);
+                        newfuncjs.render();
+                    });
+            }
+
+        });
+        $('#funcinfoform .resetchapter').click(function () {
+            if ($('#newchapterwin').length > 0) {
+                $('#newchapterwin').dialog('open');
+            } else {
+                require(['text!views/manager/newchapter.htm', 'views/manager/newchapter'],
+                    function (div, newchapterjs) {
+                        $('body').append(div);
+                        newchapterjs.render();
+                    });
+            }
+
+        });
+
+    }
+
+    return {
+        render: render
+
+    };
+});
