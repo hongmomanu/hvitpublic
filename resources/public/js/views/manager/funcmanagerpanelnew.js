@@ -13,14 +13,15 @@ define(function () {
 
             },
             onLoadSuccess: function (row, data) {
-                require(['commonfuncs/treegridtip'], function () {
+                /*require(['commonfuncs/treegridtip'], function () {
                     $("#funcmanagerpanel").treegrid('tooltip', ['text']);
-                });
+                });*/
 
             },
             onClickRow: function (rowData) {
-                rowData.funcname = rowData.text;
+                rowData.funcname = rowData.textold;
                 rowData.funcid = rowData.id;
+                rowData.label = rowData.value;
                 $('#funcinfoform').form('load', rowData);
                 $('#funcformbtns .save,#funcformbtns .del').linkbutton('enable');
                 $('#funcmanagerlayout').layout('expand', 'east');
@@ -29,18 +30,18 @@ define(function () {
         });
 
         $('#funcformbtns .del').click(function () {
-            $.messager.confirm('确定要删除行政区划么?', '你正在试图删除行政区划?', function (r) {
+            $.messager.confirm('确定要删除功能么?', '你正在试图删除功能?', function (r) {
                 if (r) {
                     require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
                         , function (easyuifrom, ajaxfrom) {
                             var params = $('#funcinfoform').form("serialize");
                             var success = function () {
-                                $.messager.alert('操作成功', '删除行政区划成功!');
+                                $.messager.alert('操作成功', '删除功能成功!');
                                 if (params.parentid == -1)$('#funcmanagerpanel').treegrid('reload');
                                 else $('#funcmanagerpanel').treegrid('reload', params.parentid);
                             };
                             var errorfunc = function () {
-                                $.messager.alert('操作失败', '删除行政区划失败!');
+                                $.messager.alert('操作失败', '删除功能失败!');
                             }
                             ajaxfrom.ajaxsend('post', 'json', 'ajax/delfunc.jsp', params, success, null, errorfunc)
 
@@ -49,19 +50,22 @@ define(function () {
             });
         });
         $('#funcformbtns .save').click(function () {
-            $.messager.confirm('确定要修改角色配置么?', '你正在试图角色配置?', function (r) {
+            $.messager.confirm('确定要修改功能配置么?', '你正在试图功能配置?', function (r) {
                     if (r) {
                         require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
                             , function (easyform, ajaxfrom) {
                                 var params = $('#funcinfoform').form("serialize");
+                                //testobj= $('#funcinfoform');
+                                console.log(params);
                                 var success = function () {
-                                    $.messager.alert('操作成功', '修改行政区划成功!');
+                                    $.messager.alert('操作成功', '修改功能成功!');
                                     $('#funcmanagerpanel').treegrid('reload', params.parentid);
                                 };
                                 var errorfunc = function () {
-                                    $.messager.alert('操作失败', '修改行政区划失败!');
+                                    $.messager.alert('操作失败', '修改功能失败!');
                                 };
-                                ajaxfrom.ajaxsend('post', 'json', 'ajax/editfunc.jsp', params, success, null, errorfunc);
+
+                                ajaxfrom.ajaxsend('post', 'json', '/auth/editfunc', params, success, null, errorfunc);
                             });
                     }
                 }
@@ -76,11 +80,11 @@ define(function () {
                         var params = $('#funcinfoform').form("serialize");
                         params.parentid = params.funcid;
                         var success = function () {
-                            $.messager.alert('操作成功', '新增行政区划成功!');
+                            $.messager.alert('操作成功', '新增功能成功!');
                             $('#funcmanagerpanel').treegrid('reload', params.funcid);
                         };
                         var errorfunc = function () {
-                            $.messager.alert('操作失败', '新增行政区划失败!');
+                            $.messager.alert('操作失败', '新增功能失败!');
                         };
                         ajaxfrom.ajaxsend('post', 'json', 'ajax/addnewfunc.jsp', params, success, null, errorfunc);
                     });

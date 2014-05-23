@@ -7,9 +7,9 @@
             <i class="icon-user"></i>{{user-id}} <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
-            <li><a href="{{servlet-context}}/profile">Profile</a></li>
+            <li><a href="{{servlet-context}}/profile">修改密码</a></li>
             <li class="divider"></li>
-            <li><a href="{{servlet-context}}/logout">Sign Out</a></li>
+            <li><a href="{{servlet-context}}/logout">注销</a></li>
           </ul>
         </li>
       </ul>
@@ -31,11 +31,11 @@
                    placeholder="密码"
                    style="margin-right: 5px"
                    type="password"/>
-            <input class="btn" type="submit" value="Login"/>
+            <input class="btn" type="submit" value="登陆"/>
           </form>
         </li>
         <li>
-          <a href="{{servlet-context}}/register">Register</a>
+          <a href="{{servlet-context}}/register" style="display:none;">Register</a>
         </li>
       </ul>
     </div>

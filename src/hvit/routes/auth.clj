@@ -35,6 +35,9 @@
   (POST "/auth/gettreefunc" [node]
     (auth/gettreefunc node))
 
+  (POST "/auth/editfunc" [funcname label funcid pid imgcss sortnum]
+    (auth/editfunc funcname label funcid pid imgcss sortnum))
+
 
 
   (GET "/logout" []

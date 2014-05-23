@@ -25,33 +25,36 @@
             <form id="funcinfoform" method="post">
             <table class="formtable">
                 <tr>
-                    <td>行政区划名:</td>
+                    <td>功能名称:</td>
                     <td><input class="easyui-validatebox" type="text" name="funcname" data-options="required:true"></td>
                 </tr>
 
                 <tr>
-                    <td>图章地址:</td>
+                    <td>功能标识:</td>
                     <td>
-                    <input type="text" name="signaturepath" >
+                    <input type="text" name="label" >
                     </td>
                 </tr>
-
                 <tr>
-                    <td>重设图章:</td>
+                    <td>图标样式:</td>
                     <td>
-                        <a class="easyui-linkbutton resetchapter"  data-options="iconCls:'icon-edit'" >选择图片</a>
+                    <input type="text" name="imgcss" >
                     </td>
                 </tr>
-
-
+                <tr>
+                    <td>排列序号:</td>
+                    <td>
+                    <input type="text" name="sortnum" >
+                    </td>
+                </tr>
 
 
 
                 <tr style="display: none;">
                     <td>
                         <input type="text" name="funcid" style="display: none;">
-                        <input type="text" name="parentid" style="display: none;">
-                        <input type="text" name="funcpath" style="display: none;">
+                        <input type="text" name="pid" style="display: none;">
+                        <input type="text" name="value" style="display: none;">
                     </td>
                 </tr>
 

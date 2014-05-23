@@ -94,9 +94,15 @@
 
 (defn getfuncsbypid [pid]
   (select functions
-    (fields :id [:funcname :text] :pid [:label :value])
+    (fields :id [:funcname :text] :pid [:label :value] :imgcss :sortnum)
     (where {:pid pid})
     )
+  )
+(defn updatefunc [fields funcid]
+  (update functions
+    (set-fields fields)
+    (where {:id funcid}))
+
   )
 
 

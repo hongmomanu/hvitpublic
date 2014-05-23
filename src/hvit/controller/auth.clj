@@ -84,7 +84,7 @@
   (let [
          childnums (count (db/getfuncsbypid (:id item)))
          state (if (> childnums 0) "closed" "open")
-         formatitem (assoc item "state" state)
+         formatitem (assoc item "state" state "textold" (:text item))
          ]
     (if (> childnums 0) (conj  formatitem {:text (str (:text formatitem) "(" childnums ")")}) formatitem)
     )
@@ -96,6 +96,14 @@
          resultsformat (map #(functreeformat %) results)
          ]
     (resp/json resultsformat)
+    )
+  )
+(defn editfunc [funcname label funcid pid imgcss sortnum]
+  (let [
+         result (db/updatefunc {:funcname funcname :label label :pid pid
+                                :imgcss imgcss :sortnum sortnum} funcid)
+         ]
+    (resp/json {:success true :msg result})
     )
   )
 (defn getfuncsbyrole [type roleid]
