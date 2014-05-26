@@ -82,6 +82,13 @@
     (resp/json (assoc {} rowsname results totalname nums))
     )
   )
+(defn getenums [start limit  totalname rowsname keyword]
+  (let [results (db/getenums keyword start limit )
+        nums  (:counts (first (db/getenumnums keyword)))
+        ]
+    (resp/json (assoc {} rowsname results totalname nums))
+    )
+  )
 (defn getroles [start limit  totalname rowsname keyword]
   (let [results (db/getroles keyword start limit )
          nums  (:counts (first (db/getrolenums keyword)))
@@ -102,7 +109,10 @@
   )
 
 (defn getroleid [roleid]
+  (println "session ssssss roleid" (session/get :roleid))
+  (println "url roleid" roleid)
   (if (nil? roleid) (session/get :roleid) roleid)
+
   )
 
 (defn makerolefunc [roleid deleteid funcid]
@@ -119,7 +129,7 @@
 
 
   )
-(defn gettreefunc [node roleid]
+(defn gettreefunc [node roleid callback]
   (let [
 
          results (db/getfuncsbypid node)
@@ -128,27 +138,62 @@
          resultsformat (map #(functreeformat % funcids) results)
 
          ]
-    (resp/json resultsformat)
-    )
-  )
-(defn editfunc [funcname label funcid pid imgcss sortnum]
-  (let [
-         result (db/updatefunc {:funcname funcname :label label :pid pid
-                                :imgcss imgcss :sortnum sortnum} funcid)
-         ]
-    (resp/json {:success true :msg result})
+    (if (nil? callback) (resp/json resultsformat)(resp/jsonp callback resultsformat))
     )
   )
 
+
+(defn editfunc [funcname label funcid pid imgcss sortnum]
+  (let [existfunc (db/getfuncsbytype funcname )
+        ]
+    (if(and (> (count existfunc) 0) (not= (:id (first existfunc)) (read-string funcid)))
+      (resp/json {:success false :msg "功能名已存在"})
+      (let [
+             result (db/updatefunc {:funcname funcname :label label :pid pid
+                                    :imgcss imgcss :sortnum sortnum} funcid)
+             ]
+        (resp/json {:success true :msg result}))
+      )
+    )
+
+  )
+(defn editenum [enumeratelabel enumeratetype enumeratevaluem id]
+
+          (let [
+                 result (db/updateenum {:enumeratelabel enumeratelabel :enumeratetype enumeratetype
+                                        :enumeratevalue enumeratevaluem } id)
+                 ]
+            (resp/json {:success true :msg result}))
+
+      )
+
+(defn delfunc [funcid]
+  (resp/json {:success true :msg (db/delfunc funcid)})
+  )
+
+(defn delenum [id]
+  (resp/json {:success true :msg (db/delenum id)})
+  )
+
 (defn addfunc [funcname label funcid  imgcss sortnum]
+  (if (> (count (db/getfuncsbytype funcname )) 0)(resp/json {:success false :msg "功能名已存在"})
   (let [
          result (db/addfunc {:funcname funcname :label label :pid funcid
                                 :imgcss imgcss :sortnum sortnum})
          ]
     (resp/json {:success true :msg result})
-    )
+    ))
   )
-(defn getfuncsbyrole [type roleid]
+
+(defn addnewenum [enumlabel enumtype enumvalue]
+
+    (let [
+           result (db/addenumerate {:enumeratelabel enumlabel :enumeratetype enumtype  :enumeratevalue enumvalue})
+           ]
+      (resp/json {:success true :msg result})
+      )
+  )
+(defn getfuncsbyrole [type roleid callback]
   (let [
          roleid (getroleid roleid)
          funcids (into [](map #(:funcid %) (db/getfuncsbyid roleid)))
@@ -157,7 +202,17 @@
          funcstype (if (nil? typepid) [] (db/getfuncsbypid (:id typepid)))
          reuslts (filter (fn [x] (some #(= (:id x) %) funcids)) funcstype)
          ]
-    (resp/json reuslts)
+    (if (nil? callback) (resp/json reuslts)(resp/jsonp callback reuslts))
+    )
+
+  )
+
+(defn getenumbytype [type callback]
+  (let [
+
+         reuslts (db/getenumeratebytype type)
+         ]
+    (if (nil? callback) (resp/json reuslts)(resp/jsonp callback reuslts))
     )
 
   )

@@ -10,7 +10,7 @@
 
 (defdb sqlserverdb schema/db-sqlserver)
 
-(declare users roles functorole functions)
+(declare users roles functorole functions enumerate)
 (defentity users
   (has-one roles {:fk :id})
   (database mysqldb)
@@ -28,6 +28,9 @@
 
   (database mysqldb)
   )
+(defentity enumerate
+  (database mysqldb)
+ )
 
 (defn create-user [user]
   (insert users
@@ -50,6 +53,13 @@
     (limit limits)
     (offset start))
   )
+
+(defn getenums [keyword start limits]
+  (select enumerate
+    (where {:enumeratetype [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (limit limits)
+    (offset start))
+  )
 (defn getroles [keyword start limits]
 
   (select roles
@@ -57,6 +67,13 @@
     (limit limits)
     (offset start))
 
+  )
+(defn getenumnums [keyword]
+
+  (select enumerate
+    (where {:enumeratetype [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (aggregate (count :id) :counts)
+    )
   )
 (defn getrolenums [keyword]
 
@@ -96,7 +113,6 @@
     )
 
   )
-
 (defn getfuncsbyid [roleid]
 
   (select functorole
@@ -127,6 +143,16 @@
     )
   )
 
+(defn delfunc [funcid]
+  (delete functions
+    (where {:id funcid})
+    )
+  )
+(defn delenum [enumid]
+  (delete enumerate
+    (where {:id enumid})
+    )
+  )
 (defn getfuncsbypid [pid]
   (select functions
     (fields :id [:funcname :text] :pid [:label :value] :imgcss :sortnum)
@@ -139,6 +165,11 @@
     (where {:id funcid}))
 
   )
+(defn updateenum [fields enumid]
+  (update enumerate
+    (set-fields fields)
+    (where {:id enumid}))
+  )
 
 (defn addfunc [fields]
   (insert functions
@@ -146,7 +177,17 @@
     )
   )
 
+(defn addenumerate [fields]
+  (insert enumerate
+    (values fields)
+    )
+  )
 
+(defn getenumeratebytype [type]
+  (select enumerate
+    (where {:enumeratetype type})
+    )
+  )
 
 
 (defn postgres-test[]

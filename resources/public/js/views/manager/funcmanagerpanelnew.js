@@ -45,7 +45,7 @@ define(function () {
                             var errorfunc = function () {
                                 $.messager.alert('操作失败', '删除功能失败!');
                             }
-                            ajaxfrom.ajaxsend('post', 'json', 'ajax/delfunc.jsp', params, success, null, errorfunc)
+                            ajaxfrom.ajaxsend('post', 'json', '/auth/delfunc', params, success, null, errorfunc)
 
                         });
                 }
@@ -58,9 +58,15 @@ define(function () {
                             , function (easyform, ajaxfrom) {
                                 var params = $('#funcinfoform').form("serialize");
                                 //testobj= $('#funcinfoform');
-                                var success = function () {
-                                    $.messager.alert('操作成功', '修改功能成功!');
-                                    $('#funcmanagerpanel').treegrid('reload', params.parentid);
+                                var success = function (res) {
+
+                                    if(res.success){
+                                        $.messager.alert('操作成功', '修改功能成功!');
+                                        $('#funcmanagerpanel').treegrid('reload', params.parentid);
+                                    }else{
+                                        $.messager.alert('操作失败', res.msg);
+                                    }
+
                                 };
                                 var errorfunc = function () {
                                     $.messager.alert('操作失败', '修改功能失败!');
@@ -80,9 +86,14 @@ define(function () {
                     , function (easyform, ajaxfrom) {
                         var params = $('#funcinfoform').form("serialize");
                         params.parentid = params.funcid;
-                        var success = function () {
-                            $.messager.alert('操作成功', '新增功能成功!');
-                            $('#funcmanagerpanel').treegrid('reload', params.funcid);
+                        var success = function (res) {
+                            if(res.success){
+                                $.messager.alert('操作成功', '新增功能成功!');
+                                $('#funcmanagerpanel').treegrid('reload', params.funcid);
+                            }else{
+                                $.messager.alert('操作失败', res.msg);
+                            }
+
                         };
                         var errorfunc = function () {
                             $.messager.alert('操作失败', '新增功能失败!');
