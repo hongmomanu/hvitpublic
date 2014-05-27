@@ -75,6 +75,9 @@
   (POST "/auth/getroles" [start limit totalname rowsname keyword]
     (auth/getroles start limit  totalname rowsname keyword))
 
+  (POST "/auth/getlogs" [start limit totalname rowsname keyword]
+    (auth/getlogs start limit  totalname rowsname keyword))
+
   (POST "/auth/delenum" [id]
     (auth/delenum id))
   (POST "/auth/deluser" [id]

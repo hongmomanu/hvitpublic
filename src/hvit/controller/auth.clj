@@ -109,7 +109,15 @@
   (let [results (db/getroles keyword start limit )
          nums  (:counts (first (db/getrolenums keyword)))
         ]
-    (if(nil? totalname) (resp/json(db/getroles keyword start limit )) (resp/json (assoc {} rowsname results totalname nums)))
+    (if(nil? totalname) (resp/json results) (resp/json (assoc {} rowsname results totalname nums)))
+
+    )
+  )
+(defn getlogs [start limit  totalname rowsname keyword]
+  (let [results (db/getlogs keyword start limit )
+         nums  (:counts (first (db/getlognums keyword)))
+        ]
+    (if(nil? totalname) (resp/json results) (resp/json (assoc {} rowsname results totalname nums)))
 
     )
   )

@@ -10,7 +10,7 @@
 
 (defdb sqlserverdb schema/db-sqlserver)
 
-(declare users roles functorole functions enumerate divisions)
+(declare users roles functorole functions enumerate divisions systemlog)
 (defentity users
   (pk :roleid)
   (has-one roles {:fk :id})
@@ -33,6 +33,10 @@
   (database mysqldb)
  )
 (defentity divisions
+  (database mysqldb)
+ )
+(defentity systemlog
+  (belongs-to users {:fk :userid})
   (database mysqldb)
  )
 
@@ -78,6 +82,14 @@
     (offset start))
 
   )
+(defn getlogs [keyword start limits]
+
+  (select systemlog
+    (where {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (limit limits)
+    (offset start))
+
+  )
 (defn getenumnums [keyword]
 
   (select enumerate
@@ -89,6 +101,13 @@
 
   (select roles
     (where {:rolename [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (aggregate (count :id) :counts)
+    )
+  )
+(defn getlognums [keyword]
+
+  (select systemlog
+    (where {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]})
     (aggregate (count :id) :counts)
     )
   )
