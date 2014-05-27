@@ -20,7 +20,8 @@ define(function () {
 
             },
             onClickRow: function (rowData) {
-                rowData.divisionname = rowData.text;
+                console.log(rowData);
+                rowData.divisionname = rowData.textold;
                 rowData.divisionid = rowData.id;
                 $('#divisioninfoform').form('load', rowData);
                 $('#divisionformbtns .save,#divisionformbtns .del').linkbutton('enable');
@@ -43,7 +44,7 @@ define(function () {
                             var errorfunc = function () {
                                 $.messager.alert('操作失败', '删除行政区划失败!');
                             }
-                            ajaxfrom.ajaxsend('post', 'json', 'ajax/deldivision.jsp', params, success, null, errorfunc)
+                            ajaxfrom.ajaxsend('post', 'json', '/auth/deldivision', params, success, null, errorfunc)
 
                         });
                 }
@@ -75,15 +76,22 @@ define(function () {
                 require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
                     , function (easyform, ajaxfrom) {
                         var params = $('#divisioninfoform').form("serialize");
-                        params.parentid = params.divisionid;
-                        var success = function () {
-                            $.messager.alert('操作成功', '新增行政区划成功!');
-                            $('#divisionmanagerpanel').treegrid('reload', params.divisionid);
+                        //params.parentid = params.divisionid;
+                        var success = function (res) {
+                            if(res.success){
+                                $.messager.alert('操作成功', '新增行政区划成功!');
+                                $('#divisionmanagerpanel').treegrid('reload', params.parentid);
+                            }else{
+                                $.messager.alert('操作失败', res.msg);
+                            }
+
+
+
                         };
                         var errorfunc = function () {
                             $.messager.alert('操作失败', '新增行政区划失败!');
                         };
-                        ajaxfrom.ajaxsend('post', 'json', 'ajax/addnewdivision.jsp', params, success, null, errorfunc);
+                        ajaxfrom.ajaxsend('post', 'json', '/auth/adddivision', params, success, null, errorfunc);
                     });
             }
         );

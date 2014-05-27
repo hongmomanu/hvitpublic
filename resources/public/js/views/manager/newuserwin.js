@@ -13,12 +13,11 @@ define(function () {
                 disabled:true,
                 handler:function(){
                    //alert(1);
-                    require(['commonfuncs/md5','jqueryplugin/easyui-form','commonfuncs/AjaxForm']
-                        ,function(md5,easyform,ajaxfrom){
+                    require(['jqueryplugin/easyui-form','commonfuncs/AjaxForm']
+                        ,function(easyform,ajaxfrom){
 
 
                             var params=$('#newuserwin form').form("serialize");
-                            params.password=CryptoJS.enc.Base64.stringify(CryptoJS.MD5(params.password));
                             params.iscommon=false;
                             var success=function(){
                                 $.messager.alert('操作成功','新增用户成功!');
@@ -28,7 +27,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','新增用户失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','ajax/addnewuser.jsp',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','/auth/addnewuser',params,success,null,errorfunc)
 
                         });
 
@@ -53,28 +52,31 @@ define(function () {
         });
         var divitiontree=$('#newuserwin .easyui-combotree');
         divitiontree.combotree({
-            url:'ajax/gettreedivision.jsp?onlychild=true&node=-1',
+            url:'/auth/gettreedivision?node=-1',
             method: 'get',
+            textField:'textold',
             onLoadSuccess:function(){
                 /*if(!this.firstloaded){
-                    divitiontree.combotree('setValue', divisionpath);
-                    this.firstloaded=true;
+                    //alert(1);
+                    console.log(divitiontree.combotree('find',-1))
+                    //divitiontree.combotree('setValue', divisionpath);
+                    //this.firstloaded=true;
                 }*/
             },
             onBeforeExpand: function (node) {
                 divitiontree.combotree("tree").tree("options").url
-                    = "ajax/gettreedivision.jsp?onlychild=true&node=" + node.id;
+                    = "/auth/gettreedivision?onlychild=true&node=" + node.id;
             },
             onHidePanel: function () {
-                divitiontree.combotree('setValue',
-                    divitiontree.combotree('tree').tree('getSelected').divisionpath);
+               /* divitiontree.combotree('setValue',
+                    divitiontree.combotree('tree').tree('getSelected').divisionpath);*/
             }
         });
 
 
         $('#newuserwin .lazy-combobox').combobox({
             onShowPanel: function () {
-                var url = 'ajax/getroles.jsp?start=0&limit=100' ;
+                var url = '/auth/getroles?start=0&limit=100' ;
                 $(this).combobox('reload', url);
             }
 

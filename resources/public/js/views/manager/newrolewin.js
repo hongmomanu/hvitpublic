@@ -15,15 +15,20 @@ define(function () {
                     require(['jqueryplugin/easyui-form','commonfuncs/AjaxForm']
                         ,function(easyform,ajaxfrom){
                             var params=$('#newrolewin form').form("serialize");
-                            var success=function(){
-                                $.messager.alert('操作成功','新增角色成功!');
-                                $('#newrolewin').dialog('close');
-                                $('#rolemanagerpanel').datagrid('reload');
+                            var success=function(res){
+                                if(res.success){
+                                    $.messager.alert('操作成功','新增角色成功!');
+                                    $('#newrolewin').dialog('close');
+                                    $('#rolemanagerpanel').datagrid('reload');
+                                }else{
+                                    $.messager.alert('操作失败',res.msg);
+                                }
+
                             };
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','新增功能失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','ajax/addnewrole.jsp',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','/auth/addnewrole',params,success,null,errorfunc)
 
                         });
 

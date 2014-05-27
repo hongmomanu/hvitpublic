@@ -49,7 +49,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','删除用户失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','ajax/deluser.jsp',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','/auth/deluser',params,success,null,errorfunc)
 
                         });
                 }

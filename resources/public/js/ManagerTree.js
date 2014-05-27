@@ -6,7 +6,7 @@ define(function(){
     var a={
 
         render:function(parameters){
-            $('#authorityacc,#systemgacc').tree({
+            $('#authorityacc,#systemgacc,#serverlogacc').tree({
                 onClick: function (node){
                     var tree=$(this);
                     var me=this;

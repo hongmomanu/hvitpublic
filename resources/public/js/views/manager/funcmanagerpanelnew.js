@@ -39,8 +39,8 @@ define(function () {
                             var params = $('#funcinfoform').form("serialize");
                             var success = function () {
                                 $.messager.alert('操作成功', '删除功能成功!');
-                                if (params.parentid == -1)$('#funcmanagerpanel').treegrid('reload');
-                                else $('#funcmanagerpanel').treegrid('reload', params.parentid);
+                                if (params.pid == -1)$('#funcmanagerpanel').treegrid('reload');
+                                else $('#funcmanagerpanel').treegrid('reload', params.pid);
                             };
                             var errorfunc = function () {
                                 $.messager.alert('操作失败', '删除功能失败!');
@@ -62,7 +62,7 @@ define(function () {
 
                                     if(res.success){
                                         $.messager.alert('操作成功', '修改功能成功!');
-                                        $('#funcmanagerpanel').treegrid('reload', params.parentid);
+                                        $('#funcmanagerpanel').treegrid('reload', params.id);
                                     }else{
                                         $.messager.alert('操作失败', res.msg);
                                     }
@@ -85,11 +85,11 @@ define(function () {
                 require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
                     , function (easyform, ajaxfrom) {
                         var params = $('#funcinfoform').form("serialize");
-                        params.parentid = params.funcid;
+                        //params.parentid = params.funcid;
                         var success = function (res) {
                             if(res.success){
                                 $.messager.alert('操作成功', '新增功能成功!');
-                                $('#funcmanagerpanel').treegrid('reload', params.funcid);
+                                $('#funcmanagerpanel').treegrid('reload',params.pid);
                             }else{
                                 $.messager.alert('操作失败', res.msg);
                             }

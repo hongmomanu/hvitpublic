@@ -48,6 +48,19 @@
         (register)))
     (register username)))
 
+(defn addnewuser [username displayname  password divisionid roleid]
+  (let [user (db/get-user username)]
+    (if(> (count user) 0) (resp/json {:success false :msg "用户已存在"})
+
+      )
+
+    (resp/json {:success true :msg (db/create-user {:username username :password (crypt/encrypt password)
+                                                    :displayname displayname :divisionid divisionid
+                                                    :roleid roleid
+                                                    })})
+    )
+  )
+
 (defn profile []
   (layout/render
     "profile.html"
@@ -82,6 +95,9 @@
     (resp/json (assoc {} rowsname results totalname nums))
     )
   )
+(defn deluser [userid]
+  (resp/json {:success true :msg (db/deluser userid)})
+  )
 (defn getenums [start limit  totalname rowsname keyword]
   (let [results (db/getenums keyword start limit )
         nums  (:counts (first (db/getenumnums keyword)))
@@ -93,7 +109,8 @@
   (let [results (db/getroles keyword start limit )
          nums  (:counts (first (db/getrolenums keyword)))
         ]
-    (resp/json (assoc {} rowsname results totalname nums))
+    (if(nil? totalname) (resp/json(db/getroles keyword start limit )) (resp/json (assoc {} rowsname results totalname nums)))
+
     )
   )
 (defn functreeformat [item funcids]
@@ -155,6 +172,16 @@
 
   )
 
+(defn adddivision [divisionid divisionname signaturepath divisionpath]
+  (if (> (count (db/getdivisionbypath (str divisionpath divisionname))) 0)(resp/json {:success false :msg "行政区划已存在"})
+    (let [
+           result (db/adddivision {:parentid divisionid :divisionname divisionname :signaturepath signaturepath
+                               :divisionpath (str divisionpath divisionname)})
+           ]
+      (resp/json {:success true :msg result})
+      ))
+
+  )
 (defn gettreedivision [node callback]
 
   (let [
@@ -197,6 +224,10 @@
   (resp/json {:success true :msg (db/delfunc funcid)})
   )
 
+(defn deldivision [divisionid]
+  (resp/json {:success true :msg (db/deldivision divisionid)})
+  )
+
 (defn delenum [id]
   (resp/json {:success true :msg (db/delenum id)})
   )
@@ -218,6 +249,16 @@
            ]
       (resp/json {:success true :msg result})
       )
+  )
+(defn addnewrole [rolename]
+  (let [
+         nums  (:counts (first (db/getrolenums rolename)))
+         ]
+    (if (> nums 0)(resp/json {:success false :msg "功能名已存在"})
+      (resp/json {:success true :msg (db/addrole rolename)})  )
+    )
+
+
   )
 (defn getfuncsbyrole [type roleid callback]
   (let [

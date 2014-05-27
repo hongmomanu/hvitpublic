@@ -12,6 +12,7 @@
 
 (declare users roles functorole functions enumerate divisions)
 (defentity users
+  (pk :roleid)
   (has-one roles {:fk :id})
   (database mysqldb)
   )
@@ -49,12 +50,18 @@
 (defn getusers [start limits]
   (select users
 
-    (fields :username :password :id :roleid :time)
+    (fields :username :password :id :roleid :time :displayname)
     (with roles
       (fields :rolename )
       )
     (limit limits)
     (offset start))
+  )
+
+(defn deluser [userid]
+  (delete users
+    (where {:id userid})
+    )
   )
 
 (defn getenums [keyword start limits]
@@ -116,6 +123,11 @@
     )
 
   )
+(defn deldivision [divisionid]
+  (delete divisions
+    (where {:id divisionid})
+    )
+  )
 (defn getfuncsbyid [roleid]
 
   (select functorole
@@ -165,10 +177,16 @@
 
 (defn getdivisionsbypid [pid]
   (select divisions
-    (fields :id [:divisionname :text] :parentid [:divisionpath :value] :signaturepath)
+    (fields :id [:divisionname :text] :parentid [:divisionpath :value] :divisionpath :signaturepath)
     (where {:parentid pid})
     )
 
+  )
+(defn getdivisionbypath [path]
+  (select divisions
+    (fields :id)
+    (where {:divisionpath path})
+    )
   )
 (defn updatefunc [fields funcid]
   (update functions
@@ -187,9 +205,20 @@
     (values fields)
     )
   )
+(defn addrole [rolename]
+  (insert roles
+    (values {:rolename rolename})
+    )
+  )
 
 (defn addenumerate [fields]
   (insert enumerate
+    (values fields)
+    )
+  )
+
+(defn adddivision [fields]
+  (insert divisions
     (values fields)
     )
   )

@@ -36,6 +36,8 @@
 
   (POST "/auth/getusers" [start limit  totalname rowsname]
     (auth/getusers start limit  totalname rowsname))
+  (POST "/auth/addnewuser" [username displayname  password divisionid roleid]
+    (auth/addnewuser username displayname  password divisionid roleid))
 
   (POST "/auth/gettreefunc" [node roleid callback]
     (auth/gettreefunc node roleid callback))
@@ -47,6 +49,10 @@
 
   (POST "/auth/gettreedivision" [node  callback]
     (auth/gettreedivision node  callback))
+  (POST "/auth/adddivision" [divisionid divisionname signaturepath divisionpath]
+    (auth/adddivision divisionid divisionname signaturepath divisionpath))
+  (POST "/auth/deldivision" [divisionid]
+    (auth/deldivision divisionid))
 
 
 
@@ -71,6 +77,11 @@
 
   (POST "/auth/delenum" [id]
     (auth/delenum id))
+  (POST "/auth/deluser" [id]
+    (auth/deluser id))
+
+  (POST "/auth/addnewrole" [rolename]
+    (auth/addnewrole rolename))
 
 
   (POST "/auth/addnewenum" [enumlabel enumtype enumvalue]
