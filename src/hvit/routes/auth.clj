@@ -42,6 +42,12 @@
   (GET "/auth/gettreefunc" [node roleid callback]
     (auth/gettreefunc node roleid callback))
 
+  (GET "/auth/gettreedivision" [node  callback]
+    (auth/gettreedivision node  callback))
+
+  (POST "/auth/gettreedivision" [node  callback]
+    (auth/gettreedivision node  callback))
+
 
 
   (POST "/auth/editfunc" [funcname label funcid pid imgcss sortnum]

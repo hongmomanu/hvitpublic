@@ -143,6 +143,32 @@
   )
 
 
+(defn divisiontreeformat [item]
+  (let [
+         childnums (count (db/getdivisionsbypid (:id item)))
+         state (if (> childnums 0) "closed" "open")
+         formatitem (assoc item "state" state "textold" (:text item))
+         ]
+
+    (if (> childnums 0) (conj  formatitem {:text (str (:text formatitem) "(" childnums ")")}) formatitem)
+    )
+
+  )
+
+(defn gettreedivision [node callback]
+
+  (let [
+
+         results (db/getdivisionsbypid node)
+         resultsformat (map #(divisiontreeformat %) results)
+
+         ]
+    (if (nil? callback) (resp/json resultsformat)(resp/jsonp callback resultsformat))
+    )
+
+  )
+
+
 (defn editfunc [funcname label funcid pid imgcss sortnum]
   (let [existfunc (db/getfuncsbytype funcname )
         ]

@@ -10,7 +10,7 @@
 
 (defdb sqlserverdb schema/db-sqlserver)
 
-(declare users roles functorole functions enumerate)
+(declare users roles functorole functions enumerate divisions)
 (defentity users
   (has-one roles {:fk :id})
   (database mysqldb)
@@ -29,6 +29,9 @@
   (database mysqldb)
   )
 (defentity enumerate
+  (database mysqldb)
+ )
+(defentity divisions
   (database mysqldb)
  )
 
@@ -158,6 +161,14 @@
     (fields :id [:funcname :text] :pid [:label :value] :imgcss :sortnum)
     (where {:pid pid})
     )
+  )
+
+(defn getdivisionsbypid [pid]
+  (select divisions
+    (fields :id [:divisionname :text] :parentid [:divisionpath :value] :signaturepath)
+    (where {:parentid pid})
+    )
+
   )
 (defn updatefunc [fields funcid]
   (update functions

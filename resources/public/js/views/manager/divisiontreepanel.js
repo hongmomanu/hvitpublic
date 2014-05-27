@@ -5,7 +5,7 @@ define(function () {
         $('#divisionmanagerpanel').treegrid({
             rownumbers: true,
             method: 'post',
-            url: 'ajax/gettreedivision.jsp?onlychild=true',
+            url: '/auth/gettreedivision',
             treeField: 'text',
             idField: 'id',
             onBeforeLoad: function (row, params) {
