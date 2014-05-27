@@ -87,3 +87,16 @@ CREATE  TABLE IF NOT EXISTS attachment
 
   );
 
+-- 日志表
+CREATE  TABLE IF NOT EXISTS systemlog
+  (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,   --  自增主键
+  time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  --  提交时间
+  userid               int,                --  用户id
+  logcontent           VARCHAR(500),       --  附件名称
+  logtype              VARCHAR(50)        --   日志类型
+
+  );
+
+
+

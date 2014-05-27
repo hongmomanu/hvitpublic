@@ -1,0 +1,28 @@
+<div id="logmanagerlayout" class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+
+    <div data-options="region:'center',title:'功能列表'">
+        <table id="logmanagerpanel" >
+            <thead>
+            <tr>
+                <th data-options="field:'logcontent',width:100">日志内容</th>
+                <th data-options="field:'username',width:100">操作用户</th>
+                <th data-options="field:'time',width:100">操作时间</th>
+
+            </tr>
+
+            </thead>
+
+
+        </table>
+    </div>
+
+    <div id="logpaneltb" style="padding:5px;height:auto;vertical-align: middle;">
+        <a>快速搜索: <input class="keyword" type="keyword" style="width:120px"></a>
+
+        <a class="easyui-linkbutton newlog" data-options="iconCls:'icon-new'">查询</a>
+
+    </div>
+
+
+</div>

@@ -62,7 +62,7 @@ define(function () {
 
                                     if(res.success){
                                         $.messager.alert('操作成功', '修改功能成功!');
-                                        $('#funcmanagerpanel').treegrid('reload', params.id);
+                                        $('#funcmanagerpanel').treegrid('reload', params.pid);
                                     }else{
                                         $.messager.alert('操作失败', res.msg);
                                     }
