@@ -92,6 +92,17 @@
   (db/update-user (session/get :user-id) first-name last-name email)
   (profile))
 
+(defn edituser [username displayname password userid]
+  (let [user (db/get-user username)
+        test (println (:id (first user)) "fenfefe" (read-string userid) )
+        password (if(> (count password) 30)password (crypt/encrypt password))
+        ]
+    (if (and (not (nil? user)) (not= (:id  user) (read-string userid)))
+      (resp/json {:success false :msg "用户名已存在"})
+      (resp/json {:success true :msg (db/updateuser
+                                       {:username username :displayname displayname :password password} userid)}))
+    )
+  )
 (defn handle-login [username password]
   (let [user (db/get-user username)]
     (if (and user (crypt/compare password (:password user)))

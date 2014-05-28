@@ -1,0 +1,22 @@
+<div  class="easyui-layout" style="width:100%;height:100%;" data-options="fit:true">
+
+    <div>
+        <ul>
+         <li><a href="/auth/addlog?logcontent=测试&callback=funcname" target="_blank">日志输入接口</a>
+             输入:logcontent (日志类容) , callback (跨域回调函数名)。输出 callback({"success":true,"msg":""})
+         </li>
+         <li><a href="/auth/getenumbytype?type=sex&callback=funcname" target="_blank">获取枚举</a>
+             输入:type (枚举类型) , callback (跨域回调函数名)。输出 callback({"success":true,"msg":""})
+         </li>
+         <li> <a href="/auth/getfuncsbyrole?type=权限设置&callback=funcname" target="_blank">获取功能权限</a>
+             输入:type (权限父类型) , callback (跨域回调函数名)。输出 callback([])
+         </li>
+         <li><a href="/auth/gettreedivision?node=-1&callback=funcname" target="_blank">获取行政区划树</a>
+             输入:node (根节点) , callback (跨域回调函数名)。输出 callback([])
+         </li>
+
+        </ul>
+
+    </div>
+
+</div>

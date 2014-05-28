@@ -33,7 +33,9 @@
 
   (GET "/auth/getenumbytype" [type  callback]
     (auth/getenumbytype type  callback))
-
+  (POST "/auth/edituser" [username displayname password id]
+    (auth/edituser username displayname password id)
+    )
   (POST "/auth/getusers" [start limit  totalname rowsname]
     (auth/getusers start limit  totalname rowsname))
   (POST "/auth/addnewuser" [username displayname  password divisionid roleid]

@@ -52,6 +52,13 @@
                :email email})
   (where {:id id})))
 
+(defn updateuser [fields id]
+  (update users
+    (set-fields fields)
+    (where {:id id})
+    )
+  )
+
 (defn getusers [start limits]
   (select users
 

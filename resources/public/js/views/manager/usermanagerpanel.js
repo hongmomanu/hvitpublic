@@ -58,21 +58,26 @@ define(function () {
         $('#userformbtns .save').click(function(){
             $.messager.confirm('确定要修改用户么?', '你正在试图修改用户?', function(r){
                     if (r){
-                        require(['commonfuncs/md5','jqueryplugin/easyui-form','commonfuncs/AjaxForm']
-                            ,function(md5,easyform,ajaxfrom){
+                        require(['jqueryplugin/easyui-form','commonfuncs/AjaxForm']
+                            ,function(easyform,ajaxfrom){
 
 
                             var params=$('#userinfoform').form("serialize");
-                            params.password=CryptoJS.enc.Base64.stringify(CryptoJS.MD5(params.password));
+                            //params.password=CryptoJS.enc.Base64.stringify(CryptoJS.MD5(params.password));
                             params.iscommon=false;
-                            var success=function(){
-                                $.messager.alert('操作成功','修改用户成功!');
-                                $('#usermanagerpanel').datagrid('reload');
+                            var success=function(res){
+                                if(res.success){
+                                    $.messager.alert('操作成功','修改用户成功!');
+                                    $('#usermanagerpanel').datagrid('reload');
+                                }else{
+                                    $.messager.alert('操作失败',res.msg);
+                                }
+
                             };
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','修改用户失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','ajax/edituser.jsp',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','/auth/edituser',params,success,null,errorfunc)
 
                         });
                     }
