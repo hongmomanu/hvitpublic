@@ -20,9 +20,10 @@ define(function () {
 
             },
             onClickRow: function (rowData) {
-                console.log(rowData);
+                //console.log(rowData);
                 rowData.divisionname = rowData.textold;
                 rowData.divisionid = rowData.id;
+                rowData.divisionpath = rowData.divisionpath.slice(0,rowData.divisionpath.lastIndexOf(rowData.textold));
                 $('#divisioninfoform').form('load', rowData);
                 $('#divisionformbtns .save,#divisionformbtns .del').linkbutton('enable');
                 $('#divisionmanagerlayout').layout('expand', 'east');
@@ -56,14 +57,26 @@ define(function () {
                         require(['jqueryplugin/easyui-form', 'commonfuncs/AjaxForm']
                             , function (easyform, ajaxfrom) {
                                 var params = $('#divisioninfoform').form("serialize");
-                                var success = function () {
-                                    $.messager.alert('操作成功', '修改行政区划成功!');
-                                    $('#divisionmanagerpanel').treegrid('reload', params.parentid);
+                                params.divisionpath=params.divisionpath+params.divisionname;
+                                var success = function (res) {
+
+                                    if(res.success){
+                                        $.messager.alert('操作成功', '修改行政区划成功!');
+                                        if(params.parentid==-1){
+                                            $('#divisionmanagerpanel').treegrid('reload');
+                                        }
+                                        else{
+                                            $('#divisionmanagerpanel').treegrid('reload',params.parentid);
+                                        }
+
+                                    }else{
+                                        $.messager.alert('操作失败', res.msg);
+                                    }
                                 };
                                 var errorfunc = function () {
                                     $.messager.alert('操作失败', '修改行政区划失败!');
                                 };
-                                ajaxfrom.ajaxsend('post', 'json', 'ajax/editdivision.jsp', params, success, null, errorfunc);
+                                ajaxfrom.ajaxsend('post', 'json', '/auth/editdivision', params, success, null, errorfunc);
                             });
                     }
                 }

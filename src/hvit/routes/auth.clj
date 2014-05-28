@@ -47,6 +47,15 @@
   (GET "/auth/gettreedivision" [node  callback]
     (auth/gettreedivision node  callback))
 
+  (GET "/files/:filename" [filename]
+    (auth/getuploadfile filename)
+    )
+
+  (POST "/auth/editdivision" [divisionname signaturepath divisionid parentid divisionpath]
+    (auth/savedivision divisionname signaturepath divisionid parentid divisionpath)
+
+    )
+
   (POST "/auth/gettreedivision" [node  callback]
     (auth/gettreedivision node  callback))
   (POST "/auth/adddivision" [divisionid divisionname signaturepath divisionpath]
@@ -96,13 +105,11 @@
   (GET "/auth/addlog" [logcontent userid callback]
     (auth/addlog logcontent userid callback))
 
-  (POST "/auth/uploadfile"[file]
+  (POST "/auth/uploadfile"  [file]
 
     (auth/uploadfile file)
     )
-  (GET "/auth/files/:filename" [filename]
-    (auth/getuploadfile filename)
-    )
+
 
 (GET "/logout" []
         (auth/logout)))

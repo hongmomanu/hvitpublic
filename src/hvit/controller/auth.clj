@@ -39,16 +39,15 @@
         timenow (c/to-long  (l/local-now))
         filename (str timenow (:filename file))
         ]
-    (println timenow)
     (io/upload-file uploadpath  (conj file {:filename filename}))
-    (resp/json {:success true :filename (:filename file) :filepath  filename})
+    (resp/json {:success true :filename (:filename file) :filepath  (str "/files/" filename)})
     )
 
   )
 
 (defn getuploadfile [filename]
-
-  (file-response (str datapath filename))
+  (println (str datapath "upload/" filename))
+  (file-response (str datapath "upload/" filename))
   )
 
 (defn register [& [id]]
@@ -246,6 +245,16 @@
 
   )
 
+(defn savedivision [divisionname signaturepath divisionid parentid divisionpath]
+  (if (> (count (db/getdivisionbypath (str divisionpath divisionname))) 0)(resp/json {:success false :msg "行政区划已存在"})
+    (let [
+           result (db/savedivision {:divisionname divisionname :signaturepath signaturepath
+                                   :divisionpath divisionpath} divisionid)
+           ]
+      (resp/json {:success true :msg result})
+      ))
+
+  )
 
 (defn editfunc [funcname label funcid pid imgcss sortnum]
   (let [existfunc (db/getfuncsbytype funcname )

@@ -118,6 +118,12 @@
     )
 
   )
+(defn savedivision [fields divisionid]
+  (update divisions
+    (set-fields fields)
+    (where {:id divisionid})
+    )
+  )
 (defn getlognums [keyword bgtime edtime]
 
   (select systemlog
