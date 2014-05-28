@@ -75,17 +75,7 @@ CREATE  TABLE IF NOT EXISTS enumerate
 
 );
 
---  附件表
-CREATE  TABLE IF NOT EXISTS attachment
-  (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,            --  自增主键
-  time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  --  提交时间
-  businessid               int,                --  业务信息id
-  attachmentname           VARCHAR(50),            --  附件名称
-  attachmenttype           VARCHAR(50),            --  附件类型
-  attachmentpath           VARCHAR(500)            --  附件路径
 
-  );
 
 -- 日志表
 CREATE  TABLE IF NOT EXISTS systemlog

@@ -75,8 +75,8 @@
   (POST "/auth/getroles" [start limit totalname rowsname keyword]
     (auth/getroles start limit  totalname rowsname keyword))
 
-  (POST "/auth/getlogs" [start limit totalname rowsname keyword]
-    (auth/getlogs start limit  totalname rowsname keyword))
+  (POST "/auth/getlogs" [start limit totalname rowsname keyword bgtime edtime]
+    (auth/getlogs start limit  totalname rowsname keyword bgtime edtime))
 
   (POST "/auth/delenum" [id]
     (auth/delenum id))
@@ -96,5 +96,13 @@
   (GET "/auth/addlog" [logcontent userid callback]
     (auth/addlog logcontent userid callback))
 
-  (GET "/logout" []
+  (POST "/auth/uploadfile"[file]
+
+    (auth/uploadfile file)
+    )
+  (GET "/auth/files/:filename" [filename]
+    (auth/getuploadfile filename)
+    )
+
+(GET "/logout" []
         (auth/logout)))

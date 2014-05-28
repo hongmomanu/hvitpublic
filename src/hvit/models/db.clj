@@ -83,13 +83,17 @@
     (offset start))
 
   )
-(defn getlogs [keyword start limits]
+(defn getlogs [keyword start limits bgtime edtime]
 
   (select systemlog
     (with users
       (fields :username )
       )
-    (where {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (where (and {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]
+            }
+             {:time [>= (sqlfn timestamp bgtime)]}
+             {:time [<= (sqlfn timestamp edtime)]}
+             ))
     (limit limits)
     (offset start))
 
@@ -114,10 +118,14 @@
     )
 
   )
-(defn getlognums [keyword]
+(defn getlognums [keyword bgtime edtime]
 
   (select systemlog
-    (where {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    (where (and {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]
+                 }
+             {:time [>= (sqlfn timestamp bgtime)]}
+             {:time [<= (sqlfn timestamp edtime)]}
+             ))
     (aggregate (count :id) :counts)
     )
   )

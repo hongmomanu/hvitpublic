@@ -5,7 +5,12 @@ define(function () {
             var keycode = (event.keyCode ? event.keyCode : event.which);
             if($(this).attr("type")==='keyword'&&keycode!=13)return;
 
-                $('#logmanagerpanel').datagrid('load',{keyword:$('#logpaneltb .keyword').val()});
+                $('#logmanagerpanel').datagrid('load',
+                    {
+                        keyword:$('#logpaneltb .keyword').val(),
+                        bgtime :$('#logpaneltb .bgtime').datebox('getValue'),
+                        edtime :$('#logpaneltb .edtime').datebox('getValue')
+                });
             }
         );
 
@@ -43,19 +48,6 @@ define(function () {
         });
 
 
-
-        $('#logpaneltb .newlog').click(function(){
-            /*if($('#newlogwin').length>0){
-                $('#newlogwin').dialog('open');
-            }else{
-                require(['text!views/manager/newlogwin.htm','views/manager/newlogwin'],
-                    function(div,newlogjs){
-                        $('body').append(div);
-                        newlogjs.render();
-                    });
-            }*/
-
-        });
 
     }
 

@@ -1,5 +1,9 @@
 (ns hvit.controller.auth
-  (:use compojure.core)
+  (:import
+      (java.sql Timestamp)
+           )
+  (:use compojure.core
+        )
 
   (:require [hvit.views.layout :as layout]
             [hvit.models.db :as db]
@@ -7,12 +11,16 @@
             [noir.session :as session]
             [noir.validation :as vali]
             [noir.util.crypt :as crypt]
+            [noir.io :as io]
+            [clj-time.local :as l]
+            [clj-time.coerce :as c]
+            [ring.util.response :refer [file-response]]
 
             )
   )
 
 
-
+(def datapath (str (System/getProperty "user.dir") "/"))
 
 (defn valid? [id pass pass1]
   (vali/rule (vali/has-value? id)
@@ -26,7 +34,22 @@
   (not (vali/errors? :id :pass :pass1)))
 
 
+(defn uploadfile [file]
+  (let [uploadpath (str datapath "upload/")
+        timenow (c/to-long  (l/local-now))
+        filename (str timenow (:filename file))
+        ]
+    (println timenow)
+    (io/upload-file uploadpath  (conj file {:filename filename}))
+    (resp/json {:success true :filename (:filename file) :filepath  filename})
+    )
 
+  )
+
+(defn getuploadfile [filename]
+
+  (file-response (str datapath filename))
+  )
 
 (defn register [& [id]]
   (layout/render
@@ -113,9 +136,12 @@
 
     )
   )
-(defn getlogs [start limit  totalname rowsname keyword]
-  (let [results (db/getlogs keyword start limit )
-         nums  (:counts (first (db/getlognums keyword)))
+(defn getlogs [start limit  totalname rowsname keyword bgtime edtime]
+  (let [
+        bgtime (if (or (nil? bgtime) (= "" (clojure.string/trim bgtime))) "1970-01-01 00:00:00" bgtime)
+        edtime (if (or (nil? edtime) (= "" (clojure.string/trim edtime))) "3000-01-01 00:00:00" edtime)
+        results (db/getlogs keyword start limit bgtime edtime )
+         nums  (:counts (first (db/getlognums keyword bgtime edtime)))
         ]
     (if(nil? totalname) (resp/json results) (resp/json (assoc {} rowsname results totalname nums)))
 
