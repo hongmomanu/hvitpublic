@@ -93,7 +93,8 @@
   (POST "/auth/getenums" [start limit totalname rowsname keyword]
     (auth/getenums start limit totalname rowsname keyword))
 
-
+  (GET "/auth/addlog" [logcontent userid callback]
+    (auth/addlog logcontent userid callback))
 
   (GET "/logout" []
         (auth/logout)))

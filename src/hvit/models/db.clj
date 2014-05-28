@@ -36,7 +36,8 @@
   (database mysqldb)
  )
 (defentity systemlog
-  (belongs-to users {:fk :userid})
+  (pk :userid)
+  (has-one users {:fk :id})
   (database mysqldb)
  )
 
@@ -85,6 +86,9 @@
 (defn getlogs [keyword start limits]
 
   (select systemlog
+    (with users
+      (fields :username )
+      )
     (where {:logcontent [like (str "%" (if (nil? keyword)"" keyword) "%")]})
     (limit limits)
     (offset start))
@@ -103,6 +107,12 @@
     (where {:rolename [like (str "%" (if (nil? keyword)"" keyword) "%")]})
     (aggregate (count :id) :counts)
     )
+  )
+(defn addlog [logcontent userid]
+  (insert systemlog
+    (values {:userid userid :logcontent logcontent})
+    )
+
   )
 (defn getlognums [keyword]
 

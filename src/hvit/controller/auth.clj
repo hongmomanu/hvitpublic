@@ -73,7 +73,7 @@
 (defn handle-login [username password]
   (let [user (db/get-user username)]
     (if (and user (crypt/compare password (:password user)))
-      (do (session/put! :user-id username) (session/put! :roleid (:roleid user)))(session/put! :login-error "用户密码错误"))
+      (do (session/put! :user-id username) (session/put! :userid (:id user)) (session/put! :roleid (:roleid user)))(session/put! :login-error "用户密码错误"))
     (resp/redirect "/")))
 
 (defn logout []
@@ -140,6 +140,10 @@
 
   )
 
+(defn getuserid [userid]
+  (if (nil? userid) (session/get :userid) userid)
+  )
+
 (defn makerolefunc [roleid deleteid funcid]
   (let[
         delids (read-string deleteid)
@@ -154,6 +158,19 @@
 
 
   )
+
+(defn addlog [logcontent userid callback]
+  (let [
+
+         userid (getuserid userid)
+
+
+         ]
+    (if (nil? callback) (resp/json {:success true :msg (db/addlog logcontent userid)})(resp/jsonp callback {:success true :msg (db/addlog logcontent userid)}))
+    )
+
+  )
+
 (defn gettreefunc [node roleid callback]
   (let [
 
