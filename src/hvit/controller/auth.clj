@@ -83,18 +83,24 @@
     )
   )
 
-(defn profile []
+(defn profile [erromsg]
   (layout/render
     "profile.html"
-    {:user (db/get-user (session/get :user-id))}))
+    {:user (db/get-user (session/get :user-id)) :msg erromsg}))
 
-(defn update-profile [{:keys [first-name last-name email]}]
-  (db/update-user (session/get :user-id) first-name last-name email)
-  (profile))
+(defn update-profile [{:keys [passwordold passwordnew]}]
+  (let [user (db/get-user (session/get :user-id))
+        ispassword (crypt/compare passwordold (:password user))
+        ]
+    (if ispassword (do (db/updateuser
+    {:password (crypt/encrypt passwordnew)} (:id user)) (resp/redirect "/")) (profile "旧密码错误") )
+
+    )
+    )
+
 
 (defn edituser [username displayname password userid]
   (let [user (db/get-user username)
-        test (println (:id (first user)) "fenfefe" (read-string userid) )
         password (if(> (count password) 30)password (crypt/encrypt password))
         ]
     (if (and (not (nil? user)) (not= (:id  user) (read-string userid)))
@@ -297,6 +303,10 @@
 
 (defn deldivision [divisionid]
   (resp/json {:success true :msg (db/deldivision divisionid)})
+  )
+
+(defn delrole [roleid]
+  (resp/json {:success true :msg (db/delrole roleid)})
   )
 
 (defn delenum [id]

@@ -87,7 +87,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','删除角色失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','ajax/delrole.jsp',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','/auth/delrole',params,success,null,errorfunc)
 
                         });
                 }

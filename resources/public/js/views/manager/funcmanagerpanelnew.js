@@ -89,7 +89,13 @@ define(function () {
                         var success = function (res) {
                             if(res.success){
                                 $.messager.alert('操作成功', '新增功能成功!');
-                                $('#funcmanagerpanel').treegrid('reload',params.pid);
+                                if(params.pid<-1){
+                                    $('#funcmanagerpanel').treegrid('reload') ;
+                                }
+                                else{
+                                    $('#funcmanagerpanel').treegrid('reload',params.pid);
+                                }
+
                             }else{
                                 $.messager.alert('操作失败', res.msg);
                             }

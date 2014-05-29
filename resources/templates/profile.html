@@ -8,13 +8,16 @@
       <label for="id">旧密码</label>
       <p>
         <input class="form-control" id="first-name" name="passwordold" tabindex="1" type="password" ></input>
+          {% if msg %}
+          <a class="alert alert-danger">{{msg}}</a>
+          {% endif %}
       </p>
       <label for="id">新密码</label>
       <p>
         <input class="form-control" id="last-name" name="passwordnew" tabindex="1" type="password"></input>
       </p>
 
-      <input class="btn" tabindex="4" type="submit" value="修改">
+      <input class="btn btn-lg btn-success" tabindex="4" type="submit" value="修改">
     </div>
   </form>
 {% endblock %}

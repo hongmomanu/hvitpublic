@@ -14,7 +14,7 @@ define(function(){
                         title: title,
                         content: htmlfile,
                         id:id,
-                        businesstype:businesstype,
+                        //businesstype:businesstype,
                         closable: true
                     };
                     if($('#tabs').tabs('exists',1)){
@@ -23,9 +23,7 @@ define(function(){
                         $('#tabs').tabs('close',1);
 
                     }
-
                     $('#tabs').tabs('add',options);
-
                     LoadingMask.ajaxLoadEnd();
                     jsfile.render(res);
 

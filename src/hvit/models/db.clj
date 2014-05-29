@@ -45,7 +45,7 @@
   (insert users
           (values user)))
 
-(defn update-user [id first-name last-name email]
+(defn update-user [id passwordold passwordnew]
   (update users
   (set-fields {:first_name first-name
                :last_name last-name
@@ -176,6 +176,11 @@
 (defn deldivision [divisionid]
   (delete divisions
     (where {:id divisionid})
+    )
+  )
+(defn delrole [roleid]
+  (delete roles
+    (where {:id roleid})
     )
   )
 (defn getfuncsbyid [roleid]

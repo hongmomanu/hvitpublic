@@ -17,14 +17,12 @@ define(function(){
                             isnew=$('#tabs').tabs('getSelected').panel('options').id!=node.id;
                         }
                         if(!$('#tabs').tabs('exists',1)||me.nodeid!=node.id||isnew){
-
                             var folder=tree.attr('folder');
                             var htmlfile='text!'+folder+node.value+'.htm';
                             var jsfile=folder+node.value;
                             var value=node.value;
                             var title=node.text;
                             require(['/js/TreeClickEvent.js'],function(TreeClickEvent){
-
                                 TreeClickEvent.ShowContent(htmlfile,jsfile,title,value,folder,null,node.id);
                                 me.nodeid=node.id;
                             });

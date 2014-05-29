@@ -18,7 +18,7 @@
   (POST "/register" [username password pass1]
         (auth/handle-registration username password pass1))
 
-  (GET "/profile" [] (auth/profile))
+  (GET "/profile" [] (auth/profile nil))
   
   (POST "/update-profile" {params :params} (auth/update-profile params))
   
@@ -64,6 +64,9 @@
     (auth/adddivision divisionid divisionname signaturepath divisionpath))
   (POST "/auth/deldivision" [divisionid]
     (auth/deldivision divisionid))
+
+  (POST "/auth/delrole" [id]
+    (auth/delrole id))
 
 
 

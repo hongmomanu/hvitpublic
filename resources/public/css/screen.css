@@ -5,3 +5,17 @@ body,.main-display-area,.col-md-7  {
     padding-top: 40px;
 }
 
+
+.container
+{
+    zoom:1;
+}
+.element {
+    display:inline-block;
+    display:inline;
+}
+`.container
+{
+    zoom:1;
+    display:inline;
+}
