@@ -36,8 +36,8 @@
   (POST "/auth/edituser" [username displayname password id]
     (auth/edituser username displayname password id)
     )
-  (POST "/auth/getusers" [start limit  totalname rowsname]
-    (auth/getusers start limit  totalname rowsname))
+  (POST "/auth/getusers" [start limit  totalname rowsname keyword]
+    (auth/getusers start limit  totalname rowsname keyword))
   (POST "/auth/addnewuser" [username displayname  password divisionid roleid]
     (auth/addnewuser username displayname  password divisionid roleid))
 

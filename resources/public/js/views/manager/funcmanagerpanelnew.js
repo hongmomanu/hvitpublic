@@ -5,7 +5,7 @@ define(function () {
             rownumbers: true,
             method: 'post',
 
-            url: '/auth/gettreefunc',
+            url: '../auth/gettreefunc',
             treeField: 'text',
             idField: 'id',
             onBeforeLoad: function (row, params) {
@@ -45,7 +45,7 @@ define(function () {
                             var errorfunc = function () {
                                 $.messager.alert('操作失败', '删除功能失败!');
                             }
-                            ajaxfrom.ajaxsend('post', 'json', '/auth/delfunc', params, success, null, errorfunc)
+                            ajaxfrom.ajaxsend('post', 'json', '../auth/delfunc', params, success, null, errorfunc)
 
                         });
                 }
@@ -72,7 +72,7 @@ define(function () {
                                     $.messager.alert('操作失败', '修改功能失败!');
                                 };
 
-                                ajaxfrom.ajaxsend('post', 'json', '/auth/editfunc', params, success, null, errorfunc);
+                                ajaxfrom.ajaxsend('post', 'json', '../auth/editfunc', params, success, null, errorfunc);
                             });
                     }
                 }
@@ -104,7 +104,7 @@ define(function () {
                         var errorfunc = function () {
                             $.messager.alert('操作失败', '新增功能失败!');
                         };
-                        ajaxfrom.ajaxsend('post', 'json', '/auth/addnewfunc', params, success, null, errorfunc);
+                        ajaxfrom.ajaxsend('post', 'json', '../auth/addnewfunc', params, success, null, errorfunc);
                     });
             }
         );

@@ -8,6 +8,5 @@
 
 
 (defroutes test-routes
-  (GET "/test" [] (sqltest/test))
-
+  (GET "/test" [] (sqltest/sql))
   )

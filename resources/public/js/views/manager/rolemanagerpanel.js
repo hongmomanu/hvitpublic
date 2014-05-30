@@ -14,7 +14,7 @@ define(function () {
             method: 'post',
             animate:true,
             checkbox:true,
-            url: '/auth/gettreefunc',
+            url: '../auth/gettreefunc',
             treeField: 'text',
             idField: 'id',
             onBeforeLoad: function (row, params) {
@@ -48,7 +48,7 @@ define(function () {
             collapsible: true,
             rownumbers: true,
             method:'post',
-            url:'/auth/getroles',
+            url:'../auth/getroles',
             remoteSort: false,
 
             fit:true,
@@ -87,7 +87,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','删除角色失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','/auth/delrole',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','../auth/delrole',params,success,null,errorfunc)
 
                         });
                 }
@@ -127,7 +127,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','配置角色功能失败!');
                             };
-                            ajaxfrom.ajaxsend('post','json','/auth/makerolefunc',params,success,null,errorfunc);
+                            ajaxfrom.ajaxsend('post','json','../auth/makerolefunc',params,success,null,errorfunc);
                         });
                     }
                 }

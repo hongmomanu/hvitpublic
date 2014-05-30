@@ -5,7 +5,7 @@ define(function () {
         $('#divisionmanagerpanel').treegrid({
             rownumbers: true,
             method: 'post',
-            url: '/auth/gettreedivision',
+            url: '../auth/gettreedivision',
             treeField: 'text',
             idField: 'id',
             onBeforeLoad: function (row, params) {
@@ -45,7 +45,7 @@ define(function () {
                             var errorfunc = function () {
                                 $.messager.alert('操作失败', '删除行政区划失败!');
                             }
-                            ajaxfrom.ajaxsend('post', 'json', '/auth/deldivision', params, success, null, errorfunc)
+                            ajaxfrom.ajaxsend('post', 'json', '../auth/deldivision', params, success, null, errorfunc)
 
                         });
                 }
@@ -76,7 +76,7 @@ define(function () {
                                 var errorfunc = function () {
                                     $.messager.alert('操作失败', '修改行政区划失败!');
                                 };
-                                ajaxfrom.ajaxsend('post', 'json', '/auth/editdivision', params, success, null, errorfunc);
+                                ajaxfrom.ajaxsend('post', 'json', '../auth/editdivision', params, success, null, errorfunc);
                             });
                     }
                 }
@@ -104,7 +104,7 @@ define(function () {
                         var errorfunc = function () {
                             $.messager.alert('操作失败', '新增行政区划失败!');
                         };
-                        ajaxfrom.ajaxsend('post', 'json', '/auth/adddivision', params, success, null, errorfunc);
+                        ajaxfrom.ajaxsend('post', 'json', '../auth/adddivision', params, success, null, errorfunc);
                     });
             }
         );

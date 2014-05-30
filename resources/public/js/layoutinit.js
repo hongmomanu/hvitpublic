@@ -9,13 +9,13 @@ define(function(){
 
                $('#westpanel').panel({
                     onLoad:function(){
-                        require(['/js/ManagerTree.js'],function(ManagerTree){
+                        require(['../js/ManagerTree.js'],function(ManagerTree){
                             ManagerTree.render();
                         });
                     }
 
                 });
-                $('#westpanel').panel('refresh','/html/menu_qxgl.html');
+                $('#westpanel').panel('refresh','../html/menu_qxgl.html');
 
     }
 

@@ -12,6 +12,7 @@
             [noir.validation :as vali]
             [noir.util.crypt :as crypt]
             [noir.io :as io]
+            [hvit.models.schema :as schema]
             [clj-time.local :as l]
             [clj-time.coerce :as c]
             [ring.util.response :refer [file-response]]
@@ -20,7 +21,6 @@
   )
 
 
-(def datapath (str (System/getProperty "user.dir") "/"))
 
 (defn valid? [id pass pass1]
   (vali/rule (vali/has-value? id)
@@ -35,19 +35,19 @@
 
 
 (defn uploadfile [file]
-  (let [uploadpath (str datapath "upload/")
+  (let [uploadpath (str schema/datapath "upload/")
         timenow (c/to-long  (l/local-now))
         filename (str timenow (:filename file))
         ]
     (io/upload-file uploadpath  (conj file {:filename filename}))
-    (resp/json {:success true :filename (:filename file) :filepath  (str "/files/" filename)})
+    (resp/json {:success true :filename (:filename file) :filepath  (str "../files/" filename)})
     )
 
   )
 
 (defn getuploadfile [filename]
-  (println (str datapath "upload/" filename))
-  (file-response (str datapath "upload/" filename))
+  ;(println (str datapath "upload/" filename))
+  (file-response (str schema/datapath "upload/" filename))
   )
 
 (defn register [& [id]]
@@ -127,9 +127,9 @@
     apps
     )
   )
-(defn getusers [start limit  totalname rowsname]
-  (let [results (db/getusers start limit)
-         nums  (:counts (first (db/getusernums)))
+(defn getusers [start limit  totalname rowsname keyword]
+  (let [results (db/getusers start limit keyword )
+         nums  (:counts (first (db/getusernums keyword)))
         ]
     (resp/json (assoc {} rowsname results totalname nums))
     )

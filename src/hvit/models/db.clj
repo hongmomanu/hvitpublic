@@ -47,9 +47,8 @@
 
 (defn update-user [id passwordold passwordnew]
   (update users
-  (set-fields {:first_name first-name
-               :last_name last-name
-               :email email})
+  (set-fields {:password passwordnew
+               })
   (where {:id id})))
 
 (defn updateuser [fields id]
@@ -59,13 +58,14 @@
     )
   )
 
-(defn getusers [start limits]
+(defn getusers [start limits keyword]
   (select users
 
     (fields :username :password :id :roleid :time :displayname)
     (with roles
       (fields :rolename )
       )
+    (where {:username [like (str "%" (if (nil? keyword)"" keyword) "%")]})
     (limit limits)
     (offset start))
   )
@@ -142,8 +142,9 @@
     (aggregate (count :id) :counts)
     )
   )
-(defn getusernums []
+(defn getusernums [keyword]
   (select users
+    (where {:username [like (str "%" (if (nil? keyword)"" keyword) "%")]})
     (aggregate (count :id) :counts)
     )
   )

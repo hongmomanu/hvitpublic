@@ -27,7 +27,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','新增用户失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','/auth/addnewuser',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','../auth/addnewuser',params,success,null,errorfunc)
 
                         });
 
@@ -52,7 +52,7 @@ define(function () {
         });
         var divitiontree=$('#newuserwin .easyui-combotree');
         divitiontree.combotree({
-            url:'/auth/gettreedivision?node=-1',
+            url:'../auth/gettreedivision?node=-1',
             method: 'get',
             textField:'textold',
             onLoadSuccess:function(){
@@ -65,7 +65,7 @@ define(function () {
             },
             onBeforeExpand: function (node) {
                 divitiontree.combotree("tree").tree("options").url
-                    = "/auth/gettreedivision?onlychild=true&node=" + node.id;
+                    = "../auth/gettreedivision?onlychild=true&node=" + node.id;
             },
             onHidePanel: function () {
                /* divitiontree.combotree('setValue',
@@ -76,7 +76,7 @@ define(function () {
 
         $('#newuserwin .lazy-combobox').combobox({
             onShowPanel: function () {
-                var url = '/auth/getroles?start=0&limit=100' ;
+                var url = '../auth/getroles?start=0&limit=100' ;
                 $(this).combobox('reload', url);
             }
 

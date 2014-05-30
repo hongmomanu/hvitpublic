@@ -9,7 +9,8 @@
 
 
 
-(defn test []
+(defn sql []
+  ;(println (-> (Thread/currentThread) (.getContextClassLoader)(.getResource "") (.getPath)) )
           (resp/json (db/mysql-test))
           ;(resp/json (db/sqlserver-test))
   )

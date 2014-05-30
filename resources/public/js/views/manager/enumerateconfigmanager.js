@@ -13,7 +13,7 @@ define(function () {
             collapsible: true,
             rownumbers: true,
             method:'post',
-            url:'/auth/getenums',
+            url:'../auth/getenums',
             remoteSort: false,
 
             fit:true,
@@ -53,7 +53,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','删除枚举失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','/auth/delenum',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','../auth/delenum',params,success,null,errorfunc)
 
                         });
                 }
@@ -83,7 +83,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','修改枚举失败!');
                             };
-                            ajaxfrom.ajaxsend('post','json','/auth/editenum',params,success,null,errorfunc);
+                            ajaxfrom.ajaxsend('post','json','../auth/editenum',params,success,null,errorfunc);
 
                         });
                     }

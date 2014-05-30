@@ -28,7 +28,7 @@ define(function () {
                             var errorfunc=function(){
                                 $.messager.alert('操作失败','新增枚举失败!');
                             }
-                            ajaxfrom.ajaxsend('post','json','/auth/addnewenum',params,success,null,errorfunc)
+                            ajaxfrom.ajaxsend('post','json','../auth/addnewenum',params,success,null,errorfunc)
 
                         });
 

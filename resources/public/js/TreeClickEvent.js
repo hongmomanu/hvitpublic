@@ -6,7 +6,7 @@ define(function(){
 
     var a={
         ShowContent:function(htmlfile,jsfile,title,value,folder,res,id,businesstype){
-            require(['/js/LookupItemName.js','/js/LoadingMask.js'],function(LookupItemName,LoadingMask){
+            require(['../js/LookupItemName.js','../js/LoadingMask.js'],function(LookupItemName,LoadingMask){
                 LoadingMask.ajaxLoading();
                 var require_render=function(htmlfile,jsfile){
 

@@ -21,7 +21,7 @@ define(function () {
             collapsible: true,
             rownumbers: true,
             method:'post',
-            url:'/auth/getlogs',
+            url:'../auth/getlogs',
             remoteSort: false,
 
             fit:true,
