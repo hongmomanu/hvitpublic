@@ -30,6 +30,7 @@
   (database mysqldb)
   )
 (defentity enumerate
+  (entity-fields :enumeratetype :enumeratevalue :enumeratelabel :id)
   (database mysqldb)
  )
 (defentity divisions
@@ -285,7 +286,11 @@
     )
   )
 
+(defn fields-test []
+  (let [myQuery enumerate]
+    (:fields myQuery))
 
+  )
 (defn postgres-test[]
 
   (with-db postgresdb
