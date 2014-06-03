@@ -63,6 +63,7 @@ define(function () {
                 params.rowsname = "rows";
             },
             onClickRow:function(index, rowData){
+                rowData.roleid=rowData.id;
                 $('#roleinfoform').form('load',rowData);
                 /*$('#rolefuncgrid').datagrid('load', {
                     roleid: rowData.roleid
@@ -100,7 +101,7 @@ define(function () {
                             ,function(easyform,ajaxfrom){
 
 
-                               var formitem=$('#roleinfoform').form("serialize");
+                                var params=$('#roleinfoform').form("serialize");
 
                                 var selectItems=$('#rolefuncgrid').tree('getChecked');
                                 var unselectItems=$('#rolefuncgrid').tree('getChecked','unchecked');
@@ -112,12 +113,9 @@ define(function () {
                                 $.each(unselectItems,function(index,item){
                                     delete_arr.push(item.id);
                                 });
-                                var params = {
-                                    roleid:$('#rolemanagerpanel').datagrid('getSelected').id,
-                                    deleteid:$.toJSON(delete_arr),
-                                    funcid:$.toJSON(funcid_arr)
+                                params.deleteid=$.toJSON(delete_arr);
+                                params.funcid=$.toJSON(funcid_arr);
 
-                                };
 
 
                             var success=function(){
