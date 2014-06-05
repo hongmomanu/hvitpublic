@@ -12,6 +12,7 @@
 
 (defn sql []
   ;(println (-> (Thread/currentThread) (.getContextClassLoader)(.getResource "") (.getPath)) )
+  (println (db/fields-test))
           (resp/json (db/fields-test))
           ;(resp/json (db/sqlserver-test))
   )
