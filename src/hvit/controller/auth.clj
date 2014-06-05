@@ -11,6 +11,7 @@
             [noir.session :as session]
             [noir.validation :as vali]
             [noir.util.crypt :as crypt]
+            [clj-http.client :as client]
             [noir.io :as io]
             [hvit.models.schema :as schema]
             [clj-time.local :as l]
@@ -82,7 +83,20 @@
                                                     })})
     )
   )
+(defn getsessionid [req]
 
+  (let [sessionid (:value (get (:cookies req) "ring-session"))
+        callback (:callback (:params req))
+        success (not (nil? sessionid))
+        ]
+    (if (nil? callback)(resp/json {:success success :sessionid sessionid})
+      (resp/jsonp callback {:success success :sessionid sessionid}))
+    )
+
+  )
+(defn sessioncheck []
+  (resp/edn (session/get :user-id))
+  )
 (defn profile [erromsg]
   (layout/render
     "profile.html"
@@ -122,9 +136,10 @@
 (defn getapps []
   (let [
         username (session/get :user-id)
-        apps (if (nil? username) [] (db/get-apps (:roleid (db/get-user username))))
+        useritem (db/get-user username)
+        apps (if (nil? username) [] (db/get-apps (:roleid useritem)))
         ]
-    apps
+    {:apps apps :sessionuid (:id useritem)}
     )
   )
 (defn getusers [start limit  totalname rowsname keyword]

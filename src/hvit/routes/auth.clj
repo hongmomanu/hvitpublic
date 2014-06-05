@@ -15,6 +15,13 @@
   (GET "/register" []
        (auth/register))
 
+  (GET "/auth/sessioncheck" []
+    (auth/sessioncheck)
+    )
+  (GET "/auth/getsessionid" req
+    (auth/getsessionid req)
+    )
+
   (POST "/register" [username password pass1]
         (auth/handle-registration username password pass1))
 

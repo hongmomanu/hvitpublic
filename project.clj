@@ -9,9 +9,12 @@
    [com.h2database/h2 "1.3.175"]
    [org.xerial/sqlite-jdbc "3.7.15-M1"]
    [com.oracle/ojdbc6 "11.2.0.3"]
+   [clj-http "0.9.2"]
+
    ;[mysql/mysql-connector-java "5.1.30"]
    [org.mariadb.jdbc/mariadb-java-client "1.1.7"]
    [net.sourceforge.jtds/jtds "1.2.4"]
+   ;[org.wltea.ik-analyzer/ik-analyzer "3.2.8"]
 
    [postgresql/postgresql "9.1-901.jdbc4"]
    [environ "0.5.0"]

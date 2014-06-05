@@ -10,10 +10,11 @@
 (defn home-page []
   (let [
     content (auth/getapps)
-    size (count content)
+    size (count  (:apps content))
+    sessionuid   (:sessionuid content)
          ]
     (layout/render
-      "home.html" {:content {:content content :nums size}
+      "home.html" {:content {:content (:apps content) :nums size :sessionuid sessionuid}
                    ;:login-error  (session/get :login-error)
                    }))
   )

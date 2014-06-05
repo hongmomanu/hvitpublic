@@ -287,8 +287,8 @@
   )
 
 (defn fields-test []
-  (let [myQuery enumerate]
-    (:fields myQuery))
+  (let [fieldsQuery enumerate]
+    (:fields fieldsQuery))
 
   )
 (defn postgres-test[]
