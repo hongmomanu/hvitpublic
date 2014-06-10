@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>欢迎访问浙江数字民政平台</title>
+
+      {% style "/css/bootstrap.css" %}
+      {% style "/css/screen.css" %}
+
+      <!--[if lte IE 6]>
+      <link rel="stylesheet" type="text/css" href="/css/bootstrap-ie6.css">
+
+      <link rel="stylesheet" type="text/css" href="/css/ie.css">
+      <![endif]-->
+
+
+      <script src="js/jquery-1.8.0.min.js" type="text/javascript"></script>
+      {% script "/js/bootstrap.js" %}
+      <!--[if lte IE 6]>
+      <script type="text/javascript" src="/js/bootstrap-ie.js"></script>
+      <![endif]-->
+      <script type="text/javascript">
+         /* var context = "{{servlet-context}}";
+          $(function() {
+              $("#{{selected-page}}").addClass("active");
+          });*/
+      </script>
+
+
+  </head>
+
+  <body>
+
+
+        <div class="container" style="height: 100%;">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+
+
+    </body>
+</html>

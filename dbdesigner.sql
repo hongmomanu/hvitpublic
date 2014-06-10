@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS functions
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,   --  自增主键
   pid int ,                           --  父节点
   funcname VARCHAR(50),                   --  功能名称
-  label  VARCHAR(50),                     --  功能标识
+  label  VARCHAR(500),                     --  功能标识
   imgcss  VARCHAR(250),                   --  图片标识
   sortnum int                        --  排序号
 

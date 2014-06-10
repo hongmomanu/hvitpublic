@@ -191,8 +191,7 @@
   )
 
 (defn getroleid [roleid]
-  (println "session ssssss roleid" (session/get :roleid))
-  (println "url roleid" roleid)
+
   (if (nil? roleid) (session/get :roleid) roleid)
 
   )
