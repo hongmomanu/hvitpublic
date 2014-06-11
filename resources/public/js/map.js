@@ -17,10 +17,14 @@ function initMap(){
         success: function(resbase){
             var baseMaps={};
             for(var i=0;i<resbase.length;i++){
-                baseMaps[resbase[i].text]=L.tileLayer(resbase[i].value, {
-                    minZoom: 4,
-                    maxZoom: 18
-                });
+                var layertype=$.evalJSON(resbase[i].imgcss);
+                if(layertype.type==='tile'){
+                    baseMaps[resbase[i].text]=L.tileLayer(resbase[i].value, {
+                        minZoom: 4,
+                        maxZoom: 18
+                    });
+                }
+
                 if(i===0)display_layers.push(baseMaps[resbase[i].text]);
 
             }
@@ -32,16 +36,30 @@ function initMap(){
                 success:function(res){
                    var overlayMaps={};
                     for(var i=0;i<res.length;i++){
-                        overlayMaps[res[i].text]=L.tileLayer(res[i].value, {
-                            minZoom: 4,
-                            maxZoom: 18
-                        });
+                        var layertype=$.evalJSON(res[i].imgcss);
+
+                        if(layertype.type==='tile'){
+                            overlayMaps[res[i].text]=L.tileLayer(res[i].value, {
+                                minZoom: 4,
+                                maxZoom: 18
+                            });
+                        }
+                        else if(layertype.type==='wms'){
+                            overlayMaps[res[i].text]=L.tileLayer.wms(res[i].value, {
+                                layers: layertype.layers,
+                                format: 'image/png',
+                                transparent: true,
+                                crs:eval(layertype.crs),
+                                //attribution: "CDC",
+                                noWrap: true
+                            });
+                        }
 
                         if(i===0)display_layers.push(overlayMaps[res[i].text]);
                     }
                     var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
                     if(display_layers.length===0)alert("无地图资源");
-                    map =new  L.Map('map', {center: [30.258 , 120.1556], zoom: 12,
+                    map =new L.Map('map', {center:[30,120], zoom: 12,
                         layers: display_layers});
 
                     map.addControl(layersControl);
