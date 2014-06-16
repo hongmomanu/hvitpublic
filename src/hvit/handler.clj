@@ -10,6 +10,7 @@
             [environ.core :refer [env]]
             [hvit.routes.auth :refer [auth-routes]]
             [hvit.routes.test :refer [test-routes]]
+            [hvit.routes.index :refer [index-routes]]
             [hvit.routes.webmap :refer [webmap-routes]]
             [hvit.models.schema :as schema]))
 
@@ -46,7 +47,7 @@
 
 (def app
  (app-handler
-   [auth-routes home-routes test-routes webmap-routes app-routes]
+   [auth-routes home-routes test-routes webmap-routes index-routes app-routes]
    :middleware
    [middleware/template-error-page middleware/log-request]
    :access-rules

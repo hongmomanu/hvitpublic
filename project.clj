@@ -11,10 +11,16 @@
    [com.oracle/ojdbc6 "11.2.0.3"]
    [clj-http "0.9.2"]
 
+   [org.apache.lucene/lucene-core "4.3.1"]
+   [com.chenlb.mmseg4j/mmseg4j-core "1.10.0"]
+   [com.chenlb.mmseg4j/mmseg4j-analysis "1.9.1"]
+
    ;[mysql/mysql-connector-java "5.1.30"]
    [org.mariadb.jdbc/mariadb-java-client "1.1.7"]
    [net.sourceforge.jtds/jtds "1.2.4"]
    ;[org.wltea.ik-analyzer/ik-analyzer "3.2.8"]
+
+   [me.raynes/fs "1.4.5"]
 
    [postgresql/postgresql "9.1-901.jdbc4"]
    [environ "0.5.0"]

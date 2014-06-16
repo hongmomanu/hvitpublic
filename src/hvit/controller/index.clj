@@ -1,4 +1,4 @@
-(ns hvit.controller.sqltest
+(ns hvit.controller.index
 
 
   (:import  (org.apache.lucene.document Field Field$Store)
@@ -23,44 +23,59 @@
   (:require [hvit.models.db :as db]
             [noir.response :as resp]
             [hvit.models.schema :as schema]
+            [me.raynes.fs :as fs]
             [clj-http.client :as client]
             )
   )
 
 
 (def index-writer (atom {}))
+(def index-searcher (atom {}))
 
 
-(defn searchindex [text]
+(defn searchindex [text indexname]
   (let [
          analyzer (new MaxWordAnalyzer)
-         dir (FSDirectory/open (new File (str schema/datapath "index" "/")))
+         indexdir (str schema/datapath "index" "/" indexname)
+         modtime (fs/mod-time indexdir)
+         dir (FSDirectory/open (new File indexdir))
          reader     (DirectoryReader/open dir)
-         searcher ( new IndexSearcher reader)
+         indexsearcher (get @index-searcher indexname)
+         searcher (if (or (nil? indexsearcher)(not= (:time indexsearcher) modtime)) (let [searcher (new IndexSearcher reader)]
+                                             (swap! index-searcher assoc indexname
+                                               {:searcher searcher :time (fs/mod-time indexdir)})
+                                             (println "ssssssssssssssssssssss")
+                                             searcher
+                                             )(:searcher indexsearcher))
+
          parser (new QueryParser Version/LUCENE_43 "text" analyzer)
          query (.parse parser text)
          tds (.search searcher query 10000)
          sd (.scoreDocs tds)
 
          ]
-    ;(println (to-array sd))
+    (println (fs/mod-time indexdir))
     ;(doall (map #(println (.get (.doc searcher (.doc %)) "text")) (to-array sd)))
 
     (resp/json {:sucess true :result (map #(.get (.doc searcher (.doc %)) "text") (to-array sd))})
     )
 
   )
-(defn addindex [text]
+(defn addindex [text indexname]
 
   (let [
          analyzer (new MaxWordAnalyzer)
          config (new IndexWriterConfig Version/LUCENE_43 analyzer)
          configdo (.setOpenMode config IndexWriterConfig$OpenMode/CREATE)
-         dir     (FSDirectory/open (new File (str schema/datapath "index" "/")))
-         iw    (if (nil? (get @index-writer "iw"))(let [iw (new IndexWriter dir config)]
-                                                    (swap! index-writer assoc "iw" iw)
+         basicdir  (str schema/datapath "index" "/")
+         tabledir (str basicdir indexname "/")
+         tabledirdo (when-not (fs/exists? tabledir) (fs/mkdir tabledir))
+         dir     (FSDirectory/open (new File tabledir))
+         indexwriter (get @index-writer indexname)
+         iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
+                                                    (swap! index-writer assoc indexname iw)
                                                     iw
-                                                    ) (get @index-writer "iw"))
+                                                    ) indexwriter)
          doc  (new Document)
          ]
     (.add doc (new TextField  "text"  text Field$Store/YES ))
@@ -77,16 +92,3 @@
 
 
 
-(defn sql []
-  ;(println (-> (Thread/currentThread) (.getContextClassLoader)(.getResource "") (.getPath)) )
-  (println (db/fields-test))
-          (resp/json (db/fields-test))
-          ;(resp/json (db/sqlserver-test))
-  )
-
-(defn sessiontest [req]
-  (println 1111111 req)
-
-  (resp/json (:body (client/get "http://localhost:3000/auth/getfuncsbyrole?type=权限设置&callback=funcname"
-               {:cookies (:cookies req)})))
-  )

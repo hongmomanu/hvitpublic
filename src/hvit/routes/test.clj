@@ -11,4 +11,6 @@
 (defroutes test-routes
   (GET "/test" [] (sqltest/sql))
   (GET "/sessiontest" req (sqltest/sessiontest req))
+  (GET "/addindex" [text] (sqltest/addindex text))
+  (GET "/searchindex" [text] (sqltest/searchindex text))
   )

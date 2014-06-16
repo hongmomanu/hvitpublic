@@ -59,7 +59,7 @@ function initMap(){
                     }
                     var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
                     if(display_layers.length===0)alert("无地图资源");
-                    map =new L.Map('map', {center:[30,120], zoom: 12,
+                    map =new L.Map('map', {center:[30,120], zoom: 9,
                         layers: display_layers});
 
                     map.addControl(layersControl);
