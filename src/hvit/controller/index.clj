@@ -26,6 +26,7 @@
             [hvit.models.schema :as schema]
             [me.raynes.fs :as fs]
             [clj-http.client :as client]
+            [clojure.data.json :as json]
             )
   )
 
@@ -33,9 +34,18 @@
 (def index-writer (atom {}))
 (def index-searcher (atom {}))
 
+(defn make-searchindex-results [searcher fileds item]
+  (apply merge  (map #(assoc {} % (.get (.doc searcher (.doc item)) % ))  fileds))
+  )
 
 (defn searchindex [text indexname]
   (let [
+         maxnum 10000
+         textmap (json/read-str text)
+         reqmap (get  textmap "req")
+         queryfields (get reqmap "query")
+         resmap (get  textmap "res")
+         output (if (nil? (get resmap "output")) (assoc {} "start" 0 "limit" maxnum) (get resmap "output"))
          analyzer (new MaxWordAnalyzer)
          indexdir (str schema/datapath "index" "/" indexname)
          modtime (fs/mod-time indexdir)
@@ -45,32 +55,37 @@
          searcher (if (or (nil? indexsearcher)(not= (:time indexsearcher) modtime)) (let [searcher (new IndexSearcher reader)]
                                              (swap! index-searcher assoc indexname
                                                {:searcher searcher :time (fs/mod-time indexdir)})
-                                             (println "ssssssssssssssssssssss")
                                              searcher
                                              )(:searcher indexsearcher))
 
-         parser (new QueryParser Version/LUCENE_43 "text" analyzer)
-         query (.parse parser text)
-         tds (.search searcher query 10000)
+         parser (new QueryParser Version/LUCENE_43 (get queryfields "fieldname") analyzer)
+         test (println (get queryfields "fieldvalue"))
+         query (.parse parser (get queryfields "fieldvalue"))
+         tds (.search searcher query maxnum)
          sd (.scoreDocs tds)
 
          ]
     (println (fs/mod-time indexdir))
-    ;(doall (map #(println (.get (.doc searcher (.doc %)) "text")) (to-array sd)))
 
-    (resp/json {:sucess true :result (map #(.get (.doc searcher (.doc %)) "text") (to-array sd))})
+    (resp/json {:sucess true
+                :result (map #(make-searchindex-results searcher (get resmap "fields") %)
+                          (drop (get output "start") (take (+ (get  output "limit") (get output "start"))(to-array sd))))
+                :totalCount (alength sd)
+                })
     )
 
   )
 (defn addindex [text indexname]
 
   (let [
+         textmap (json/read-str text)
          analyzer (new MaxWordAnalyzer)
-         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
-         configdo (.setOpenMode config IndexWriterConfig$OpenMode/CREATE)
+
          basicdir  (str schema/datapath "index" "/")
          tabledir (str basicdir indexname "/")
-         tabledirdo (when-not (fs/exists? tabledir) (fs/mkdir tabledir))
+         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
+         tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
+                      (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
          dir     (FSDirectory/open (new File tabledir))
          indexwriter (get @index-writer indexname)
          iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
@@ -79,9 +94,10 @@
                                                     ) indexwriter)
          doc  (new Document)
          ]
-    (.add doc (new TextField  "text"  text Field$Store/YES ))
+    (doall (map #(.add doc (new TextField  (first %)  (second %) Field$Store/YES )) textmap))
     (.addDocument iw doc)
     (.commit iw )
+
     ;(.close iw)
     ;(.optimize iw)
 

@@ -325,5 +325,5 @@
 
 (defn oraclepage []
   (with-db dboracle
-  (exec-raw [(hvitmd/create-oraclequery-paging {:table "t_doorplate" :properties ["id"] :order ["id"] :from 1 :max 10} ) []] :results))
+  (exec-raw [(hvitmd/create-oraclequery-paging {:table "t_doorplate" :properties ["id"] :order ["id"] :from 12 :max 14} ) []] :results))
   )
