@@ -9,7 +9,7 @@
             (org.apache.lucene.search IndexSearcher)
             (org.apache.lucene.queryparser.classic QueryParser)
 
-            (org.apache.lucene.index IndexWriterConfig IndexWriterConfig$OpenMode IndexWriter DirectoryReader)
+            (org.apache.lucene.index Term IndexWriterConfig IndexWriterConfig$OpenMode IndexWriter DirectoryReader)
 
             (org.apache.lucene.util Version)
             ;(org.apache.lucene.search.highlight Highlighter SimpleSpanFragmenter QueryScorer)
@@ -72,6 +72,28 @@
                           (drop (get output "start") (take (+ (get  output "limit") (get output "start"))(to-array sd))))
                 :totalCount (alength sd)
                 })
+    )
+
+  )
+
+(defn delindex [id indexname]
+  (let [
+         basicdir  (str schema/datapath "index" "/")
+         tabledir (str basicdir indexname "/")
+         analyzer (new MaxWordAnalyzer)
+         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
+         tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
+                      (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
+         dir     (FSDirectory/open (new File tabledir))
+         indexwriter (get @index-writer indexname)
+         iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
+                                       (swap! index-writer assoc indexname iw)
+                                       iw
+                                       ) indexwriter)
+         ]
+    (.deleteDocuments iw (new Term "id" id))
+    (.commit iw )
+    (resp/json {:success true})
     )
 
   )
