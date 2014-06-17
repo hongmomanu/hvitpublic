@@ -19,6 +19,7 @@
    [org.mariadb.jdbc/mariadb-java-client "1.1.7"]
    [net.sourceforge.jtds/jtds "1.2.4"]
    ;[org.wltea.ik-analyzer/ik-analyzer "3.2.8"]
+   [hvitmiddleware "0.1.2"]
 
    [me.raynes/fs "1.4.5"]
 
@@ -77,4 +78,5 @@
                   ]
   :description
   "FIXME: write description"
+  :jvm-opts ["-Dfile.encoding=utf8"]
   :min-lein-version "2.0.0")

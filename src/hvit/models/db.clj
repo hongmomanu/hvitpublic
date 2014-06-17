@@ -1,7 +1,9 @@
 (ns hvit.models.db
   (:use korma.core
         [korma.db :only [defdb with-db]])
-  (:require [hvit.models.schema :as schema]))
+  (:require [hvit.models.schema :as schema]
+            [hvitmiddleware.core :as hvitmd]
+            ))
 
 (defdb db schema/db-spec)
 (defdb mysqldb schema/db-mysql)
@@ -10,7 +12,14 @@
 
 (defdb sqlserverdb schema/db-sqlserver)
 
+(defdb dboracle schema/db-oracle)
+
 (declare users roles functorole functions enumerate divisions systemlog)
+
+(defentity t_doorplate
+  (database dboracle)
+  )
+
 (defentity users
   (pk :roleid)
   (has-one roles {:fk :id})
@@ -305,4 +314,16 @@
 
   (with-db sqlserverdb
     (exec-raw ["SELECT 2 WHERE 1 = ? " [1]] :results))
+  )
+
+
+
+(defn oracltest [pageids]
+  (with-db dboracle
+    (select t_doorplate (where {:id [in pageids]})))
+  )
+
+(defn oraclepage []
+  (with-db dboracle
+  (exec-raw [(hvitmd/create-oraclequery-paging {:table "t_doorplate" :properties ["id"] :order ["id"] :from 1 :max 10} ) []] :results))
   )

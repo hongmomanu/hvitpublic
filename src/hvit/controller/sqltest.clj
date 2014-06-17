@@ -79,10 +79,18 @@
 
 (defn sql []
   ;(println (-> (Thread/currentThread) (.getContextClassLoader)(.getResource "") (.getPath)) )
-  (println (db/fields-test))
-          (resp/json (db/fields-test))
-          ;(resp/json (db/sqlserver-test))
+  ;(println (db/fields-test))
+          ;(resp/json (db/fields-test))
+  (let [pagelist (db/oraclepage)
+        pageids (map #(:id %) pagelist)
+        ]
+    (println pageids)
+    (resp/json {:results (db/oracltest pageids)})
+    )
+
   )
+
+
 
 (defn sessiontest [req]
   (println 1111111 req)

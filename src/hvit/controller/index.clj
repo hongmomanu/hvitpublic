@@ -12,6 +12,7 @@
             (org.apache.lucene.index IndexWriterConfig IndexWriterConfig$OpenMode IndexWriter DirectoryReader)
 
             (org.apache.lucene.util Version)
+            ;(org.apache.lucene.search.highlight Highlighter SimpleSpanFragmenter QueryScorer)
             (java.io File)
             (com.chenlb.mmseg4j.analysis ComplexAnalyzer MaxWordAnalyzer)
 

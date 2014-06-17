@@ -24,9 +24,9 @@
 ;;oracle 连接
 (def db-oracle  {:classname "oracle.jdbc.OracleDriver"
                  :subprotocol "oracle"
-                 :subname "thin:@10.33.253.32:1521:orcl"
-                 :user "sms"
-                 :password "sms"
+                 :subname "thin:@192.168.2.141:1521:orcl"
+                 :user "CIVILAFFAIRS_ZS"
+                 :password "hvit"
                  :naming {:keys clojure.string/lower-case :fields clojure.string/upper-case}})
 ;;mysql 连接
 (def db-mysql {
