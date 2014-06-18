@@ -18,7 +18,8 @@
 
     )
   (:use compojure.core)
-
+  (:use korma.core
+        [korma.db :only [oracle]])
 
 
   (:require [hvit.models.db :as db]
@@ -27,11 +28,14 @@
             [me.raynes.fs :as fs]
             [clj-http.client :as client]
             [clojure.data.json :as json]
+            [clojure.java.jdbc :as j]
             )
   )
 
+(declare addindex-func)
 
 (def index-writer (atom {}))
+
 (def index-searcher (atom {}))
 
 (defn make-searchindex-results [searcher fileds item]
@@ -49,10 +53,12 @@
          analyzer (new MaxWordAnalyzer)
          indexdir (str schema/datapath "index" "/" indexname)
          modtime (fs/mod-time indexdir)
-         dir (FSDirectory/open (new File indexdir))
-         reader     (DirectoryReader/open dir)
+
          indexsearcher (get @index-searcher indexname)
-         searcher (if (or (nil? indexsearcher)(not= (:time indexsearcher) modtime)) (let [searcher (new IndexSearcher reader)]
+         searcher (if (or (nil? indexsearcher)(not= (:time indexsearcher) modtime)) (let [
+                                                                                           dir (FSDirectory/open (new File indexdir))
+                                                                                           reader     (DirectoryReader/open dir)
+                                                                                           searcher (new IndexSearcher reader)]
                                              (swap! index-searcher assoc indexname
                                                {:searcher searcher :time (fs/mod-time indexdir)})
                                              searcher
@@ -79,15 +85,16 @@
 (defn updateindex [id text indexname]
   (let [
          textmap (json/read-str text)
-         basicdir  (str schema/datapath "index" "/")
-         tabledir (str basicdir indexname "/")
-         analyzer (new MaxWordAnalyzer)
-         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
-         tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
-                      (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
-         dir     (FSDirectory/open (new File tabledir))
+
          indexwriter (get @index-writer indexname)
-         iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
+         iw    (if (nil? indexwriter)(let [  basicdir  (str schema/datapath "index" "/")
+                                             tabledir (str basicdir indexname "/")
+                                             analyzer (new MaxWordAnalyzer)
+                                             config (new IndexWriterConfig Version/LUCENE_43 analyzer)
+                                             tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
+                                                          (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
+                                             dir     (FSDirectory/open (new File tabledir))
+                                            iw (new IndexWriter dir config)]
                                        (swap! index-writer assoc indexname iw)
                                        iw
                                        ) indexwriter)
@@ -105,15 +112,17 @@
 
 (defn delindex [id indexname]
   (let [
-         basicdir  (str schema/datapath "index" "/")
-         tabledir (str basicdir indexname "/")
-         analyzer (new MaxWordAnalyzer)
-         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
-         tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
-                      (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
-         dir     (FSDirectory/open (new File tabledir))
+
          indexwriter (get @index-writer indexname)
-         iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
+         iw    (if (nil? indexwriter)(let [
+                                            basicdir  (str schema/datapath "index" "/")
+                                            tabledir (str basicdir indexname "/")
+                                            analyzer (new MaxWordAnalyzer)
+                                            config (new IndexWriterConfig Version/LUCENE_43 analyzer)
+                                            tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
+                                                         (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
+                                            dir     (FSDirectory/open (new File tabledir))
+                                            iw (new IndexWriter dir config)]
                                        (swap! index-writer assoc indexname iw)
                                        iw
                                        ) indexwriter)
@@ -124,34 +133,75 @@
     )
 
   )
-(defn addindex [text indexname]
+(defn oracle-map [address user pass]
+  {:classname "oracle.jdbc.OracleDriver"
+   :subprotocol "oracle"
+   :subname (str "thin:@" address)
+   :user user
+   :password pass
+   }
+    )
+(defn makeindexfromdb [dbtype address user pass table idfield indexfields indexname]
+  (def  temple-db  (condp = dbtype
+              "oracle" (oracle-map address user pass)
+              (str "unexpected 1")))
+  (println temple-db)
+  (let [
+         sql        (str "select " indexfields " from t_doorplate " )
+         fetch-size 1000 ;; or whatever's appropriate
+         cnxn       (doto (j/get-connection temple-db)
+                      (.setAutoCommit false))
+         stmt       (j/prepare-statement cnxn sql :fetch-size fetch-size)
+         results    (rest (j/query cnxn [stmt]))
+         keyid    (keyword idfield)
 
+        ]
+    (dorun (map #(addindex-func (json/write-str (dissoc (conj % {:id (get % keyid)}) keyid)) indexname false) results))
+    (.commit (get @index-writer indexname))
+    (resp/json {:success true}
+
+    )
+
+  )
+  )
+
+(defn addindex-func [text indexname iscommit]
+  (println "adding index........")
   (let [
          textmap (json/read-str text)
-         analyzer (new MaxWordAnalyzer)
-
-         basicdir  (str schema/datapath "index" "/")
-         tabledir (str basicdir indexname "/")
-         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
-         tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
-                      (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
-         dir     (FSDirectory/open (new File tabledir))
          indexwriter (get @index-writer indexname)
-         iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
-                                                    (swap! index-writer assoc indexname iw)
-                                                    iw
-                                                    ) indexwriter)
+         iw    (if (nil? indexwriter)(let [
+                                            analyzer (new MaxWordAnalyzer)
+
+                                            basicdir  (str schema/datapath "index" "/")
+                                            tabledir (str basicdir indexname "/")
+                                            config (new IndexWriterConfig Version/LUCENE_43 analyzer)
+                                            tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
+                                                         (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
+                                            dir     (FSDirectory/open (new File tabledir))
+                                            iw (new IndexWriter dir config)]
+                                       (swap! index-writer assoc indexname iw)
+                                       iw
+                                       ) indexwriter)
          doc  (new Document)
          ]
-    (doall (map #(.add doc (new TextField  (first %)  (second %) Field$Store/YES )) textmap))
+    (println textmap)
+    (doall (map #(.add doc (new TextField  (first %)  (if (nil? (second %)) "" (second %)) Field$Store/YES )) textmap))
     (.addDocument iw doc)
-    (.commit iw )
+    (when iscommit (.commit iw ))
 
     ;(.close iw)
     ;(.optimize iw)
 
-    (resp/json {:sucess true})
+
     )
+
+  )
+(defn addindex [text indexname]
+
+  (addindex-func text indexname true)
+  (resp/json {:sucess true})
+
 
 
   )
