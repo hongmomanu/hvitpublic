@@ -76,6 +76,33 @@
 
   )
 
+(defn updateindex [id text indexname]
+  (let [
+         textmap (json/read-str text)
+         basicdir  (str schema/datapath "index" "/")
+         tabledir (str basicdir indexname "/")
+         analyzer (new MaxWordAnalyzer)
+         config (new IndexWriterConfig Version/LUCENE_43 analyzer)
+         tabledirdo (if (fs/exists? tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/APPEND)
+                      (do (fs/mkdir tabledir)(.setOpenMode config IndexWriterConfig$OpenMode/CREATE)))
+         dir     (FSDirectory/open (new File tabledir))
+         indexwriter (get @index-writer indexname)
+         iw    (if (nil? indexwriter)(let [iw (new IndexWriter dir config)]
+                                       (swap! index-writer assoc indexname iw)
+                                       iw
+                                       ) indexwriter)
+         doc  (new Document)
+
+         ]
+    (doall (map #(.add doc (new TextField  (first %)  (second %) Field$Store/YES )) textmap))
+    (.updateDocument iw (new Term "id" id) doc)
+    (.commit iw )
+    (resp/json {:success true})
+    )
+
+
+  )
+
 (defn delindex [id indexname]
   (let [
          basicdir  (str schema/datapath "index" "/")

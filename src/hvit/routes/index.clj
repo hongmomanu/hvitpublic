@@ -14,4 +14,5 @@
   (GET "/index/addindex" [text indexname] (lindex/addindex text indexname))
   (GET "/index/searchindex" [text indexname] (lindex/searchindex text indexname))
   (GET "/index/delindex" [id indexname] (lindex/delindex id indexname))
+  (GET "/index/updateindex" [id text indexname] (lindex/updateindex id text indexname))
   )

@@ -15,6 +15,25 @@
              输入:node (根节点) , callback (跨域回调函数名)。输出 callback([])
          </li>
 
+            <li><a href="../index/addindex?text={&quot;content&quot;:&quot;测试内容&quot;,&quot;id&quot;:&quot;2&quot;}&indexname=test" target="_blank">
+                新增索引</a>
+                输入:text (索引记录) ,indexname (索引名称)。输出 {"sucess":true}
+            </li>
+
+            <li><a href="../index/delindex?id=2&indexname=test" target="_blank">
+                删除索引</a>
+                输入:id (索引id) ,indexname (索引名称)。输出 {"sucess":true}
+            </li>
+            <li><a href="../index/updateindex?id=2&indexname=test&text={&quot;content&quot;:&quot;浙江省博物馆武林馆&quot;,&quot;id&quot;:&quot;2&quot;}" target="_blank">
+                更新索引</a>
+                输入:id (索引id) ,indexname (索引名称),text(更新记录内容)。输出 {"sucess":true}
+            </li>
+            <li><a href="../index/searchindex?text={&quot;req&quot;:{&quot;query&quot;:{&quot;fieldname&quot;:&quot;content&quot;,&quot;fieldvalue&quot;:&quot;浙江博物馆&quot;}},&quot;res&quot;:{&quot;fields&quot;:[&quot;content&quot;,&quot;id&quot;],&quot;output&quot;:{&quot;start&quot;:0,&quot;limit&quot;:10}}}&indexname=test" target="_blank">
+                查询索引</a>
+                输入:text (索引查询条件) ,indexname (索引名称)。输出 {"sucess":true,"result":[{"id":null,"content":"浙江省博物馆武林馆"},{"id":"2","content":"浙江省博物馆武林馆"}],"totalCount":2}
+            </li>
+
+
         </ul>
 
     </div>
