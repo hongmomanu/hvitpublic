@@ -44,7 +44,7 @@
 
 (defn searchindex [text indexname]
   (let [
-         maxnum 10000
+         maxnum 1000
          textmap (json/read-str text)
          reqmap (get  textmap "req")
          queryfields (get reqmap "query")
@@ -156,7 +156,7 @@
          keyid    (keyword idfield)
 
         ]
-    (dorun (map #(addindex-func (json/write-str (dissoc (conj % {:id (get % keyid)}) keyid)) indexname false) results))
+    (dorun (map #(addindex-func (json/write-str (conj % {:id (get % keyid)})) indexname false) results))
     (.commit (get @index-writer indexname))
     (resp/json {:success true}
 
@@ -186,7 +186,7 @@
          doc  (new Document)
          ]
     (println textmap)
-    (doall (map #(.add doc (new TextField  (first %)  (if (nil? (second %)) "" (second %)) Field$Store/YES )) textmap))
+    (doall (map #(.add doc (new TextField  (first %)  (if (nil? (second %)) "" (str (second %))) Field$Store/YES )) textmap))
     (.addDocument iw doc)
     (when iscommit (.commit iw ))
 
