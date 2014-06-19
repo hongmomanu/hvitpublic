@@ -43,8 +43,8 @@
   )
 
 (defn searchindex [text indexname]
-  (let [
-         maxnum 1000
+  (try (let [
+         maxnum 100
          textmap (json/read-str text)
          reqmap (get  textmap "req")
          queryfields (get reqmap "query")
@@ -71,19 +71,19 @@
          sd (.scoreDocs tds)
 
          ]
-    (println (fs/mod-time indexdir))
+    ;(println (fs/mod-time indexdir))
 
     (resp/json {:sucess true
                 :result (map #(make-searchindex-results searcher (get resmap "fields") %)
                           (drop (get output "start") (take (+ (get  output "limit") (get output "start"))(to-array sd))))
                 :totalCount (alength sd)
                 })
-    )
+    ) (catch Exception e (resp/json {:sucess false :msg (.getMessage e)})))
 
   )
 
 (defn updateindex [id text indexname]
-  (let [
+  (try (let [
          textmap (json/read-str text)
 
          indexwriter (get @index-writer indexname)
@@ -105,13 +105,13 @@
     (.updateDocument iw (new Term "id" id) doc)
     (.commit iw )
     (resp/json {:success true})
-    )
+    ) (catch Exception e (resp/json {:sucess false :msg (.getMessage e)})))
 
 
   )
 
 (defn delindex [id indexname]
-  (let [
+  (try (let [
 
          indexwriter (get @index-writer indexname)
          iw    (if (nil? indexwriter)(let [
@@ -130,7 +130,7 @@
     (.deleteDocuments iw (new Term "id" id))
     (.commit iw )
     (resp/json {:success true})
-    )
+    ) (catch Exception e (resp/json {:sucess false :msg (.getMessage e)})))
 
   )
 (defn oracle-map [address user pass]
@@ -145,8 +145,8 @@
   (def  temple-db  (condp = dbtype
               "oracle" (oracle-map address user pass)
               (str "unexpected 1")))
-  (println temple-db)
-  (let [
+
+  (try (let [
          sql        (str "select " indexfields " from t_doorplate " )
          fetch-size 1000 ;; or whatever's appropriate
          cnxn       (doto (j/get-connection temple-db)
@@ -162,11 +162,10 @@
 
     )
 
-  )
+  )(catch Exception e (resp/json {:sucess false :msg (.getMessage e)})))
   )
 
 (defn addindex-func [text indexname iscommit]
-  (println "adding index........")
   (let [
          textmap (json/read-str text)
          indexwriter (get @index-writer indexname)
@@ -189,20 +188,16 @@
     (doall (map #(.add doc (new TextField  (first %)  (if (nil? (second %)) "" (str (second %))) Field$Store/YES )) textmap))
     (.addDocument iw doc)
     (when iscommit (.commit iw ))
-
     ;(.close iw)
     ;(.optimize iw)
-
-
     )
 
   )
 (defn addindex [text indexname]
 
-  (addindex-func text indexname true)
-  (resp/json {:sucess true})
-
-
+  (try (do (addindex-func text indexname true)
+       (resp/json {:sucess true}) )
+    (catch Exception e (resp/json {:sucess false :msg (.getMessage e)})))
 
   )
 
