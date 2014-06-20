@@ -29,6 +29,7 @@
             [clj-http.client :as client]
             [clojure.data.json :as json]
             [clojure.java.jdbc :as j]
+            [clojure.java.jdbc.deprecated :as jdeprecated]
             )
   )
 
@@ -39,7 +40,7 @@
 (def index-searcher (atom {}))
 
 (defn make-searchindex-results [searcher fileds item]
-  (apply merge  (map #(assoc {} % (.get (.doc searcher (.doc item)) % ))  fileds))
+  (apply merge  (map #(assoc {} % (.get (.doc searcher (.doc item)) % ))  fileds)) ;{:score (.score item)} )
   )
 
 (defn searchindex [text indexname]
@@ -147,16 +148,26 @@
               (str "unexpected 1")))
 
   (try (let [
-         sql        (str "select " indexfields " from t_doorplate " )
+         sql        (str "select " indexfields " from " table )
          fetch-size 1000 ;; or whatever's appropriate
+
          cnxn       (doto (j/get-connection temple-db)
                       (.setAutoCommit false))
-         stmt       (j/prepare-statement cnxn sql :fetch-size fetch-size)
-         results    (rest (j/query cnxn [stmt]))
+         stmt       (j/prepare-statement cnxn sql :fetch-size fetch-size :concurrency :read-only)
+
+         ;results    (rest (j/query cnxn [stmt] :as-arrays? true :row-fn #(println "nonono"  %)))
+         ;results    (rest (j/query cnxn [stmt] ))
          keyid    (keyword idfield)
+         doresults (jdeprecated/with-query-results results [stmt] ;; binds the results to `results`
+           (doseq [row results]
+             ;(println row)
+             (addindex-func (json/write-str (conj row {:id (get row keyid)})) indexname false)
+             ))
+
 
         ]
-    (dorun (map #(addindex-func (json/write-str (conj % {:id (get % keyid)})) indexname false) results))
+
+    ;(dorun (map #(addindex-func (json/write-str (conj % {:id (get % keyid)})) indexname false) results))
     (.commit (get @index-writer indexname))
     (resp/json {:success true}
 
