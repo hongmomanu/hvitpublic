@@ -1,0 +1,65 @@
+{% extends "templates/basedatatable.html" %}
+
+{% block content  %}
+<div id="jqxgrid"></div>
+<table cellpadding="5" cellspacing="0" border="1" class="display" id="example" align="center">
+    <thead>
+    <tr>
+        <th>门牌号</th>
+        <th>id</th>
+    </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    // Load the map with the initMap function in map.js
+
+    $(document).ready(function () {
+        //var data = '[{ "doorplate": "Alfreds Futterkiste", "id": "Maria Anders", "ContactTitle": "Sales Representative", "Address": "Obere Str. 57", "City": "Berlin", "Country": "Germany" }, { "doorplate": "Ana Trujillo Emparedados y helados", "id": "Ana Trujillo", "ContactTitle": "Owner", "Address": "Avda. de la Constitucin 2222", "City": "Mxico D.F.", "Country": "Mexico" }, { "doorplate": "Antonio Moreno Taquera", "id": "Antonio Moreno", "ContactTitle": "Owner", "Address": "Mataderos 2312", "City": "Mxico D.F.", "Country": "Mexico" }, { "doorplate": "Around the Horn", "id": "Thomas Hardy", "ContactTitle": "Sales Representative", "Address": "120 Hanover Sq.", "City": "London", "Country": "UK" }, { "doorplate": "Berglunds snabbkp", "id": "Christina Berglund", "ContactTitle": "Order Administrator", "Address": "Berguvsvgen 8", "City": "Lule", "Country": "Sweden" }, { "doorplate": "Blauer See Delikatessen", "id": "Hanna Moos", "ContactTitle": "Sales Representative", "Address": "Forsterstr. 57", "City": "Mannheim", "Country": "Germany" }, { "doorplate": "Blondesddsl pre et fils", "id": "Frdrique Citeaux", "ContactTitle": "Marketing Manager", "Address": "24, place Klber", "City": "Strasbourg", "Country": "France" }, { "doorplate": "Blido Comidas preparadas", "id": "Martn Sommer", "ContactTitle": "Owner", "Address": "C\/ Araquil, 67", "City": "Madrid", "Country": "Spain" }, { "doorplate": "Bon app\'", "id": "Laurence Lebihan", "ContactTitle": "Owner", "Address": "12, rue des Bouchers", "City": "Marseille", "Country": "France" }, { "doorplate": "Bottom-Dollar Markets", "id": "Elizabeth Lincoln", "ContactTitle": "Accounting Manager", "Address": "23 Tsawassen Blvd.", "City": "Tsawassen", "Country": "Canada" }, { "doorplate": "B\'s Beverages", "id": "Victoria Ashworth", "ContactTitle": "Sales Representative", "Address": "Fauntleroy Circus", "City": "London", "Country": "UK" }, { "doorplate": "Cactus Comidas para llevar", "id": "Patricio Simpson", "ContactTitle": "Sales Agent", "Address": "Cerrito 333", "City": "Buenos Aires", "Country": "Argentina" }, { "doorplate": "Centro comercial Moctezuma", "id": "Francisco Chang", "ContactTitle": "Marketing Manager", "Address": "Sierras de Granada 9993", "City": "Mxico D.F.", "Country": "Mexico" }, { "doorplate": "Chop-suey Chinese", "id": "Yang Wang", "ContactTitle": "Owner", "Address": "Hauptstr. 29", "City": "Bern", "Country": "Switzerland" }, { "doorplate": "Comrcio Mineiro", "id": "Pedro Afonso", "ContactTitle": "Sales Associate", "Address": "Av. dos Lusadas, 23", "City": "Sao Paulo", "Country": "Brazil" }, { "doorplate": "Consolidated Holdings", "id": "Elizabeth Brown", "ContactTitle": "Sales Representative", "Address": "Berkeley Gardens 12 Brewery", "City": "London", "Country": "UK" }, { "doorplate": "Drachenblut Delikatessen", "id": "Sven Ottlieb", "ContactTitle": "Order Administrator", "Address": "Walserweg 21", "City": "Aachen", "Country": "Germany" }, { "doorplate": "Du monde entier", "id": "Janine Labrune", "ContactTitle": "Owner", "Address": "67, rue des Cinquante Otages", "City": "Nantes", "Country": "France" }, { "doorplate": "Eastern Connection", "id": "Ann Devon", "ContactTitle": "Sales Agent", "Address": "35 King George", "City": "London", "Country": "UK" }, { "doorplate": "Ernst Handel", "id": "Roland Mendel", "ContactTitle": "Sales Manager", "Address": "Kirchgasse 6", "City": "Graz", "Country": "Austria"}]';
+        var url = '../index/searchindex';
+        // prepare the data
+        var text = {"req": {"query": {"fieldname": "doorplate", "fieldvalue": "省府路2号"}},
+            "res": {"fields": ["doorplate", "id", "content", "docID"], "output": {"start": 0, "limit": 10}}};
+        var indexname="hz_doorplate";
+        var defeaulturl=url+"?text="+$.toJSON(text)+"&indexname="+indexname;
+
+
+        $('#example').dataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": defeaulturl,
+                "data": function (d) {
+                    //d.myKey = "myValue";
+                    //console.log(d);
+                    text.res.output.start= d.start;
+                    if(d.search.value&&d.search.value!=='')text.req.query.fieldvalue= d.search.value;
+                    d.text=$.toJSON(text);
+
+                    // d.custom = $('#myInput').val();
+                    // etc
+                },
+
+                "dataSrc": "result"
+            },
+            "columns": [
+                { "data": "doorplate" },
+                { "data": "id" }
+
+
+            ],
+            "bSort": false,
+            "bFilter": true,//搜索栏
+            "oLanguage": {
+                "sUrl": '../js/DataTables-1.10.0/local.txt'
+            },
+            //"bStateSave": true,
+//"bJQueryUI": true,   //使用jqueryui 。我用的时候显示的不是很好
+            "sPaginationType": "full_numbers"//分页
+        });
+
+    });
+
+</script>
+
+{% endblock %}

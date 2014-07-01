@@ -19,4 +19,5 @@
   (GET "/index/makeindexfromdb" [dbtype address user pass table idfield indexfields indexname]
     (lindex/makeindexfromdb dbtype address user pass table idfield indexfields indexname)
     )
+  (GET "/index/searchtest" [] (lindex/index-searchtest))
   )

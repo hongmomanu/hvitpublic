@@ -30,6 +30,8 @@
             [clojure.data.json :as json]
             [clojure.java.jdbc :as j]
             [clojure.java.jdbc.deprecated :as jdeprecated]
+            [hvit.views.layout :as layout]
+            [hvit.controller.auth :as auth]
             )
   )
 
@@ -38,6 +40,15 @@
 (def index-writer (atom {}))
 
 (def index-searcher (atom {}))
+
+(defn index-searchtest []
+  (let [roleid (auth/getroleid nil)]
+
+    (if (nil? roleid) (layout/render "error.html")(layout/render "indexsearch.html") )
+    )
+
+  )
+
 
 (defn make-searchindex-results [searcher fileds item]
   (apply merge  (map #(assoc {} % (.get (.doc searcher (.doc item)) % ))  fileds)) ;{:score (.score item)} )
@@ -70,6 +81,7 @@
          query (.parse parser (get queryfields "fieldvalue"))
          tds (.search searcher query maxnum)
          sd (.scoreDocs tds)
+         totalsize (alength sd)
 
          ]
     ;(println (fs/mod-time indexdir))
@@ -77,7 +89,9 @@
     (resp/json {:sucess true
                 :result (map #(make-searchindex-results searcher (get resmap "fields") %)
                           (drop (get output "start") (take (+ (get  output "limit") (get output "start"))(to-array sd))))
-                :totalCount (alength sd)
+                :totalCount totalsize
+                :recordsTotal totalsize
+                :recordsFiltered totalsize
                 })
     ) (catch Exception e (resp/json {:sucess false :msg (.getMessage e)})))
 
