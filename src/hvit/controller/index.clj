@@ -12,7 +12,7 @@
             (org.apache.lucene.index Term IndexWriterConfig IndexWriterConfig$OpenMode IndexWriter DirectoryReader)
 
             (org.apache.lucene.util Version)
-            ;(org.apache.lucene.search.highlight Highlighter SimpleSpanFragmenter QueryScorer)
+            (org.apache.lucene.search.highlight Highlighter TokenSources SimpleSpanFragmenter QueryScorer)
             (java.io File)
             (com.chenlb.mmseg4j.analysis ComplexAnalyzer MaxWordAnalyzer)
 
@@ -50,8 +50,15 @@
   )
 
 
-(defn make-searchindex-results [searcher fileds item]
-  (apply merge  (map #(assoc {} % (.get (.doc searcher (.doc item)) % ))  fileds)) ;{:score (.score item)} )
+(defn make-searchindex-results [searcher fileds item filedname  highlighter analyzer]
+  (let [
+         doc (.doc searcher (.doc item))
+         stream  (TokenSources/getAnyTokenStream (.getIndexReader searcher) (.doc item) filedname  doc analyzer)
+         ]
+
+    (apply merge  (map #(assoc {} % (if (= filedname %) (.getBestFragment highlighter stream (.get doc % ))(.get doc % ) ))  fileds)) ;{:score (.score item)} )
+    )
+
   )
 
 (defn searchindex [text indexname]
@@ -65,6 +72,7 @@
          analyzer (new MaxWordAnalyzer)
          indexdir (str schema/datapath "index" "/" indexname)
          modtime (fs/mod-time indexdir)
+         fieldname (get queryfields "fieldname")
 
          indexsearcher (get @index-searcher indexname)
          searcher (if (or (nil? indexsearcher)(not= (:time indexsearcher) modtime)) (let [
@@ -76,9 +84,13 @@
                                              searcher
                                              )(:searcher indexsearcher))
 
-         parser (new QueryParser Version/LUCENE_43 (get queryfields "fieldname") analyzer)
-         test (println (get queryfields "fieldvalue"))
+         parser (new QueryParser Version/LUCENE_43 fieldname analyzer)
+
          query (.parse parser (get queryfields "fieldvalue"))
+         scorer (new QueryScorer query  fieldname)
+         fragmenter (new SimpleSpanFragmenter scorer)
+         highlighter (new Highlighter scorer)
+         highlighterdo (.setTextFragmenter highlighter fragmenter)
          tds (.search searcher query maxnum)
          sd (.scoreDocs tds)
          totalsize (alength sd)
@@ -87,7 +99,7 @@
     ;(println (fs/mod-time indexdir))
 
     (resp/json {:sucess true
-                :result (map #(make-searchindex-results searcher (get resmap "fields") %)
+                :result (map #(make-searchindex-results searcher (get resmap "fields") % fieldname highlighter analyzer)
                           (drop (get output "start") (take (+ (get  output "limit") (get output "start"))(to-array sd))))
                 :totalCount totalsize
                 :recordsTotal totalsize

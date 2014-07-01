@@ -14,6 +14,7 @@
    [org.clojure/data.json "0.2.5"]
 
    [org.apache.lucene/lucene-core "4.3.1"]
+   [org.apache.lucene/lucene-highlighter "4.2.0"]
    [com.chenlb.mmseg4j/mmseg4j-core "1.10.0"]
    [com.chenlb.mmseg4j/mmseg4j-analysis "1.9.1"]
 
