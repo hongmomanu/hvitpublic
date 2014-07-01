@@ -21,7 +21,7 @@
         var text = {"req": {"query": {"fieldname": "doorplate", "fieldvalue": "省府路2号"}},
             "res": {"fields": ["doorplate", "id", "content", "docID"], "output": {"start": 0, "limit": 10}}};
         var indexname="hz_doorplate";
-        var defeaulturl=url+"?text="+$.toJSON(text)+"&indexname="+indexname;
+        var defeaulturl=url+"?indexname="+indexname;
 
 
         $('#example').dataTable({
@@ -34,6 +34,7 @@
                     //console.log(d);
                     text.res.output.start= d.start;
                     if(d.search.value&&d.search.value!=='')text.req.query.fieldvalue= d.search.value;
+                    else text.req.query.fieldvalue='韓';
                     d.text=$.toJSON(text);
 
                     // d.custom = $('#myInput').val();

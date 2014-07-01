@@ -4,7 +4,7 @@
 
 <div class="row-fluid marketing">
     {% for item in content.content %}
-    <div class="span4">
+    <div class="span4" style="{{forloop.counter0|rowfirstspan}}">
         <h2>{{item.funcname}}</h2>
         <p>{{item.funcname}},进入系统享受服务，处于测试阶段，如有疑问，发现bug，欢迎提交。天地之间有杆秤，大秤妥是那老百姓，秤杆子吖挑呀挑江山，你就是那定盘的心。
         为官者，务必清廉，否则有何面目于兄妹父母，相亲父老，有何面目立于天地之间也。

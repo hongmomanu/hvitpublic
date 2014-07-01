@@ -1,5 +1,6 @@
 (ns hvit.routes.home
   (:use compojure.core)
+  (:use selmer.filters)
   (:require [hvit.views.layout :as layout]
             [hvit.controller.auth :as auth]
             [noir.validation :as vali]
@@ -7,6 +8,7 @@
             [noir.session :as session]
             [hvit.util :as util]))
 
+(add-filter! :rowfirstspan #(if (= (rem % 3) 0) "margin-left: 0;" ""))
 (defn home-page []
   (let [
     content (auth/getapps)
