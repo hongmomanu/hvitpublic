@@ -34,12 +34,11 @@
 
       var src=$(this).attr('addr')+"?roleid="+$(this).attr('roleid');
       var container=$('div.row-fluid').parent();
-      /*container.html('');
-      container.append('<iframe onload="autoHeight();" src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
+      container.html('');
+      container.append('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
               'allowtransparency="true" height="100%" width="100%" ></iframe>');
-*/
-       container.html('');
-       container.load(src);
+
+
 
    });
    if($('a.btn').length==1){
