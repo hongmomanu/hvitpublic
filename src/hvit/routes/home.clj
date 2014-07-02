@@ -20,6 +20,12 @@
                    ;:login-error  (session/get :login-error)
                    }))
   )
+
+(defn login-page []
+
+  (layout/render
+    "login.html" )
+  )
   ;(util/md->html "/md/docs.md")
 
 (defn about-page []
@@ -27,5 +33,6 @@
 
 (defroutes home-routes
   (GET "/" [] (home-page ))
+  (GET "/loginpage" [] (login-page ))
   (GET "/main" [roleid] (resp/redirect (str "/html/main.html?roleid=" roleid)))
   (GET "/about" [] (about-page)))
