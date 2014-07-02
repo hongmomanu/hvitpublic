@@ -35,7 +35,9 @@
       var src=$(this).attr('addr')+"?roleid="+$(this).attr('roleid');
       var container=$('div.row-fluid').parent();
       container.html('');
-      container.append('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
+       /*container.append('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
+              'allowtransparency="true" height="100%" width="100%" ></iframe>');*/
+      container.html('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
               'allowtransparency="true" height="100%" width="100%" ></iframe>');
 
 

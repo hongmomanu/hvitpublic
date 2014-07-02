@@ -19,13 +19,13 @@
         var url = '../index/searchindex';
         // prepare the data
         var text = {"req": {"query": {"fieldname": "doorplate", "fieldvalue": "省府路2号"}},
-            "res": {"fields": ["doorplate", "id", "content", "docID"], "output": {"start": 0, "limit": 100}}};
+            "res": {"fields": ["doorplate", "id", "content", "docID"], "output": {"start": 0, "limit": 10}}};
         var indexname="hz_doorplate";
         var defeaulturl=url+"?indexname="+indexname;
 
 
         $('#example').dataTable({
-
+            //"lengthMenu": [[50,10], [50,10]],
             "processing": true,
             "serverSide": true,
             "ajax": {
