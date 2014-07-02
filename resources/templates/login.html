@@ -14,16 +14,22 @@
 
             <tr>
 
-                <td><input class='text-2' type='text' required="true" placeholder="在这里输入用户名" name='username' id='account' /></td>
+                <td><input class='text-basic' type='text' required="true" placeholder="在这里输入用户名" name='username' id='account' /></td>
             </tr>
             <tr>
 
-                <td><input class='text-2' type='password' required="true" placeholder="在这里输入密码" name='password' /></td>
+                <td><input class='text-basic' type='password' required="true" placeholder="在这里输入密码" name='password' id='password' /></td>
             </tr>
-            <tr><td></td></tr>
+            <tr>
+            <td>
+
+                <div id="checkCode" class="code"></div>
+                <input id="inputCode" class='text-code' type='text' required="true" placeholder="在这里输入验证码" name='code' /></td>
+            </td>
+            </tr>
             <tr>
                 <td colspan='2' class='a-center'>
-                    <input type='submit' id='submit' value='登录' class='button-s' style="text-align:center" />
+                    <input type='submit' id='submit' value='' class='button-s' />
                 </td>
             </tr>
         </table>
@@ -33,14 +39,52 @@
 
 
 </div>
-<div id='poweredby'>
-    技术支持：浙江省海予信息技术有限公司
-</div>
+
+<div id = "alert_placeholder"></div>
+
 
 <script type="text/javascript">
     // Load the map with the initMap function in map.js
 
     $(document).ready(function () {
+         var loginerror="{{login-error}}";
+        if(loginerror!==''){
+            $('#alert_placeholder').html('<div class="alert"><a class="close" data-dismiss="alert">×</a><span>'+loginerror+'</span></div>')
+        }
+        $('form').submit(function() {
+            var inputCode = $("#inputCode").val();
+            var account = $("#account").val();
+            var password = $("#password").val();
+            var code=$("#checkCode").text();
+
+           if(account===''){
+               var message="请填入用户名！";
+               $('#alert_placeholder').html('<div class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+               return false;  // do this if you don't want to submit the form
+           }
+           else if(password===''){
+               var message="请输入密码！";
+               $('#alert_placeholder').html('<div class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+               return false;  // do this if you don't want to submit the form
+           }
+           else if(inputCode===''){
+                var message="请填入验证码！";
+                $('#alert_placeholder').html('<div class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+                return false;  // do this if you don't want to submit the form
+           }
+           else if (inputCode.toUpperCase() != code.toUpperCase())
+            {
+                var message="验证码输入有误！";
+                $('#alert_placeholder').html('<div class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+                createCode("checkCode",4);
+                return false;  // do this if you don't want to submit the form
+            }
+
+        });
+        $('#checkCode').click(function(){
+            createCode("checkCode",4);
+        });
+        createCode("checkCode",4);
 
     });
 

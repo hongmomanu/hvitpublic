@@ -1,0 +1,21 @@
+.code
+{
+    /*background:url(code_bg.jpg);*/
+    font-family:Arial;
+    float: right;
+    font-style:italic;
+    color:blue;
+    font-size:30px;
+    border:0;
+    padding-right: 10px;
+    letter-spacing:3px;
+    font-weight:bolder;
+
+    cursor:pointer;
+    width:70px;
+    height:30px;
+    line-height:30px;
+    text-align:center;
+    vertical-align:middle;
+
+}

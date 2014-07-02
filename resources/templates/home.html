@@ -19,13 +19,27 @@
 </div>
 
 <script type="text/javascript">
+    /*function autoHeight(){
+        var iframeHeight =function(){
+            var iframe = document.getElementById("runtime");//这里括号内的"runtime"其实就是上面的ID，要改成自己上面填写的ID。
+            if(iframe.Document){//ie自有属性
+                iframe.style.height = iframe.Document.documentElement.scrollHeight;
+            }else if(iframe.contentDocument){//ie,firefox,chrome,opera,safari
+                iframe.height = iframe.contentDocument.body.offsetHeight ;
+            }
+        }
+        setTimeout(iframeHeight, 500);
+    }*/
    $('a.btn').click(function(){
 
       var src=$(this).attr('addr')+"?roleid="+$(this).attr('roleid');
       var container=$('div.row-fluid').parent();
-      container.html('');
-      container.append('<iframe src="'+src+'" frameborder="0" scrolling="no" ' +
+      /*container.html('');
+      container.append('<iframe onload="autoHeight();" src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
               'allowtransparency="true" height="100%" width="100%" ></iframe>');
+*/
+       container.html('');
+       container.load(src);
 
    });
    if($('a.btn').length==1){

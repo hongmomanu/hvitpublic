@@ -15,10 +15,13 @@
     size (count  (:apps content))
     sessionuid   (:sessionuid content)
          ]
-    (layout/render
-      "home.html" {:content {:content (:apps content) :nums size :sessionuid sessionuid}
-                   ;:login-error  (session/get :login-error)
-                   }))
+    (if (nil? sessionuid)
+      (layout/render
+        "login.html" {:login-error  (session/get :login-error)})
+      (layout/render "home.html"
+        {:content {:content (:apps content) :nums size :sessionuid sessionuid};:login-error  (session/get :login-error)
+        }) )
+    )
   )
 
 (defn login-page []

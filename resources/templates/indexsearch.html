@@ -1,8 +1,8 @@
 {% extends "templates/basedatatable.html" %}
 
 {% block content  %}
-<div id="jqxgrid"></div>
-<table cellpadding="5" cellspacing="0" border="1" class="display" id="example" align="center">
+<table cellpadding="5" cellspacing="0" border="1" class="display" id="example"
+       align="center" style="height: 100%;" >
     <thead>
     <tr>
         <th>门牌号</th>
@@ -19,20 +19,21 @@
         var url = '../index/searchindex';
         // prepare the data
         var text = {"req": {"query": {"fieldname": "doorplate", "fieldvalue": "省府路2号"}},
-            "res": {"fields": ["doorplate", "id", "content", "docID"], "output": {"start": 0, "limit": 10}}};
+            "res": {"fields": ["doorplate", "id", "content", "docID"], "output": {"start": 0, "limit": 100}}};
         var indexname="hz_doorplate";
         var defeaulturl=url+"?indexname="+indexname;
 
 
         $('#example').dataTable({
+
             "processing": true,
             "serverSide": true,
             "ajax": {
                 "url": defeaulturl,
                 "data": function (d) {
                     //d.myKey = "myValue";
-                    //console.log(d);
                     text.res.output.start= d.start;
+                    text.res.output.limit= d.length;
                     if(d.search.value&&d.search.value!=='')text.req.query.fieldvalue= d.search.value;
                     else text.req.query.fieldvalue='韓';
                     d.text=$.toJSON(text);
