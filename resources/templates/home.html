@@ -19,13 +19,44 @@
 </div>
 
 <script type="text/javascript">
+    if (!Array.prototype.forEach){
+        Array.prototype.forEach = function(fun /*, thisArg */){
+            "use strict";
+            if (this === void 0 || this === null || typeof fun !== "function") throw new TypeError();
 
-   $('a.btn').click(function(){
+            var
+                    t = Object(this),
+                    len = t.length >>> 0,
+                    thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+
+            for (var i = 0; i < len; i++)
+                if (i in t)
+                    fun.call(thisArg, t[i], i, t);
+        };
+    }
+
+    $('a.btn').click(function(){
 
       var src=$(this).attr('addr')+"?roleid="+$(this).attr('roleid');
       var container=$('div.row-fluid').parent();
       container.html('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
-              'allowtransparency="true" height="100%" width="100%" ></iframe>');
+              'allowtransparency="true" height="100%"  width="100%" ></iframe>');
+
+      $('#runtime').height($('body').height()-100);
+
+       iFrameResize({
+           log                     : false,                  // Enable console logging
+           enablePublicMethods     : true,                  // Enable methods within iframe hosted page
+           resizedCallback         : function(messageData){ // Callback fn when resize is received
+
+           },
+           messageCallback         : function(messageData){ // Callback fn when message is received
+
+           },
+           closedCallback         : function(id){ // Callback fn when iFrame is closed
+
+           }
+       });
 
 
 

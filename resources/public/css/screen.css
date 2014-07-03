@@ -14,8 +14,4 @@ body,.main-display-area,.col-md-7  {
     display:inline-block;
     display:inline;
 }
-`.container
-{
-    zoom:1;
-    display:inline;
-}
+
