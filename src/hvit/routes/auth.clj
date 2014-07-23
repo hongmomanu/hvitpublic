@@ -117,10 +117,14 @@
   (GET "/auth/addlog" [logcontent userid callback]
     (auth/addlog logcontent userid callback))
 
+  (GET "/auth/proxy" req
+    (auth/getproxy req))
+
   (POST "/auth/uploadfile"  [file]
 
     (auth/uploadfile file)
     )
+
 
 
 (GET "/logout" []

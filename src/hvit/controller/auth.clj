@@ -214,7 +214,19 @@
 
 
   )
+(defn getproxy [req]
+  ;(println req)
+  (let [{:keys [params]} req
+        content (client/get (:url params) {:query-params (dissoc params :url)  :socket-timeout 3000
+                                         :conn-timeout 3000})
+        ]
+     (:body content)
 
+
+    )
+
+
+  )
 (defn addlog [logcontent userid callback]
   (let [
 
