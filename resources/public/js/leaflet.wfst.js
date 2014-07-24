@@ -14,7 +14,7 @@ L.WFST = L.GeoJSON.extend({
         // These come from OL demo: http://openlayers.org/dev/examples/wfs-protocol-transactions.js
         var initOptions = L.extend({
             showExisting: true,         // Show existing features in WFST layer on map?
-            version: "1.1.0",           // WFS version 
+            version: "1.1.0",           // WFS version
             failure: function(msg){},    // Function for handling initialization failures
             xsdNs: 'xsd'
             // geomField : <field_name> // The geometry field to use. Auto-detected if only one geom field 
@@ -245,7 +245,6 @@ L.WFST = L.GeoJSON.extend({
 
         var where = {};
         where[this.options.primaryKeyField] = layer.feature.properties[this.options.primaryKeyField];
-
         var xml = this.options._xmlpre;
         xml += "<wfs:Update typeName='"+this.options.typename+"'>";
         xml += this._wfstUpdateValues(layer);
@@ -298,11 +297,12 @@ L.WFST = L.GeoJSON.extend({
     _wfstValueKeyPairs: function(layer){
         var field = {};
         var elems = this._fieldsByAttribute();
+        console.log(elems);
         var geomFields = [];
 
         for(var p = 0;p < elems.length;p++){
             attr = elems[p].getAttribute('name');
-
+            console.log(layer.feature);
             if( typeof layer.feature != 'undefined' && 
                 typeof layer.feature.properties != 'undefined' && 
                 typeof layer.feature.properties[attr] != 'undefined'
@@ -314,13 +314,15 @@ L.WFST = L.GeoJSON.extend({
                 }else if(layer.feature.properties[attr] !== null){
                     field[attr] = layer.feature.properties[attr]; 
                 }else{
+
                     // Not sure what to do with null values yet. 
                     // At the very least Geoserver isn't liking null where a date should be.
                 }
             }else if(
                 elems[p].getAttribute('type') === 'gml:GeometryPropertyType' || 
                 elems[p].getAttribute('type') === 'gml:PointPropertyType' || 
-                elems[p].getAttribute('type') === 'gml:MultiSurfacePropertyType' || 
+                elems[p].getAttribute('type') === 'gml:MultiLineStringPropertyType' ||
+                elems[p].getAttribute('type') === 'gml:MultiSurfacePropertyType' ||
                 elems[p].getAttribute('type') === 'gml:SurfacePropertyType' 
             ){
                 geomFields.push(elems[p]);
@@ -333,18 +335,21 @@ L.WFST = L.GeoJSON.extend({
         }
 
         // Only require a geometry field if it looks like we have geometry but we aren't trying to save it
-        if(
+        /*if(
             (layer.hasOwnProperty('x') && layer.hasOwnProperty('y') && typeof layer.x != 'undefined' && typeof layer.y != 'undefined') ||
             (layer.hasOwnProperty('_latlng') && Object.keys(layer._latlng).length > 0)
         ){
             if(this.options.geomField || geomFields.length === 1){
                 this.options.geomField = this.options.geomField || geomFields[0].getAttribute('name');
+
                 field[this.options.geomField] = layer.toGML();
             }else{
                 console.log("No geometry field!");
                 return false;
             }
-        }
+        }*/
+        this.options.geomField = this.options.geomField || geomFields[0].getAttribute('name');
+        field[this.options.geomField] = layer.toGML();
 
         return field;
     },
@@ -396,7 +401,8 @@ L.WFST = L.GeoJSON.extend({
     Get all existing objects from the WFS service and draw them
     */
     _loadExistingFeatures: function(){
-        var geoJsonUrl = this.options.url + '?service=WFS&version=' + this.options.version + '&request=GetFeature&typeName=' + this.options.featureNS + ':' + this.options.featureType + '&outputFormat=application/json';
+        //var geoJsonUrl = this.options.url + '?service=WFS&version=' + this.options.version + '&request=GetFeature&typeName=' + this.options.featureNS + ':' + this.options.featureType + '&outputFormat=application/json';
+        var geoJsonUrl = this.options.url + '&service=WFS&version=' + this.options.version + '&request=GetFeature&typeName=' + this.options.featureNS + ':' + this.options.featureType + '&outputFormat=json';
         this._ajax({
             url: geoJsonUrl,
             success: function(res){
@@ -412,7 +418,8 @@ L.WFST = L.GeoJSON.extend({
     Get the feature description
     */
     _loadFeatureDescription: function(){
-        var describeFeatureUrl = this.options.url + '?service=WFS&version=' + this.options.version + '&request=DescribeFeatureType&typename=' + this.options.featureNS + ':' + this.options.featureType;
+        //var describeFeatureUrl = this.options.url + '?service=WFS&version=' + this.options.version + '&request=DescribeFeatureType&typename=' + this.options.featureNS + ':' + this.options.featureType;
+        var describeFeatureUrl = this.options.url + '&service=WFS&version=' + this.options.version + '&request=DescribeFeatureType&typename=' + this.options.featureNS + ':' + this.options.featureType;
         this._ajax({
             url: describeFeatureUrl,
             success: function(res){

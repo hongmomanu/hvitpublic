@@ -1,7 +1,9 @@
 var map; // the map object
 var layers = {};
+var wms_layers = [];
 var drawControl;
 var display_layers=[];
+var proxy="../auth/proxy?url="
 
 function initMap(){
     // create a map in the "map" div, set the view to a given place and zoom
@@ -45,7 +47,7 @@ function initMap(){
                             });
                         }
                         else if(layertype.type==='wms'){
-                            overlayMaps[res[i].text]=L.tileLayer.wms(res[i].value, {
+                            var wms_layer=L.tileLayer.wms(res[i].value, {
                                 layers: layertype.layers,
                                 format: 'image/png',
                                 transparent: true,
@@ -53,6 +55,8 @@ function initMap(){
                                 //attribution: "CDC",
                                 noWrap: true
                             });
+                            overlayMaps[res[i].text]=wms_layer;
+                            wms_layers.push(wms_layer);
                         }
 
                         if(i===0)display_layers.push(overlayMaps[res[i].text]);
@@ -63,6 +67,32 @@ function initMap(){
                         layers: display_layers});
 
                     map.addControl(layersControl);
+
+                    // Initialize the WFST layer
+                    layers.drawnItems = L.wfst(null,{
+                        // Required
+                        url : proxy+'http://192.168.2.142:8080/geoserver/zsmz/wfs',
+                        featureNS : 'zsmz',
+                        version:'1.0.0',
+                        featureType : 'STL_JX',
+                        primaryKeyField: 'id'
+                    }).addTo(map);
+
+                    // Initialize the draw control and pass it the FeatureGroup of editable layers
+                    var drawControl = new L.Control.Draw({
+                        edit: {
+                            featureGroup: layers.drawnItems
+                        }
+                    });
+
+                    map.addControl(drawControl);
+
+                    map.on('draw:created', function (e) {
+                        layers.drawnItems.addLayer(e.layer);
+                    });
+                    map.on('draw:edited', function (e) {
+                        layers.drawnItems.wfstSave(e.layers);
+                    });
                     //console.log(L.GeoIP.getPosition());
 
                     L.GeoIP.centerMapOnPosition(map);
