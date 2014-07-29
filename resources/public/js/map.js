@@ -74,7 +74,7 @@ function initMap(){
                         url : proxy+'http://192.168.2.141:8082/geoserver/xsdata/wfs', //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
                         featureNS : 'xsdata',
                         version:'1.0.0',
-                        featureType : 'STP_DW'/*,
+                        featureType : 'STL_ALL_ROAD'/*,STP_DW
                         primaryKeyField: 'id'*/
                     }).addTo(map);
 
@@ -91,12 +91,10 @@ function initMap(){
                         layers.drawnItems.addLayer(e.layer,{"success":function(){}});
                     });
                     map.on('draw:editstart', function (e) {
-                        console.log(e);
                         //layers.drawnItems.addLayer(e.layer);
                     });
                     map.on('draw:edited', function (e) {
-                        testobj=e;
-                        console.log(e);
+
                         layers.drawnItems.wfstSave(layers.drawnItems);
                     });
 
