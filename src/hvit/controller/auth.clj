@@ -94,6 +94,17 @@
     )
 
   )
+(defn getsessionidjs [req]
+
+  (let [sessionid (:value (get (:cookies req) "ring-session"))
+        callback (:callback (:params req))
+        success (not (nil? sessionid))
+        ]
+    (str "var sessionid='" sessionid "';")
+
+    )
+
+  )
 (defn sessioncheck []
   (resp/edn (session/get :user-id))
   )
@@ -215,17 +226,21 @@
 
   )
 (defn getproxy [req]
-  ;(println req)
   (let [{:keys [params]} req
-        content (client/get (:url params) {:query-params (dissoc params :url)  :socket-timeout 3000
-                                         :conn-timeout 3000})
+        content (client/get (:url params) {:query-params (dissoc params :url)  :socket-timeout 10000
+                                         :conn-timeout 10000})
         ]
      (:body content)
-
-
     )
-
-
+  )
+(defn postproxy [req]
+  ;(println (:body req))
+  (let [{:keys [query-params body content-length content-type ]} req
+        content (client/post (get query-params "url") {:body body :length content-length :content-type  content-type   :socket-timeout 10000
+                                         :conn-timeout 10000})       ;:form-params (dissoc query-params "url")
+        ]
+     (:body content)
+    )
   )
 (defn addlog [logcontent userid callback]
   (let [

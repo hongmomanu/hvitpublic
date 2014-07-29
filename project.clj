@@ -53,7 +53,9 @@
    {:ring
     {:open-browser? false, :stacktraces? false, :auto-reload? false}},
    :dev
-   {:dependencies [[ring-mock "0.1.5"] [ring/ring-devel "1.2.2"]],
+   {:dependencies [[ring-mock "0.1.5"]
+                   [ring/ring-devel "1.3.0"]
+                   [pjstadig/humane-test-output "0.6.0"]],
     :env {:dev true}}}
   :url
   "http://example.com/FIXME"

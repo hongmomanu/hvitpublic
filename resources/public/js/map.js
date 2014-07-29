@@ -71,11 +71,11 @@ function initMap(){
                     // Initialize the WFST layer
                     layers.drawnItems = L.wfst(null,{
                         // Required
-                        url : proxy+'http://192.168.2.142:8080/geoserver/zsmz/wfs',
-                        featureNS : 'zsmz',
+                        url : proxy+'http://192.168.2.141:8082/geoserver/xsdata/wfs', //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
+                        featureNS : 'xsdata',
                         version:'1.0.0',
-                        featureType : 'STL_JX',
-                        primaryKeyField: 'id'
+                        featureType : 'STL_ALL_ROAD'/*,
+                        primaryKeyField: 'id'*/
                     }).addTo(map);
 
                     // Initialize the draw control and pass it the FeatureGroup of editable layers
@@ -90,10 +90,15 @@ function initMap(){
                     map.on('draw:created', function (e) {
                         layers.drawnItems.addLayer(e.layer);
                     });
-                    map.on('draw:edited', function (e) {
-                        layers.drawnItems.wfstSave(e.layers);
+                    map.on('draw:editstart', function (e) {
+                        console.log(e);
+                        //layers.drawnItems.addLayer(e.layer);
                     });
-                    //console.log(L.GeoIP.getPosition());
+                    map.on('draw:edited', function (e) {
+                        testobj=e;
+                        console.log(e);
+                        layers.drawnItems.wfstSave(layers.drawnItems);
+                    });
 
                     L.GeoIP.centerMapOnPosition(map);
 

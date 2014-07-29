@@ -21,6 +21,9 @@
   (GET "/auth/getsessionid" req
     (auth/getsessionid req)
     )
+  (GET "/auth/getsessionidjs" req
+    (auth/getsessionidjs req)
+    )
 
   (POST "/register" [username password pass1]
         (auth/handle-registration username password pass1))
@@ -119,6 +122,8 @@
 
   (GET "/auth/proxy" req
     (auth/getproxy req))
+  (POST "/auth/proxy" req
+    (auth/postproxy req))
 
   (POST "/auth/uploadfile"  [file]
 

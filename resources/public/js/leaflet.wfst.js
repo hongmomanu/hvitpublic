@@ -243,12 +243,14 @@ L.WFST = L.GeoJSON.extend({
             }
         });
 
-        var where = {};
-        where[this.options.primaryKeyField] = layer.feature.properties[this.options.primaryKeyField];
+        //var where = {};
+        //where[this.options.primaryKeyField] = layer.feature.properties[this.options.primaryKeyField];
+        //where["FeatureId"] = layer.feature.properties[this.options.primaryKeyField];
         var xml = this.options._xmlpre;
         xml += "<wfs:Update typeName='"+this.options.typename+"'>";
         xml += this._wfstUpdateValues(layer);
-        xml += this._whereFilter(where);
+        //xml += this._whereFilter(where);
+        xml += this._featureIdFilter(layer.feature.id);
         xml += "</wfs:Update>";
         xml += "</wfs:Transaction>";
 
@@ -297,7 +299,6 @@ L.WFST = L.GeoJSON.extend({
     _wfstValueKeyPairs: function(layer){
         var field = {};
         var elems = this._fieldsByAttribute();
-        console.log(elems);
         var geomFields = [];
 
         for(var p = 0;p < elems.length;p++){
@@ -349,7 +350,7 @@ L.WFST = L.GeoJSON.extend({
             }
         }*/
         this.options.geomField = this.options.geomField || geomFields[0].getAttribute('name');
-        field[this.options.geomField] = layer.toGML();
+        field[this.options.geomField] = layer.editing?layer.toGML():layer.getLayers()[0].toGML();
 
         return field;
     },
@@ -362,6 +363,15 @@ L.WFST = L.GeoJSON.extend({
             xml += '<ogc:Literal>' + where[propertyName] + '</ogc:Literal>';
             xml += '</ogc:PropertyIsEqualTo>'; 
         }
+        xml += '</ogc:Filter>';
+        return xml;
+    },
+    _featureIdFilter:function(featureId){
+
+        var xml = '<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">';
+        xml += '<ogc:FeatureId fid="';
+        xml += featureId;
+        xml += '"/>';
         xml += '</ogc:Filter>';
         return xml;
     },
