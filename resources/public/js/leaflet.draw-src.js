@@ -2680,7 +2680,7 @@ L.EditToolbar.Edit = L.Handler.extend({
         testobj=this;
 		//var layer = e.layer ||e.target ||this._featureGroup.getLayers()[0].getLayers()[0] || e,
 		//var layer = this._featureGroup.getLayers()[0].getLayers()[0],
-		var layer = e.getLayers()[0],
+		var layer = (e.getLayers&&e.getLayers()[0])||e,
 			isMarker = layer instanceof L.Marker,
 			pathOptions;
 
@@ -2735,7 +2735,8 @@ L.EditToolbar.Edit = L.Handler.extend({
         //console.log(this);
         //testobj=this;
 		//var layer = e.layer|| e.target || e;
-		var layer =this._featureGroup.getLayers()[0].getLayers()[0];
+		//var layer =this._featureGroup.getLayers()[0].getLayers()[0];
+		var layer =(e.getLayers&&e.getLayers()[0])||e;
 		layer.edited = false;
 
 		// Reset layer styles to that of before select

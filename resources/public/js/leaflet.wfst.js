@@ -147,7 +147,7 @@ L.WFST = L.GeoJSON.extend({
                     // Since we do one insert at a time, it should always be object 0
                     var fid = self._getElementsByTagName(xml,'ogc:FeatureId')[0].getAttribute('fid');
                     layer.feature.id = fid;
-                    layer.feature.properties[self.options.primaryKeyField] = fid.replace(self.options.featureType + '.','');
+                    //layer.feature.properties[self.options.primaryKeyField] = fid.replace(self.options.featureType + '.','');
 
                     realsuccess(res);
                 }else if(typeof options.failure == 'function'){ 
@@ -217,13 +217,13 @@ L.WFST = L.GeoJSON.extend({
 
     //  Save changes to a single layer with WFS-T
     _wfstSave: function(layer,options){
-        if(typeof this.options.primaryKeyField == 'undefined'){
+        /*if(typeof this.options.primaryKeyField == 'undefined'){
             console.log("I can't do saves without a primaryKeyField!");
             if(typeof options.failure == 'function'){
                 options.failure();
             }
             return false;
-        }
+        }*/
 
         options = options || {};
 
@@ -281,9 +281,9 @@ L.WFST = L.GeoJSON.extend({
         var xml = '';
         var field = this._wfstValueKeyPairs(layer);
 
-        if(!field){
+        /*if(!field){
             return false;
-        }
+        }*/
 
         for(var f in field){
             if(field[f] !== null && field[f] !== ''){
@@ -350,7 +350,7 @@ L.WFST = L.GeoJSON.extend({
             }
         }*/
         this.options.geomField = this.options.geomField || geomFields[0].getAttribute('name');
-        field[this.options.geomField] = layer.editing?layer.toGML():layer.getLayers()[0].toGML();
+        field[this.options.geomField] =layer.toGML?layer.toGML():layer.getLayers()[0].toGML();
 
         return field;
     },
