@@ -20,7 +20,6 @@ function initMap(){
             var baseMaps={};
             for(var i=0;i<resbase.length;i++){
                 var layertype=$.evalJSON(resbase[i].imgcss);
-                console.log(layertype);
                 if(layertype.type==='tile'){
                     baseMaps[resbase[i].text]=L.tileLayer(resbase[i].value, {
                         minZoom: layertype.level[0],
@@ -69,14 +68,16 @@ function initMap(){
 
                     map.addControl(layersControl);
 
-                    // Initialize the WFST layer
+                    L.easyButton( "编辑" , functions[i] , hoverText[i] )
+
+                    /*// Initialize the WFST layer
                     layers.drawnItems = L.wfst(null,{
                         // Required
                         url : proxy+'http://192.168.2.141:8082/geoserver/zs_csmz/wfs', //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
                         featureNS : 'zs_csmz',//xsdata  zs_csmz
                         version:'1.1.0',
-                        featureType : 'STR_XianJ'/*,STP_DW STL_ALL_ROAD  STR_XianJ
-                        primaryKeyField: 'id'*/
+                        featureType : 'STR_XianJ'*//*,STP_DW STL_ALL_ROAD  STR_XianJ
+                        primaryKeyField: 'id'*//*
                     }).addTo(map);
 
                     // Initialize the draw control and pass it the FeatureGroup of editable layers
@@ -97,7 +98,7 @@ function initMap(){
                     map.on('draw:edited', function (e) {
 
                         layers.drawnItems.wfstSave(layers.drawnItems);
-                    });
+                    });*/
 
                     L.GeoIP.centerMapOnPosition(map);
 
