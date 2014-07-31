@@ -68,7 +68,9 @@ function initMap(){
 
                     map.addControl(layersControl);
 
-                    L.easyButton( "编辑" , functions[i] , hoverText[i] )
+                    map.addControl( new L.Control.Search({url: 'search.php?q={s}'}) );
+
+                    //L.easyButton( "fa-edit" , function(){alert(2)} , "编辑" )
 
                     /*// Initialize the WFST layer
                     layers.drawnItems = L.wfst(null,{
