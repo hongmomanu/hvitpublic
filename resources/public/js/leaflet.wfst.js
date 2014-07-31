@@ -16,7 +16,10 @@ L.WFST = L.GeoJSON.extend({
             showExisting: true,         // Show existing features in WFST layer on map?
             version: "1.1.0",           // WFS version
             failure: function(msg){},    // Function for handling initialization failures
-            xsdNs: 'xsd'
+            xsdNs: 'xsd',
+            coordsToLatLng:function(a){
+                return a;
+            }
             // geomField : <field_name> // The geometry field to use. Auto-detected if only one geom field 
             // url: <WFS service URL> 
             // featureNS: <Feature NameSpace>
@@ -102,7 +105,7 @@ L.WFST = L.GeoJSON.extend({
     wfstTouch: function(layers,options){
         // Touch a file so it needs to be saved again
         layers = layers ? (L.Util.isArray(layers) ? layers : [layers]) : [];
-        console.log("Save layers now!");
+        //console.log("Save layers now!");
 
         for (var i = 0, len = layers.length; i < len; i++) {
             layers[i]._wfstSaved = false;
@@ -171,7 +174,7 @@ L.WFST = L.GeoJSON.extend({
     // Remove a layers with WFS-T
     _wfstRemove: function(layer,options){
         if(typeof this.options.primaryKeyField == 'undefined' && typeof options.where == 'undefined'){
-            console.log("I can't do deletes without a primaryKeyField!");
+            //console.log("I can't do deletes without a primaryKeyField!");
             if(typeof options.failure == 'function'){
                 options.failure();
             }
@@ -303,14 +306,14 @@ L.WFST = L.GeoJSON.extend({
 
         for(var p = 0;p < elems.length;p++){
             attr = elems[p].getAttribute('name');
-            console.log(layer.feature);
+            //console.log(layer.feature);
             if( typeof layer.feature != 'undefined' && 
                 typeof layer.feature.properties != 'undefined' && 
                 typeof layer.feature.properties[attr] != 'undefined'
             ){
                 // Null value present, but not allowed
                 if(layer.feature.properties[attr] === null && !elems[p].getAttribute('nillable')){
-                    console.log("Null value given for non nillable field: " + attr);
+                    //console.log("Null value given for non nillable field: " + attr);
                     return false; // No value given for required field!
                 }else if(layer.feature.properties[attr] !== null){
                     field[attr] = layer.feature.properties[attr]; 
@@ -323,13 +326,14 @@ L.WFST = L.GeoJSON.extend({
                 elems[p].getAttribute('type') === 'gml:GeometryPropertyType' || 
                 elems[p].getAttribute('type') === 'gml:PointPropertyType' || 
                 elems[p].getAttribute('type') === 'gml:MultiLineStringPropertyType' ||
+                elems[p].getAttribute('type') === 'gml:MultiPolygonPropertyType' ||
                 elems[p].getAttribute('type') === 'gml:MultiSurfacePropertyType' ||
                 elems[p].getAttribute('type') === 'gml:SurfacePropertyType' 
             ){
                 geomFields.push(elems[p]);
             }else if(elems[p].getAttribute('nillable') == 'false'){
                 if(elems[p].getAttribute('maxOccurs') != "1" && elems[p].getAttribute('minOccurs') != "1"){
-                    console.log("No value given for required field " + attr);
+                    //console.log("No value given for required field " + attr);
                     return false; // No value given for required field!
                 }
             }
@@ -387,8 +391,12 @@ L.WFST = L.GeoJSON.extend({
     _ajax: function(options){
         options = L.extend({
             method: 'GET',
-            success: function(r){console.log(r);},
-            failure: function(r){console.log("AJAX Failure!");console.log(r);},
+            success: function(r){
+                //console.log(r);
+            },
+            failure: function(r){
+                //console.log("AJAX Failure!");console.log(r);
+            },
             self: this,
             url: this.options.url
         },options);
@@ -520,7 +528,7 @@ L.WFST = L.GeoJSON.extend({
         }
         var exception = self._getElementsByTagName(xml,'ows:ExceptionReport');
         if(exception.length > 0){ 
-            console.log(self._getElementsByTagName(xml,'ows:ExceptionText')[0].firstChild.nodeValue);
+            //console.log(self._getElementsByTagName(xml,'ows:ExceptionText')[0].firstChild.nodeValue);
             return false;
         }
         return xml;

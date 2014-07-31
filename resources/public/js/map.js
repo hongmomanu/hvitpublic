@@ -20,10 +20,11 @@ function initMap(){
             var baseMaps={};
             for(var i=0;i<resbase.length;i++){
                 var layertype=$.evalJSON(resbase[i].imgcss);
+                console.log(layertype);
                 if(layertype.type==='tile'){
                     baseMaps[resbase[i].text]=L.tileLayer(resbase[i].value, {
-                        minZoom: 4,
-                        maxZoom: 18
+                        minZoom: layertype.level[0],
+                        maxZoom: layertype.level[1]
                     });
                 }
 
@@ -42,8 +43,8 @@ function initMap(){
 
                         if(layertype.type==='tile'){
                             overlayMaps[res[i].text]=L.tileLayer(res[i].value, {
-                                minZoom: 4,
-                                maxZoom: 18
+                                minZoom: layertype.level[0],
+                                maxZoom: layertype.level[1]
                             });
                         }
                         else if(layertype.type==='wms'){
@@ -71,10 +72,10 @@ function initMap(){
                     // Initialize the WFST layer
                     layers.drawnItems = L.wfst(null,{
                         // Required
-                        url : proxy+'http://192.168.2.141:8082/geoserver/xsdata/wfs', //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
-                        featureNS : 'xsdata',
-                        version:'1.0.0',
-                        featureType : 'STL_ALL_ROAD'/*,STP_DW
+                        url : proxy+'http://192.168.2.141:8082/geoserver/zs_csmz/wfs', //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
+                        featureNS : 'zs_csmz',//xsdata  zs_csmz
+                        version:'1.1.0',
+                        featureType : 'STR_XianJ'/*,STP_DW STL_ALL_ROAD  STR_XianJ
                         primaryKeyField: 'id'*/
                     }).addTo(map);
 
