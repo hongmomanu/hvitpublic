@@ -56,7 +56,12 @@ function initMap(){
                                 noWrap: true
                             });
                             overlayMaps[res[i].text]=wms_layer;
-                            wms_layers.push(wms_layer);
+                            wms_layers.push(
+                                {
+                                    text:res[i].text,
+                                    value:res[i].value,
+                                    layers:layertype.layers
+                                });
                         }
 
                         if(i===0)display_layers.push(overlayMaps[res[i].text]);
@@ -68,7 +73,11 @@ function initMap(){
 
                     map.addControl(layersControl);
 
-                    map.addControl( new L.Control.Search({url: 'search.php?q={s}'}) );
+                    map.addControl( new L.Control.Search(
+                        {
+                            url: 'search.php?q={s}',
+                            searchLayers:wms_layers
+                        }) );
 
                     //L.easyButton( "fa-edit" , function(){alert(2)} , "编辑" )
 

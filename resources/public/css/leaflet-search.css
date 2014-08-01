@@ -36,7 +36,6 @@
 }
 .leaflet-search-div{
   float: left;
-  padding-right: 5px;
 }
 
 .leaflet-control-search.search-load .search-cancel {
@@ -56,7 +55,7 @@
 }
 
 .search-cancel{
-    right:130px !important;
+    right:123px !important;
 }
 
 .leaflet-control-search .search-cancel:hover {

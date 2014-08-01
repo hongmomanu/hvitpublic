@@ -17,7 +17,8 @@ L.Control.Search = L.Control.extend({
 		wrapper: '',				//container id to insert Search Control
 		url: '',					//url for search by ajax request, ex: "search.php?q={s}"
 		jsonpParam: null,			//jsonp param name for search by jsonp service, ex: "callback"
-		layer: null,				//layer where search markers(is a L.LayerGroup)		
+		layer: null,				//layer where search markers(is a L.LayerGroup)
+        wfslayer:false,
 		callData: null,				//function that fill _recordsCache, passed searching text by first param and callback in second
 		//TODO important! implements uniq option 'sourceData' that recognizes source type: url,array,callback or layer		
 		//TODO implement can do research on multiple sources
@@ -38,10 +39,11 @@ L.Control.Search = L.Control.extend({
 		//TODO add option for persist markerLoc after collapse!
 		autoCollapseTime: 1200,		//delay for autoclosing alert and collapse after blur
 		zoom: null,					//zoom after pan to location found, default: map.getZoom()
-		text: 'Search...',			//placeholder value	
-		textCancel: 'Cancel',		//title in cancel button
+		text: '输入查找...........',			//placeholder value
+		textCancel: '取消',		//title in cancel button
 		textErr: 'Location not found',	//error message
 		position: 'topleft',
+        searchLayers:[],
 		animateLocation: true,		//animate a circle over location found
 		circleLocation: true,		//draw a circle in location found
 		markerLocation: false,		//draw a marker in location found
@@ -69,15 +71,16 @@ L.Control.Search = L.Control.extend({
 		this._autoTypeTmp = this.options.autoType;	//useful for disable autoType temporarily in delete/backspace keydown
 		this._countertips = 0;		//number of tips items
 		this._recordsCache = {};	//key,value table! that store locations! format: key,latlng
+        this._searchLayers=this.options.searchLayers;
+        this._selectSearchLayer=null;
 	},
 
 	onAdd: function (map) {
 		this._map = map;
 		this._container = L.DomUtil.create('div', 'leaflet-control-search');
-        this._searchDiv=L.DomUtil.create('div', 'leaflet-search-div',this._container);
-        this._searchDiv.style.display = 'none';
+        this._searchDiv=this._createSearchDiv(this.options.text,'leaflet-search-div');
 		this._input = this._createInput(this.options.text, 'search-input');
-        this._select = this._createLayersSelect(this.options.text, 'search-select');
+        this._select = this._createLayersSelect(this.options.text, 'easyui-combobox');
 		this._tooltip = this._createTooltip('search-tooltip');
 		this._cancel = this._createCancel(this.options.textCancel, 'search-cancel');
 		this._button = this._createButton(this.options.text, 'search-button');
@@ -111,6 +114,16 @@ L.Control.Search = L.Control.extend({
 		}
 		else
 			L.Control.prototype.addTo.call(this, map);
+
+        var me=this;
+        easyloader.load('combobox',function(){
+            $("#map_search_layers").combobox({
+                onSelect: function(rec){
+                    me._selectSearchLayer=rec;
+                }
+            });
+        });
+
 
 		return this;
 	},
@@ -182,7 +195,10 @@ L.Control.Search = L.Control.extend({
 	},
 	
 	expand: function() {
-        this._searchDiv.style.display='block';
+        //this._searchDiv.style.display='block';
+        $(this._searchDiv).show()
+        //$.parser.parse();
+
 		/*this._input.style.display = 'block';
         this._select.style.display='block';*/
 		L.DomUtil.addClass(this._container, 'search-exp');	
@@ -198,7 +214,8 @@ L.Control.Search = L.Control.extend({
 		this._input.blur();
 		if(this.options.collapsed)
 		{
-            this._searchDiv.style.display='none'
+            //this._searchDiv.style.display='none'
+            $(this._searchDiv).hide();
 			/*this._input.style.display = 'none';
             this._select.style.display='none';*/
 			this._cancel.style.display = 'none';			
@@ -255,23 +272,36 @@ L.Control.Search = L.Control.extend({
 		
 		return input;
 	},
+    _createSearchDiv:function(text,className){
+        var div=L.DomUtil.create('div', className,this._container);
+        div.style.display = 'none';
+        L.DomEvent
+            .disableClickPropagation(div)
+            //.on(input, 'keyup', this._handleKeypress, this)
+            //.on(input, 'keydown', this._handleAutoresize, this)
+            .on(div, 'blur', this.collapseDelayed, this)
+            .on(div, 'focus', this.collapseDelayedStop, this);
+        return div;
+    },
     _createLayersSelect: function (text, className) {
-		var select = L.DomUtil.create('select', className, this._searchDiv); //this._container
-		/*input.type = 'text';
-		input.size = this._inputMinSize;
-		input.value = '';
-		input.autocomplete = 'off';
-		input.placeholder = text;*/
-		//select.style.display = 'none';
+		var input = L.DomUtil.create('input', className, this._searchDiv); //this._container
 
-		/*L.DomEvent
+        $(input).attr("id","map_search_layers");
+        $(input).attr("data-options",
+                "data:"+ $.toJSON(this._searchLayers)
+                +""
+        );
+
+		L.DomEvent
 			.disableClickPropagation(input)
-			.on(input, 'keyup', this._handleKeypress, this)
-			.on(input, 'keydown', this._handleAutoresize, this)
+			//.on(input, 'keyup', this._handleKeypress, this)
+			//.on(input, 'keydown', this._handleAutoresize, this)
 			.on(input, 'blur', this.collapseDelayed, this)
-			.on(input, 'focus', this.collapseDelayedStop, this);*/
-
-		return select;
+			.on(input, 'focus', this.collapseDelayedStop, this);
+        //this._searchDiv.style.display = 'block';
+        //console.log(input);
+        //$.parser.parse();
+		return input;
 	},
 
 
@@ -455,6 +485,9 @@ L.Control.Search = L.Control.extend({
 		//may be return {abort: function() { script.parentNode.removeChild(script); } };
 	},
 
+    _recordsFromWfs:function(text,callAfter){
+      var url="";
+    },
 	_recordsFromAjax: function(text, callAfter) {	//Ajax request
 		if (window.XMLHttpRequest === undefined) {
 			window.XMLHttpRequest = function() {
@@ -478,7 +511,9 @@ L.Control.Search = L.Control.extend({
 		    	response = JSON.parse(request.responseText);
 		    	var fdata = that._filterJSON(response);//_filterJSON defined in inizialize...
 		        callAfter(fdata);
-		    }
+		    }else{
+                L.DomUtil.removeClass(that._container, 'search-load');
+            }
 		};
 		request.send();
 		return this;   
@@ -611,7 +646,7 @@ L.Control.Search = L.Control.extend({
 			default://All keys
 
 				if(this._input.value.length)
-					this._cancel.style.display = 'block';
+					this._cancel.style.display = 'inline-block';
 				else
 					this._cancel.style.display = 'none';
 
@@ -680,6 +715,9 @@ L.Control.Search = L.Control.extend({
 				});
 			}
 		}
+        else if(this.wfslayer){
+
+        }
 		else if(this.options.layer)	//SEARCH ELEMENTS IN PRELOADED LAYER
 		{
 			this._recordsCache = this._recordsFromLayer();	//fill table key,value from markers into layer				

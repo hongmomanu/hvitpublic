@@ -1,3 +1,28 @@
+Version 1.3.6
+* Bug
+ * treegrid: The 'getChecked' method can not return correct checked rows. fixed.
+ * tree: The checkbox does not display properly on async tree when 'onlyLeafCheck' property is true. fixed.
+* Improvement
+ * treegrid: All the selecting and checking methods are extended from datagrid component.
+ * linkbutton: The icon alignment is fully supported, possible values are: 'top','bottom','left','right'.
+ * linkbutton: Add 'size' property, possible values are: 'small','large'.
+ * linkbutton: Add 'onClick' event.
+ * menubutton: Add 'menuAlign' property that allows the user set top level menu alignment.
+ * combo: Add 'panelAlign' property, possible values are: 'left','right'.
+ * calendar: The 'formatter','styler' and 'validator' options are available to custom the calendar dates.
+ * calendar: Add 'onChange' event.
+ * panel: Add 'method','queryParams' and 'loader' options.
+ * panel: Add 'onLoadError' event.
+ * datagrid: Add 'onBeginEdit' event that fires when a row goes into edit mode.
+ * datagrid: Add 'onEndEdit' event that fires when finishing editing but before destroying editors.
+ * datagrid: Add 'sort' method and 'onBeforeSortColumn' event.
+ * datagrid: The 'combogrid' editor has been integrated into datagrid.
+ * datagrid: Add 'ctrlSelect' property that only allows multi-selection when ctrl+click is used.
+ * slider: Add 'converter' option that allows users determine how to convert a value to the slider position or the slider position to the value.
+ * searchbox: Add 'disabled' property.
+ * searchbox: Add 'disable','enable','clear','reset' methods.
+ * spinner: Add 'readonly' property, 'readonly' method and 'onChange' event.
+
 Version 1.3.5
 -------------
 * Bug
