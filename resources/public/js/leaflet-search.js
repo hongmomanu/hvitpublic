@@ -44,6 +44,7 @@ L.Control.Search = L.Control.extend({
 		textErr: 'Location not found',	//error message
 		position: 'topleft',
         searchLayers:[],
+        searchField:'',
 		animateLocation: true,		//animate a circle over location found
 		circleLocation: true,		//draw a circle in location found
 		markerLocation: false,		//draw a marker in location found
@@ -73,6 +74,7 @@ L.Control.Search = L.Control.extend({
 		this._recordsCache = {};	//key,value table! that store locations! format: key,latlng
         this._searchLayers=this.options.searchLayers;
         this._selectSearchLayer=null;
+        this._searchField=this.options.searchField;
 	},
 
 	onAdd: function (map) {
@@ -492,7 +494,29 @@ L.Control.Search = L.Control.extend({
             $.messager.$.messager.alert('警告!','请选择要查询的图层!');
             return;
         }
-        var url="";
+
+
+        var xml_str='<wfs:GetFeature service="WFS" version="1.1.0"'
+        +' outputFormat="JSON"'
+        +' xmlns:wfs="http://www.opengis.net/wfs"'
+        +' xmlns:ogc="http://www.opengis.net/ogc">'
+        +' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
+        +'</wfs:Query>'
+        + this._makeFilters({field:this._searchField,value:text});
+        +'</wfs:GetFeature>'
+
+        '';
+
+
+    },
+    _makeFilters:function(fieldValue){
+        var str="" + "<ogc:Filter>"
+            + "<ogc:PropertyIsLike wildCard='*' singleChar='.' escape='!'>"
+            + "<ogc:PropertyName>fieldValue.field</ogc:PropertyName>"
+            + "<ogc:Literal>*"+fieldValue.value+"*</ogc:Literal>"
+            + "</ogc:PropertyIsLike>"
+            + "</ogc:Filter>";
+        return str;
 
 
     },
@@ -702,7 +726,7 @@ L.Control.Search = L.Control.extend({
 				L.DomUtil.removeClass(that._container, 'search-load');
 			});
 		}else if(this._searchLayers){
-            this._recordsFromWfs(text,null);
+            this._recordsFromWfs(inputText,null);
         }
 		else if(this.options.url)	//JSONP/AJAX REQUEST
 		{

@@ -76,6 +76,7 @@ function initMap(){
                     map.addControl( new L.Control.Search(
                         {
                             url: 'search.php?q={s}',
+                            searchField:'tsmc',
                             searchLayers:wms_layers
                         }) );
 
