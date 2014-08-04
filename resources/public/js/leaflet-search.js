@@ -120,6 +120,7 @@ L.Control.Search = L.Control.extend({
             $("#map_search_layers").combobox({
                 onSelect: function(rec){
                     me._selectSearchLayer=rec;
+                    console.log(rec);
                 }
             });
         });
@@ -487,6 +488,7 @@ L.Control.Search = L.Control.extend({
 
     _recordsFromWfs:function(text,callAfter){
       var url="";
+
     },
 	_recordsFromAjax: function(text, callAfter) {	//Ajax request
 		if (window.XMLHttpRequest === undefined) {
