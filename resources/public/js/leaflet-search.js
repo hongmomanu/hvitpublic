@@ -120,7 +120,7 @@ L.Control.Search = L.Control.extend({
             $("#map_search_layers").combobox({
                 onSelect: function(rec){
                     me._selectSearchLayer=rec;
-                    console.log(rec);
+                    //console.log(rec);
                 }
             });
         });
@@ -487,7 +487,13 @@ L.Control.Search = L.Control.extend({
 	},
 
     _recordsFromWfs:function(text,callAfter){
-      var url="";
+        this._selectSearchLayer;
+        if(this._selectSearchLayer==null){
+            $.messager.$.messager.alert('警告!','请选择要查询的图层!');
+            return;
+        }
+        var url="";
+
 
     },
 	_recordsFromAjax: function(text, callAfter) {	//Ajax request
@@ -695,7 +701,9 @@ L.Control.Search = L.Control.extend({
 
 				L.DomUtil.removeClass(that._container, 'search-load');
 			});
-		}
+		}else if(this._searchLayers){
+            this._recordsFromWfs(text,null);
+        }
 		else if(this.options.url)	//JSONP/AJAX REQUEST
 		{
 			if(this.options.jsonpParam)
