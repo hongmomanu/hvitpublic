@@ -122,7 +122,7 @@ L.Control.Search = L.Control.extend({
             $("#map_search_layers").combobox({
                 onSelect: function(rec){
                     me._selectSearchLayer=rec;
-                    //console.log(rec);
+                    console.log(rec);
                 }
             });
         });
@@ -498,28 +498,37 @@ L.Control.Search = L.Control.extend({
         }
 
 
-        var xml_str='<wfs:GetFeature service="WFS" version="1.1.0"'
+        var xml_str='<wfs:GetFeature';
+        xml_str += ' service="WFS" version="1.1.0" '
         +' outputFormat="JSON"'
         +' xmlns:wfs="http://www.opengis.net/wfs"'
         +' xmlns:ogc="http://www.opengis.net/ogc">'
         +' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
+        + this._makeFilters({field:this._searchField,value:text})
         +'</wfs:Query>'
-        + this._makeFilters({field:this._searchField,value:text});
-        +'</wfs:GetFeature>'
+        +'</wfs:GetFeature>';
 
-        '';
+
+        $.ajax({
+            type: 'POST',
+            contentType: "text/hda; charset=utf-8",
+            url: proxy+this._selectSearchLayer.value,
+            processData: false,
+            data: xml_str,
+            success: callAfter,
+            dataType: "json"
+        });
 
 
     },
     _makeFilters:function(fieldValue){
-        var str="" + "<ogc:Filter>"
+        var str="<ogc:Filter>"
             + "<ogc:PropertyIsLike wildCard='*' singleChar='.' escape='!'>"
-            + "<ogc:PropertyName>fieldValue.field</ogc:PropertyName>"
+            + "<ogc:PropertyName>"+fieldValue.field+"</ogc:PropertyName>"
             + "<ogc:Literal>*"+fieldValue.value+"*</ogc:Literal>"
             + "</ogc:PropertyIsLike>"
             + "</ogc:Filter>";
         return str;
-
 
     },
 	_recordsFromAjax: function(text, callAfter) {	//Ajax request
@@ -728,7 +737,24 @@ L.Control.Search = L.Control.extend({
 				L.DomUtil.removeClass(that._container, 'search-load');
 			});
 		}else if(this._searchLayers){
-            this._recordsFromWfs(inputText,null);
+            that=this;
+            this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
+                var featuresLayer = new L.GeoJSON(data, {
+                    style: function(feature) {
+                        return {color: feature.properties.color };
+                    },
+                    onEachFeature: function(feature, marker) {
+                        marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.name +'</h4>');
+                    }
+                });
+
+                map.addLayer(featuresLayer);
+                that._layer=featuresLayer;
+                that._recordsCache = that._recordsFromLayer();	//fill table key,value from markers into layer
+                that.showTooltip();
+                L.DomUtil.removeClass(that._container, 'search-load');
+
+            });
         }
 		else if(this.options.url)	//JSONP/AJAX REQUEST
 		{

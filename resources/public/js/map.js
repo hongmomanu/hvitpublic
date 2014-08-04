@@ -47,7 +47,7 @@ function initMap(){
                             });
                         }
                         else if(layertype.type==='wms'){
-                            var wms_layer=L.tileLayer.wms(res[i].value, {
+                            var wms_layer=L.tileLayer.wms(res[i].value+"?service=wms", {
                                 layers: layertype.layers,
                                 format: 'image/png',
                                 transparent: true,
@@ -75,8 +75,8 @@ function initMap(){
 
                     map.addControl( new L.Control.Search(
                         {
-                            url: 'search.php?q={s}',
                             searchField:'tsmc',
+                            propertyName: 'tsmc',
                             searchLayers:wms_layers
                         }) );
 
