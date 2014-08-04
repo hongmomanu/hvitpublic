@@ -491,8 +491,10 @@ L.Control.Search = L.Control.extend({
     _recordsFromWfs:function(text,callAfter){
         this._selectSearchLayer;
         if(this._selectSearchLayer==null){
-            $.messager.$.messager.alert('警告!','请选择要查询的图层!');
-            return;
+            easyloader.load('messager',function(){
+                $.messager.alert('警告!','请选择要查询的图层!');
+            });
+           return;
         }
 
 
