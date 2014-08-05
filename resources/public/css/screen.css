@@ -23,4 +23,7 @@ body,.main-display-area,.col-md-7  {
     display:inline-block;
     display:inline;
 }
+.customnav{
+    min-height: 40px; /* change value here*/
+}
 
