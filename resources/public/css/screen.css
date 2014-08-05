@@ -19,16 +19,39 @@ body,.main-display-area,.col-md-7  {
 {
     width:99% !important;
 }
-.container-nav
+.container-nav-auth
 {
     width:100% !important;
+    height: 53px;
+    line-height: 53px;
+    z-index: 1;
+    vertical-align:middle;
     background-image:url(../img/loginfooter.png);
 }
+.nav-logo-auth{
+
+   margin-left:20px !important;
+    background: url(../img/logo.png) no-repeat;
+    height: 53px;
+    width: 220px;
+    padding: 0px 0px 0px 0px!important;
+    text-align: center;
+}
+.nav-logotext-auth{
+    margin-left:20px !important;
+    height: 53px;
+    padding: 0px 0px 0px 0px!important;
+    text-align: center;
+}
+.nav-dropdown-auth{
+
+    /*height: 50px;*/
+}
+
 .element {
     display:inline-block;
     display:inline;
 }
-.customnav{
-    min-height: 40px; /* change value here*/
-}
+
+
 

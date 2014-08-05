@@ -9,7 +9,7 @@
         <p>{{item.funcname}},进入系统享受服务，处于测试阶段，如有疑问，发现bug，欢迎提交。天地之间有杆秤，大秤妥是那老百姓，秤杆子吖挑呀挑江山，你就是那定盘的心。
         为官者，务必清廉，否则有何面目于兄妹父母，相亲父老，有何面目立于天地之间也。
         </p>
-        <p><a class="btn btn-lg btn-success" roleid="{{item.roleid}}" titlesname="{{item.funcname}}" sessionuid="{{content.sessionuid}}" href="#" addr="{{item.label}}">点击进入 &raquo;</a></p>
+        <p><a class="btn btn-lg btn-success" roleid="{{item.roleid}}" imgcss="{{item.imgcss}}" titlesname="{{item.funcname}}" sessionuid="{{content.sessionuid}}" href="#" addr="{{item.label}}">点击进入 &raquo;</a></p>
     </div>
 
 
@@ -42,10 +42,26 @@
       container.html('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
               'allowtransparency="true" height="100%"  width="100%" ></iframe>');
 
-      $('#runtime').height($('body').height()-93);
+
       var titlename=$(this).attr('titlesname');
+      var cssname=$(this).attr('imgcss');
       $('title').text(titlename);
-      $('#nav-logo').text(titlename);
+      $('#nav-logo-text').text(titlename);
+
+      $('#navbar-div-container').addClass('container-nav-'+cssname);
+      $('#nav-logo').addClass('nav-logo-'+cssname);
+      $('#nav-logo-text').addClass('nav-logotext-'+cssname);
+      console.log($('#nav-logo-text').height()+60);
+      $('#runtime').height($('body').height()-($('#nav-logo-text').height()+60));
+      $('body').css('padding-top',$('#nav-logo-text').height()-20);
+      /*if($('#nav-logo-text').height()>20){
+
+          $('body').css('padding-top',$('#nav-logo-text').height()-20);
+      }else{
+          $('body').css('padding-top',($('#nav-logo-text').height()));
+      }*/
+
+
 
 
        iFrameResize({
