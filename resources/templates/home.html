@@ -42,22 +42,15 @@
       container.html('<iframe  src="'+src+'" frameborder="0" id="runtime" name="runtime" scrolling="no" ' +
               'allowtransparency="true" height="100%"  width="100%" ></iframe>');
 
-
       var titlename=$(this).attr('titlesname');
       var cssname=$(this).attr('imgcss');
-      $('title').text(titlename);
+      document.title=titlename;
       $('#nav-logo-text').text(titlename);
-
       $('#navbar-div-container').addClass('container-nav-'+cssname);
       $('#nav-logo').addClass('nav-logo-'+cssname);
       $('#nav-logo-text').addClass('nav-logotext-'+cssname);
-      //console.log($('#nav-logo-text').height()+60);
       $('#runtime').height($('body').height()-($('#navbar-div-container').height()+45));
       $('body').css('padding-top',$('#navbar-div-container').height()-20);
-
-
-
-
 
        iFrameResize({
            log                     : false,                  // Enable console logging
