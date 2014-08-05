@@ -171,7 +171,7 @@
 (defn get-apps [roleid]
   (select functorole
     (with functions
-      (fields :label :funcname )
+      (fields :label :funcname :imgcss)
       (where {:pid -1} )
       )
     (where {:roleid roleid} )
