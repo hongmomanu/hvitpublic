@@ -17,7 +17,12 @@ body,.main-display-area,.col-md-7  {
 
 .container
 {
-    width:99%;
+    width:99% !important;
+}
+.container-nav
+{
+    width:100% !important;
+    background-image:url(../img/loginfooter.png);
 }
 .element {
     display:inline-block;
