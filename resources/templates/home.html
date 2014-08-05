@@ -51,15 +51,10 @@
       $('#navbar-div-container').addClass('container-nav-'+cssname);
       $('#nav-logo').addClass('nav-logo-'+cssname);
       $('#nav-logo-text').addClass('nav-logotext-'+cssname);
-      console.log($('#nav-logo-text').height()+60);
-      $('#runtime').height($('body').height()-($('#nav-logo-text').height()+60));
-      $('body').css('padding-top',$('#nav-logo-text').height()-20);
-      /*if($('#nav-logo-text').height()>20){
+      //console.log($('#nav-logo-text').height()+60);
+      $('#runtime').height($('body').height()-($('#navbar-div-container').height()+45));
+      $('body').css('padding-top',$('#navbar-div-container').height()-20);
 
-          $('body').css('padding-top',$('#nav-logo-text').height()-20);
-      }else{
-          $('body').css('padding-top',($('#nav-logo-text').height()));
-      }*/
 
 
 
