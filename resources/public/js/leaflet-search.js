@@ -744,11 +744,11 @@ L.Control.Search = L.Control.extend({
                         return {color: feature.properties.color };
                     },
                     onEachFeature: function(feature, marker) {
-                        marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.name +'</h4>');
+                        marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
                     }
                 });
 
-                map.addLayer(featuresLayer);
+                that._map.addLayer(featuresLayer);
                 that._layer=featuresLayer;
                 that._recordsCache = that._recordsFromLayer();	//fill table key,value from markers into layer
                 that.showTooltip();
@@ -850,6 +850,7 @@ L.Control.Search = L.Control.extend({
 					this.showAlert();
 				else
 				{
+                    console.loc;
 					this.showLocation(loc, this._input.value);
 					this.fire('search_locationfound', {
 							latlng: loc,
@@ -872,7 +873,7 @@ L.Control.Search = L.Control.extend({
 	},
 
 	showLocation: function(latlng, title) {	//set location on map from _recordsCache
-			
+		console.log(latlng);
 		if(this.options.zoom)
 			this._map.setView(latlng, this.options.zoom);
 		else
@@ -932,6 +933,7 @@ var SearchMarker = L.Marker.extend({
 		this._circleLoc.setLatLng(latlng);
 		return this;
 	},
+
 	
 	setTitle: function(title) {
 		title = title || '';
