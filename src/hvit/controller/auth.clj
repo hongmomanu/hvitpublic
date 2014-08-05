@@ -170,6 +170,14 @@
     (resp/json (assoc {} rowsname results totalname nums))
     )
   )
+(defn getenumskey [keyword callback]
+  (let [
+
+         reuslts (db/getenumskey keyword)
+         ]
+    (if (nil? callback) (resp/json reuslts)(resp/jsonp callback reuslts))
+    )
+  )
 (defn getroles [start limit  totalname rowsname keyword]
   (let [results (db/getroles keyword start limit )
          nums  (:counts (first (db/getrolenums keyword)))

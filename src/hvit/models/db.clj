@@ -86,6 +86,11 @@
     )
   )
 
+(defn getenumskey [keyword ]
+  (select enumerate
+    (where {:enumeratetype [like (str "%" (if (nil? keyword)"" keyword) "%")]})
+    )
+  )
 (defn getenums [keyword start limits]
   (select enumerate
     (where {:enumeratetype [like (str "%" (if (nil? keyword)"" keyword) "%")]})

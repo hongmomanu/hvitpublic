@@ -460,7 +460,6 @@ L.Control.Search = L.Control.extend({
 		var jsonret = {}, i,
 			propName = this.options.propertyName,
 			propLoc = this.options.propertyLoc;
-
 		if( L.Util.isArray(propLoc) )
 			for(i in json)
 				jsonret[ this._getPath(json[i],propName) ]= L.latLng( json[i][ propLoc[0] ], json[i][ propLoc[1] ] );
@@ -595,6 +594,7 @@ L.Control.Search = L.Control.extend({
 				if(layer.feature.properties.hasOwnProperty(propName))
 				{
 					loc = layer.getBounds().getCenter();
+                    testobj=layer;
 					loc.layer = layer;			
 					retRecords[ layer.feature.properties[propName] ] = loc;
 				}
@@ -844,13 +844,14 @@ L.Control.Search = L.Control.extend({
 				this.collapse();
 			else
 			{
-				var loc = this._getLocation(this._input.value);
-				
+				console.log(this._input.value);
+                var loc = this._getLocation(this._input.value);
+				console.log(loc);
 				if(loc===false)
 					this.showAlert();
 				else
 				{
-                    console.loc;
+
 					this.showLocation(loc, this._input.value);
 					this.fire('search_locationfound', {
 							latlng: loc,
@@ -873,7 +874,6 @@ L.Control.Search = L.Control.extend({
 	},
 
 	showLocation: function(latlng, title) {	//set location on map from _recordsCache
-		console.log(latlng);
 		if(this.options.zoom)
 			this._map.setView(latlng, this.options.zoom);
 		else
@@ -933,7 +933,6 @@ var SearchMarker = L.Marker.extend({
 		this._circleLoc.setLatLng(latlng);
 		return this;
 	},
-
 	
 	setTitle: function(title) {
 		title = title || '';
