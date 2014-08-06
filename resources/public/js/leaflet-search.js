@@ -594,8 +594,7 @@ L.Control.Search = L.Control.extend({
 				if(layer.feature.properties.hasOwnProperty(propName))
 				{
 					loc = layer.getBounds().getCenter();
-                    testobj=layer;
-					loc.layer = layer;			
+					loc.layer = layer;
 					retRecords[ layer.feature.properties[propName] ] = loc;
 				}
 				else
@@ -751,8 +750,8 @@ L.Control.Search = L.Control.extend({
                         marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
                     }
                 });
-                if(this._layer){
-                    this._map.removeLayer(this._layer);
+                if(that._layer){
+                    that._map.removeLayer(that._layer);
                 }
 
                 that._map.addLayer(featuresLayer);
