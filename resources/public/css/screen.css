@@ -33,7 +33,7 @@ body,.main-display-area,.col-md-7  {
    margin-left:20px !important;
     background: url(../img/logo.png) no-repeat;
     height: 53px;
-    width: 220px;
+    width: 250px;
     padding: 0px 0px 0px 0px!important;
     text-align: center;
 }
@@ -42,11 +42,16 @@ body,.main-display-area,.col-md-7  {
     height: 53px;
     padding: 0px 0px 0px 0px!important;
     text-align: center;
+    display: none!important;
 }
 .nav-dropdown-auth{
 
     /*height: 50px;*/
-}
+}/*
+.navbar-fixed-top .navbar-inner,
+.navbar-static-top .navbar-inner {
+    border-width: 0 0 0px;
+}*/
 
 .element {
     display:inline-block;
