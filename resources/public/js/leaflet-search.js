@@ -74,6 +74,7 @@ L.Control.Search = L.Control.extend({
 		this._recordsCache = {};	//key,value table! that store locations! format: key,latlng
         this._searchLayers=this.options.searchLayers;
         this._selectSearchLayer=null;
+        this._histroyMarkers=[];
         this._searchField=this.options.searchField;
 	},
 
@@ -691,11 +692,7 @@ L.Control.Search = L.Control.extend({
 
 				if(this._input.value.length >= this.options.minLength)
 				{
-                    if(this._layer){
-                        console.log(this._layer);
-                        console.log(this._map);
-                        this._map.removeLayer(this._layer);
-                    }
+
                     var that = this;
 					clearTimeout(this.timerKeypress);	//cancel last search request while type in				
 					this.timerKeypress = setTimeout(function() {	//delay before request, for limit jsonp/ajax request
@@ -708,7 +705,12 @@ L.Control.Search = L.Control.extend({
 					this._hideTooltip();
 		}
 	},
-	
+	_clearHistoryMarkers:function(){
+       for(var i=0;i<this._histroyMarkers.length;i++){
+           this._map.removeLayer(this._histroyMarkers[i]);
+       }
+       this._histroyMarkers=[];
+    },
 	_fillRecordsCache: function() {
 //TODO important optimization!!! always append data in this._recordsCache
 //  now _recordsCache content is emptied and replaced with new data founded
@@ -739,7 +741,7 @@ L.Control.Search = L.Control.extend({
 			});
 		}else if(this._searchLayers){
             that=this;
-
+            this._clearHistoryMarkers();
             this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
                 var featuresLayer = new L.GeoJSON(data, {
                     style: function(feature) {
@@ -749,11 +751,10 @@ L.Control.Search = L.Control.extend({
                         return a;
                     },
                     onEachFeature: function(feature, marker) {
+                        that._histroyMarkers.push(marker);
                         marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
                     }
                 });
-
-
                 that._map.addLayer(featuresLayer);
                 that._layer=featuresLayer;
                 that._recordsCache = that._recordsFromLayer();	//fill table key,value from markers into layer
