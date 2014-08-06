@@ -44,6 +44,36 @@ body,.main-display-area,.col-md-7  {
     text-align: center;
     display: none!important;
 }
+
+/**********pension start**********/
+.container-nav-pension
+{
+    width:100% !important;
+    height: 50px;
+    line-height: 50px;
+    z-index: 1;
+    vertical-align:middle;
+    background-image:url(http://112.124.50.195:8080/pensionweb/img/pension01/header.png);
+}
+.nav-logo-pension{
+
+    margin-left:20px !important;
+    background: url(http://112.124.50.195:8080/pensionweb/img/pension01/logo.png) no-repeat;
+    height: 50px;
+    width: 315px;
+    padding: 0px 0px 0px 0px!important;
+    text-align: center;
+}
+.nav-logotext-pension{
+    margin-left:20px !important;
+    height: 50px;
+    padding: 0px 0px 0px 0px!important;
+    text-align: center;
+    display:none!important;
+}
+
+/**********pension end**********/
+
 .nav-dropdown-auth{
 
     /*height: 50px;*/
