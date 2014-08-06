@@ -122,7 +122,6 @@ L.Control.Search = L.Control.extend({
             $("#map_search_layers").combobox({
                 onSelect: function(rec){
                     me._selectSearchLayer=rec;
-                    console.log(rec);
                 }
             });
         });
@@ -301,9 +300,7 @@ L.Control.Search = L.Control.extend({
 			//.on(input, 'keydown', this._handleAutoresize, this)
 			.on(input, 'blur', this.collapseDelayed, this)
 			.on(input, 'focus', this.collapseDelayedStop, this);
-        //this._searchDiv.style.display = 'block';
-        //console.log(input);
-        //$.parser.parse();
+
 		return input;
 	},
 
@@ -694,7 +691,12 @@ L.Control.Search = L.Control.extend({
 
 				if(this._input.value.length >= this.options.minLength)
 				{
-					var that = this;
+                    if(this._layer){
+                        console.log(this._layer);
+                        console.log(this._map);
+                        this._map.removeLayer(this._layer);
+                    }
+                    var that = this;
 					clearTimeout(this.timerKeypress);	//cancel last search request while type in				
 					this.timerKeypress = setTimeout(function() {	//delay before request, for limit jsonp/ajax request
 
@@ -750,9 +752,7 @@ L.Control.Search = L.Control.extend({
                         marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
                     }
                 });
-                if(that._layer){
-                    that._map.removeLayer(that._layer);
-                }
+
 
                 that._map.addLayer(featuresLayer);
                 that._layer=featuresLayer;
@@ -850,9 +850,7 @@ L.Control.Search = L.Control.extend({
 				this.collapse();
 			else
 			{
-				console.log(this._input.value);
                 var loc = this._getLocation(this._input.value);
-				console.log(loc);
 				if(loc===false)
 					this.showAlert();
 				else
@@ -880,6 +878,8 @@ L.Control.Search = L.Control.extend({
 	},
 
 	showLocation: function(latlng, title) {	//set location on map from _recordsCache
+
+
 		if(this.options.zoom)
 			this._map.setView(latlng, this.options.zoom);
 		else

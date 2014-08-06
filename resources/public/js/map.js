@@ -77,6 +77,7 @@ function initMap(){
                         {
                             searchField:'tsmc',
                             propertyName: 'tsmc',
+                            zoom:15,
                             searchLayers:wms_layers
                         }) );
 
