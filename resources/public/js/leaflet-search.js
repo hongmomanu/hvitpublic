@@ -738,9 +738,7 @@ L.Control.Search = L.Control.extend({
 			});
 		}else if(this._searchLayers){
             that=this;
-            if(this._layer){
-                this._map.removeLayer(this._layer);
-            }
+
             this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
                 var featuresLayer = new L.GeoJSON(data, {
                     style: function(feature) {
@@ -753,6 +751,9 @@ L.Control.Search = L.Control.extend({
                         marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
                     }
                 });
+                if(this._layer){
+                    this._map.removeLayer(this._layer);
+                }
 
                 that._map.addLayer(featuresLayer);
                 that._layer=featuresLayer;
