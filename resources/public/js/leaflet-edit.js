@@ -100,8 +100,7 @@ L.Control.Edit = L.Control.extend({
 		if(this.options.collapsed)
 		{
             $(this._searchDiv).hide();
-			this._cancel.style.display = 'none';
-			L.DomUtil.removeClass(this._container, 'search-exp');		
+			L.DomUtil.removeClass(this._container, 'search-exp');
 			this._map.off('dragstart click', this.collapse, this);
 		}
 		this.fire('search_collapsed');

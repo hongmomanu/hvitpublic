@@ -20,31 +20,32 @@
 
     <div data-options="region:'east',split:true,collapsed:true" title="详细信息" style="width:500px;">
 
-            <div style="padding:10px 0 10px 60px;">
+            <div style="padding:10px 10px 10px 10px;">
 
             <form id="funcinfoform" method="post">
-            <table class="formtable">
+            <table class="formtable" style="width: 100%;">
                 <tr>
                     <td>功能名称:</td>
-                    <td><input class="easyui-validatebox" type="text" name="funcname" data-options="required:true"></td>
+                    <td><input class="easyui-textbox" style="width: 100%" type="text" name="funcname" data-options="required:true"></td>
                 </tr>
 
                 <tr>
                     <td>功能标识:</td>
                     <td>
-                    <input type="text" name="label" >
+                    <input class="easyui-textbox" name="label" style="width: 100%">
                     </td>
                 </tr>
                 <tr>
                     <td>图标样式:</td>
                     <td>
-                    <input type="text" name="imgcss" >
+                    <!--<input type="text" name="imgcss" >-->
+                    <input class="easyui-textbox" data-options="multiline:true"  style="width:100%;height: 80px;" name="imgcss">
                     </td>
                 </tr>
                 <tr>
                     <td>排列序号:</td>
                     <td>
-                    <input type="text" name="sortnum" >
+                    <input class="easyui-textbox" name="sortnum" style="width: 100%" >
                     </td>
                 </tr>
 

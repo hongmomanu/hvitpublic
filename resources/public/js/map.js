@@ -60,7 +60,10 @@ function initMap(){
                                 {
                                     text:res[i].text,
                                     value:res[i].value,
-                                    layers:layertype.layers
+                                    layers:layertype.layers,
+                                    searchField:layertype.searchField,
+                                    propertyName:layertype.propertyName,
+                                    zoom:layertype.zoom
                                 });
                         }
 
@@ -73,13 +76,27 @@ function initMap(){
 
                     map.addControl(layersControl);
 
-                    map.addControl( new L.Control.Search(
-                        {
-                            searchField:'tsmc',
-                            propertyName: 'tsmc',
-                            zoom:15,
-                            searchLayers:wms_layers
-                        }) );
+                    $.ajax({
+                        type: 'get',
+                        dataType: 'json',
+                        url: '../auth/getfuncsbyrole',
+                        data: {type:'图层编辑'},
+                        success:function(res){
+                            var editLayers=[];
+                            for(var i=0;i<res.length;i++){
+                                editLayers.push(res[i].value);
+                            }
+                            map.addControl( new L.Control.Search(
+                                {
+                                    searchLayers:wms_layers,
+                                    editLayers:editLayers
+                                })
+                            );
+
+                        }
+                    });
+
+
 
                     //L.easyButton( "fa-edit" , function(){alert(2)} , "编辑" )
 

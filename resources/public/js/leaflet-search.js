@@ -44,6 +44,7 @@ L.Control.Search = L.Control.extend({
 		textErr: 'Location not found',	//error message
 		position: 'topleft',
         searchLayers:[],
+        editLayers:[],
         searchField:'',
 		animateLocation: true,		//animate a circle over location found
 		circleLocation: true,		//draw a circle in location found
@@ -83,8 +84,10 @@ L.Control.Search = L.Control.extend({
 		this._container = L.DomUtil.create('div', 'leaflet-control-search');
         this._searchDiv=this._createSearchDiv(this.options.text,'leaflet-search-div');
 		this._input = this._createInput(this.options.text, 'search-input');
+
         this._select = this._createLayersSelect(this.options.text, 'easyui-combobox');
-		this._tooltip = this._createTooltip('search-tooltip');
+		this._isedit =this._createIsChecked('easyui-linkbutton');
+        this._tooltip = this._createTooltip('search-tooltip');
 		this._cancel = this._createCancel(this.options.textCancel, 'search-cancel');
 		this._button = this._createButton(this.options.text, 'search-button');
 		this._alert = this._createAlert('search-alert');
@@ -121,15 +124,73 @@ L.Control.Search = L.Control.extend({
         var me=this;
         easyloader.load('combobox',function(){
             $("#map_search_layers").combobox({
+                width:130,
                 onSelect: function(rec){
                     me._selectSearchLayer=rec;
+                    me._searchField=rec.searchField;
+                    me.options.propertyName=rec.propertyName;
+                    me.options.zoom=rec.zoom;
+                    if($.inArray(rec.text,me.options.editLayers)>-1){
+                        $("#map_edit_btn").linkbutton('enable');
+                    }else{
+                        $("#map_edit_btn").linkbutton('disable');
+                    }
+
                 }
             });
         });
-
+        easyloader.load('linkbutton',function(){
+            $("#map_edit_btn").linkbutton({
+                iconCls:'icon-edit',
+                plain:true,
+                onClick:function(){
+                  //console.log(me._selectSearchLayer);
+                  me.makeDrawEdit();
+                },
+                disabled:true
+            });
+        });
 
 		return this;
 	},
+
+    makeDrawEdit:function(){
+        console.log(this._selectSearchLayer);
+        var wfs_url=this._selectSearchLayer.value;
+        var layers=this._selectSearchLayer.layers.split(":");
+        var featurens=layers[0];
+        var featuretype=layers[layers.length-1];
+        var me=this;
+        var drawnItems = L.wfst(null,{
+            // Required
+            url : proxy+wfs_url+"?service=wfs", //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
+            featureNS : featurens,//xsdata  zs_csmz
+            version:'1.1.0',
+            featureType : featuretype//*,STP_DW STL_ALL_ROAD  STR_XianJ
+    }).addTo(me._map);
+
+    // Initialize the draw control and pass it the FeatureGroup of editable layers
+    var drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: drawnItems
+        }
+    });
+
+    me._map.addControl(drawControl);
+
+    me._map.on('draw:created', function (e) {
+    drawnItems.addLayer(e.layer,{"success":function(){}});
+    });
+    me._map.on('draw:editstart', function (e) {
+        //layers.drawnItems.addLayer(e.layer);
+    });
+    me._map.on('draw:edited', function (e) {
+
+        drawnItems.wfstSave(drawnItems);
+    });
+
+
+},
 
 	onRemove: function(map) {
 		this._recordsCache = {};
@@ -198,15 +259,10 @@ L.Control.Search = L.Control.extend({
 	},
 	
 	expand: function() {
-        //this._searchDiv.style.display='block';
-        $(this._searchDiv).show()
-        //$.parser.parse();
-
-		/*this._input.style.display = 'block';
-        this._select.style.display='block';*/
-		L.DomUtil.addClass(this._container, 'search-exp');	
+        $(this._searchDiv).show();
+		L.DomUtil.addClass(this._container, 'search-exp');
 		this._input.focus();
-		this._map.on('dragstart click', this.collapse, this);
+		this._map.on('dragstart click', this.collapse, this); //拖动地图隐藏搜索栏
 		return this;	
 	},
 
@@ -217,11 +273,8 @@ L.Control.Search = L.Control.extend({
 		this._input.blur();
 		if(this.options.collapsed)
 		{
-            //this._searchDiv.style.display='none'
             $(this._searchDiv).hide();
-			/*this._input.style.display = 'none';
-            this._select.style.display='none';*/
-			this._cancel.style.display = 'none';			
+			this._cancel.style.display = 'none';
 			L.DomUtil.removeClass(this._container, 'search-exp');		
 			//this._markerLoc.hide();//maybe unuseful
 			this._map.off('dragstart click', this.collapse, this);
@@ -285,6 +338,13 @@ L.Control.Search = L.Control.extend({
             .on(div, 'blur', this.collapseDelayed, this)
             .on(div, 'focus', this.collapseDelayedStop, this);
         return div;
+    },
+    _createIsChecked:function(className){
+        var input = L.DomUtil.create('a', className, this._searchDiv);
+        $(input).attr("id","map_edit_btn");
+
+        return input;
+
     },
     _createLayersSelect: function (text, className) {
 		var input = L.DomUtil.create('input', className, this._searchDiv); //this._container
@@ -757,6 +817,7 @@ L.Control.Search = L.Control.extend({
                 });
                 that._map.addLayer(featuresLayer);
                 that._layer=featuresLayer;
+                that._geojson=data;
                 that._recordsCache = that._recordsFromLayer();	//fill table key,value from markers into layer
                 that.showTooltip();
                 L.DomUtil.removeClass(that._container, 'search-load');
