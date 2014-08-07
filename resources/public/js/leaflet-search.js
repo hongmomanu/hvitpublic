@@ -124,7 +124,7 @@ L.Control.Search = L.Control.extend({
         var me=this;
         easyloader.load('combobox',function(){
             $("#map_search_layers").combobox({
-                width:130,
+                width:105,
                 onSelect: function(rec){
                     me._selectSearchLayer=rec;
                     me._searchField=rec.searchField;
@@ -171,7 +171,11 @@ L.Control.Search = L.Control.extend({
 
     // Initialize the draw control and pass it the FeatureGroup of editable layers
     var drawControl = new L.Control.Draw({
-        draw: false,
+        draw: {
+            polygon: false,
+            marker: false,
+            line:false
+        },
         edit: {
             featureGroup: drawnItems
         }
@@ -180,7 +184,7 @@ L.Control.Search = L.Control.extend({
     me._map.addControl(drawControl);
 
     me._map.on('draw:created', function (e) {
-    drawnItems.addLayer(e.layer,{"success":function(){}});
+        drawnItems.addLayer(e.layer,{"success":function(){}});
     });
     me._map.on('draw:editstart', function (e) {
         //layers.drawnItems.addLayer(e.layer);
