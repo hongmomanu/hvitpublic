@@ -171,6 +171,7 @@ L.Control.Search = L.Control.extend({
 
     // Initialize the draw control and pass it the FeatureGroup of editable layers
     var drawControl = new L.Control.Draw({
+        draw: false,
         edit: {
             featureGroup: drawnItems
         }
