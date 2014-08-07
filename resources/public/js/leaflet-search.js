@@ -172,11 +172,11 @@ L.Control.Search = L.Control.extend({
     // Initialize the draw control and pass it the FeatureGroup of editable layers
     var drawControl = new L.Control.Draw({
         draw: {
-            polygon: false,
-            marker: false,
-            rectangle:false,
-            circle:false,
-            polyline:false
+            polygon: me._selectSearchLayer.shape==='polygon',
+            marker: me._selectSearchLayer.shape==='marker',
+            rectangle:me._selectSearchLayer.shape==='rectangle',
+            circle:me._selectSearchLayer.shape==='circle',
+            polyline:me._selectSearchLayer.shape==='polyline'
         },
         edit: {
             featureGroup: drawnItems

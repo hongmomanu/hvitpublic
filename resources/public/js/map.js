@@ -63,6 +63,7 @@ function initMap(){
                                     layers:layertype.layers,
                                     searchField:layertype.searchField,
                                     propertyName:layertype.propertyName,
+                                    shape:layertype.shape,
                                     zoom:layertype.zoom
                                 });
                         }
