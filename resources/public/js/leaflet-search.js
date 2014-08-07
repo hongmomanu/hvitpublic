@@ -174,7 +174,9 @@ L.Control.Search = L.Control.extend({
         draw: {
             polygon: false,
             marker: false,
-            line:false
+            rectangle:false,
+            circle:false,
+            polyline:false
         },
         edit: {
             featureGroup: drawnItems
