@@ -155,7 +155,6 @@ L.Control.Search = L.Control.extend({
 	},
 
     makeDrawEdit:function(){
-        console.log(this._selectSearchLayer);
         var wfs_url=this._selectSearchLayer.value;
         var layers=this._selectSearchLayer.layers.split(":");
         var featurens=layers[0];
@@ -192,10 +191,14 @@ L.Control.Search = L.Control.extend({
         //layers.drawnItems.addLayer(e.layer);
     });
     me._map.on('draw:edited', function (e) {
-
-        drawnItems.wfstSave(drawnItems);
+        //console.log(e.layers);
+        drawnItems.wfstSave(e.layers);
     });
-
+    me._map.on('draw:deleted',function(e){
+        /*console.log(e);
+        alert(2);*/
+        drawnItems.removeLayerFromWFS(e.layers.getLayers());
+    });
 
 },
 

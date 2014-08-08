@@ -51,10 +51,13 @@ L.WFST = L.GeoJSON.extend({
         L.GeoJSON.prototype.addLayer.call(this,layer);
     },
     removeLayer: function(layer,options) {
-        this.wfstRemove(layer,options);
-
+        //this.wfstRemove(layer,options);
         // Call to parent removeLayer
         L.GeoJSON.prototype.removeLayer.call(this,layer);
+    },
+
+    removeLayerFromWFS:function(layer,options){
+        this.wfstRemove(layer,options);
     },
 
 
@@ -173,13 +176,13 @@ L.WFST = L.GeoJSON.extend({
 
     // Remove a layers with WFS-T
     _wfstRemove: function(layer,options){
-        if(typeof this.options.primaryKeyField == 'undefined' && typeof options.where == 'undefined'){
+        /*if(typeof this.options.primaryKeyField == 'undefined' && typeof options.where == 'undefined'){
             //console.log("I can't do deletes without a primaryKeyField!");
             if(typeof options.failure == 'function'){
                 options.failure();
             }
             return false;
-        }
+        }*/
 
         var realsuccess;
         if(typeof options.success == 'function'){
@@ -200,17 +203,18 @@ L.WFST = L.GeoJSON.extend({
             }
         });
 
-        var where; 
+       /* var where;
         if(typeof options.where == 'undefined'){
             where = {};
             where[this.options.primaryKeyField] = layer.feature.properties[this.options.primaryKeyField];
         }else{
             where = options.where;
-        }
+        }*/
 
         var xml = this.options._xmlpre;
         xml += "<wfs:Delete typeName='"+this.options.typename+"'>";
-        xml += this._whereFilter(where);
+        //xml += this._whereFilter(where);
+        xml += this._featureIdFilter(layer.feature.id);
         xml += "</wfs:Delete>";
         xml += "</wfs:Transaction>";
 

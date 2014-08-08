@@ -2598,8 +2598,16 @@ L.EditToolbar.Edit = L.Handler.extend({
 
 	save: function () {
 		var editedLayers = new L.LayerGroup();
+        //console.log(editedLayers);
 		this._featureGroup.eachLayer(function (layer) {
-			if (layer.edited) {
+			if (layer.edited||(function(){
+                for(var key in layer._layers)
+                {
+                    if(layer._layers[key].edited)
+                        return true;
+                }
+                return false;
+            })()) {
 				editedLayers.addLayer(layer);
 				layer.edited = false;
 			}
@@ -2872,7 +2880,8 @@ L.EditToolbar.Delete = L.Handler.extend({
 	},
 
 	_disableLayerDelete: function (e) {
-		var layer = e.layer || e.target || e;
+		//var layer = e.layer || e.target || e;
+		var layer = e.target ||e.layer ||  e;
 
 		layer.off('click', this._removeLayer, this);
 
@@ -2881,7 +2890,8 @@ L.EditToolbar.Delete = L.Handler.extend({
 	},
 
 	_removeLayer: function (e) {
-		var layer = e.layer || e.target || e;
+		//var layer = e.layer || e.target || e;
+		var layer = e.target ||e.layer ||  e;
 
 		this._deletableLayers.removeLayer(layer);
 
