@@ -191,12 +191,10 @@ L.Control.Search = L.Control.extend({
         //layers.drawnItems.addLayer(e.layer);
     });
     me._map.on('draw:edited', function (e) {
-        //console.log(e.layers);
         drawnItems.wfstSave(e.layers);
     });
     me._map.on('draw:deleted',function(e){
-        /*console.log(e);
-        alert(2);*/
+
         drawnItems.removeLayerFromWFS(e.layers.getLayers());
     });
 
