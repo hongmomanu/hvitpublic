@@ -133,6 +133,11 @@
     (auth/uploadfile file)
     )
 
+  (GET "/auth/proxylogin" [loginurl viewurl loginparams]
+    (auth/proxylogin loginurl viewurl loginparams)
+
+    )
+
 
 
 (GET "/logout" []

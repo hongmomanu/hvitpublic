@@ -12,6 +12,7 @@
             [noir.validation :as vali]
             [noir.util.crypt :as crypt]
             [clj-http.client :as client]
+            [clojure.data.json :as json]
             [noir.io :as io]
             [hvit.models.schema :as schema]
             [clj-time.local :as l]
@@ -231,6 +232,29 @@
 
     )
 
+
+  )
+
+(defn proxylogin [loginurl viewurl loginparams]
+  (let [my-cs (clj-http.cookies/cookie-store)]
+    (println loginurl viewurl loginparams)
+
+    (try
+      (client/post loginurl {:form-params (json/read-str loginparams)
+                        :socket-timeout 5000
+                        ; :trace-redirects ["http://192.168.2.112:3000/map/webmap"]
+                        ;:force-redirects true
+                        :body-encoding "GBK"
+                        :conn-timeout 5000
+                        :cookie-store my-cs})
+
+      #_(client/get viewurl {:cookie-store my-cs
+                                                                :as :auto})
+
+      (catch Exception e (resp/json {:success false}))
+      )
+
+    )
 
   )
 (defn getproxy [req]

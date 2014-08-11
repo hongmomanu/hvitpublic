@@ -145,7 +145,7 @@ L.Control.Search = L.Control.extend({
                 plain:true,
                 onClick:function(){
                   //console.log(me._selectSearchLayer);
-                  me.makeDrawEdit();
+                  me.makeDrawEdit() ;
                 },
                 disabled:true
             });
