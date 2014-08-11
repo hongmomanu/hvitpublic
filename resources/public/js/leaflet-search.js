@@ -126,10 +126,12 @@ L.Control.Search = L.Control.extend({
             $("#map_search_layers").combobox({
                 width:105,
                 onSelect: function(rec){
+                    if(me._drawControl)me._map.removeControl(me._drawControl);
                     me._selectSearchLayer=rec;
                     me._searchField=rec.searchField;
                     me.options.propertyName=rec.propertyName;
                     me.options.zoom=rec.zoom;
+
                     if($.inArray(rec.text,me.options.editLayers)>-1){
                         $("#map_edit_btn").linkbutton('enable');
                     }else{
@@ -181,7 +183,7 @@ L.Control.Search = L.Control.extend({
             featureGroup: drawnItems
         }
     });
-
+    me._drawControl=drawControl;
     me._map.addControl(drawControl);
 
     me._map.on('draw:created', function (e) {

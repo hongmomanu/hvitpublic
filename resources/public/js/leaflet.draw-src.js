@@ -2592,7 +2592,8 @@ L.EditToolbar.Edit = L.Handler.extend({
 
 	revertLayers: function () {
 		this._featureGroup.eachLayer(function (layer) {
-			this._revertLayer(layer);
+			//this._revertLayer(layer);
+			this._revertLayer((layer.getLayers&&layer.getLayers()[0])||layer);
 		}, this);
 	},
 
