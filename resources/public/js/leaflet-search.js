@@ -529,7 +529,8 @@ L.Control.Search = L.Control.extend({
 
 	_defaultFilterJSON: function(json) {	//default callback for filter data
 		var jsonret = {}, i,
-			propName = this.options.propertyName,
+			//propName = this.options.propertyName,
+			propName = this._searchField,
 			propLoc = this.options.propertyLoc;
 		if( L.Util.isArray(propLoc) )
 			for(i in json)
