@@ -127,6 +127,8 @@ L.Control.Search = L.Control.extend({
                 width:105,
                 onSelect: function(rec){
                     if(me._drawControl)me._map.removeControl(me._drawControl);
+                    if(me._drawnItems)me._map.removeLayer(me._drawnItems);
+
                     me._selectSearchLayer=rec;
                     me._searchField=rec.searchField;
                     me.options.propertyName=rec.propertyName;
@@ -184,6 +186,7 @@ L.Control.Search = L.Control.extend({
         }
     });
     me._drawControl=drawControl;
+    me._drawnItems=drawnItems;
     me._map.addControl(drawControl);
 
     me._map.on('draw:created', function (e) {
