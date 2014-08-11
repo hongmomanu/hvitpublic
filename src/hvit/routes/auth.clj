@@ -34,6 +34,8 @@
   
   (POST "/login" [username password]
         (auth/handle-login username password))
+  (GET "/login" [username password]
+        (auth/handle-login username password))
 
   (POST "/auth/getfuncsbyrole" [type roleid callback]
     (auth/getfuncsbyrole type roleid callback))
@@ -133,8 +135,8 @@
     (auth/uploadfile file)
     )
 
-  (GET "/auth/proxylogin" [loginurl viewurl loginparams]
-    (auth/proxylogin loginurl viewurl loginparams)
+  (GET "/auth/proxylogin" [loginurl viewurl loginparams method]
+    (auth/proxylogin loginurl viewurl loginparams method)
 
     )
 

@@ -235,18 +235,27 @@
 
   )
 
-(defn proxylogin [loginurl viewurl loginparams]
+(defn proxylogin [loginurl viewurl loginparams method]
   (let [my-cs (clj-http.cookies/cookie-store)]
     (println loginurl viewurl loginparams)
 
     (try
-      (client/post loginurl {:form-params (json/read-str loginparams)
-                        :socket-timeout 5000
-                        ; :trace-redirects ["http://192.168.2.112:3000/map/webmap"]
-                        ;:force-redirects true
-                        :body-encoding "GBK"
-                        :conn-timeout 5000
-                        :cookie-store my-cs})
+      (if (= method "get")(client/get loginurl {:query-params (json/read-str loginparams)
+                                                 :socket-timeout 5000
+                                                 :trace-redirects ["http://192.168.2.112:3000/"]
+                                                 ;;:force-redirects true
+                                                 :follow-redirects false
+                                                 :body-encoding "GBK"
+                                                 :conn-timeout 5000
+                                                 :cookie-store my-cs})
+        (client/post loginurl {:form-params (json/read-str loginparams)
+                               :socket-timeout 5000
+                               ; :trace-redirects ["http://192.168.2.112:3000/map/webmap"]
+                               ;:force-redirects true
+                               :body-encoding "GBK"
+                               :conn-timeout 5000
+                               :cookie-store my-cs})
+        )
 
       #_(client/get viewurl {:cookie-store my-cs
                                                                 :as :auto})
