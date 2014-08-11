@@ -2398,13 +2398,13 @@ L.EditToolbar = L.Toolbar.extend({
 
 	getModeHandlers: function (map) {
 		var featureGroup = this.options.featureGroup;
-        var editprops=this.options.editprops
+        var searchlayer=this.options.searchlayer
 		return [
 			{
 				enabled: this.options.edit,
 				handler: new L.EditToolbar.Edit(map, {
 					featureGroup: featureGroup,
-                    editprops:editprops,
+                    searchlayer:searchlayer,
 					selectedPathOptions: this.options.edit.selectedPathOptions
 				}),
 				title: L.drawLocal.edit.toolbar.buttons.edit
@@ -2522,7 +2522,7 @@ L.EditToolbar.Edit = L.Handler.extend({
 
 		// Store the selectable layer group for ease of access
 		this._featureGroup = options.featureGroup;
-        this._editprops=options.editprops;
+        this._searchlayer=options.searchlayer;
 
 		if (!(this._featureGroup instanceof L.FeatureGroup)) {
 			throw new Error('options.featureGroup must be a L.FeatureGroup');
@@ -2745,8 +2745,14 @@ L.EditToolbar.Edit = L.Handler.extend({
       layer.bindPopup('<h4 style="color:red">12333</h4>');
       //console.log(layer);
     },
+    _deleteEditPopup:function(feature,layer){
+
+        layer.unbindPopup();
+        this._searchlayer.makesearchPopup(feature,layer,'search')
+    },
 
 	_disableLayerEdit: function (e) {
+
         //console.log(this);
         //testobj=this;
 		//var layer = e.layer|| e.target || e;
@@ -2772,6 +2778,7 @@ L.EditToolbar.Edit = L.Handler.extend({
 		} else {
 			layer.editing.disable();
 		}
+        this._deleteEditPopup(e.feature,layer);
 	},
 
 	_onMarkerDragEnd: function (e) {

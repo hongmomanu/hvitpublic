@@ -157,7 +157,32 @@ L.Control.Search = L.Control.extend({
 
 		return this;
 	},
+    makesearchPopup:function(feature,marker,type){
+        var that=this;
+        var id=feature.id.replace(".","_")+type;
+        marker.bindPopup('<table id="grid'+id+'" style="width:200px" ></table>');
+        marker.on('popupopen',function(e){
+            easyloader.load('datagrid',function(){
+                var table=$('#grid'+id);
+                table.datagrid({
+                    columns:[[
+                        {field:'field',title:'属性名',width:98},
+                        {field:'value',title:'属性值',width:100}
+                    ]]
+                });
+                var data=[];
+                for(var i=0;i<that.options.propertyName.length;i++){
+                    var item={};
+                    item["field"]=that.options.propertyName[i];
+                    item["value"]=feature.properties[that.options.propertyName[i]];
+                    data.push(item);
+                }
+                table.datagrid('loadData',data)
 
+            });
+
+        });
+    },
     makeDrawEdit:function(){
         var wfs_url=this._selectSearchLayer.value;
         var layers=this._selectSearchLayer.layers.split(":");
@@ -170,6 +195,7 @@ L.Control.Search = L.Control.extend({
             featureNS : featurens,//xsdata  zs_csmz
             version:'1.1.0',
             searchLayer:me,
+            onEachFeature: function (feature,marker){return me.makesearchPopup(feature,marker,'edit');},
             featureType : featuretype//*,STP_DW STL_ALL_ROAD  STR_XianJ
     }).addTo(me._map);
 
@@ -184,7 +210,7 @@ L.Control.Search = L.Control.extend({
         },
         edit: {
             featureGroup: drawnItems,
-            editprops:me.options.propertyName
+            searchlayer:me
         }
     });
     me._drawControl=drawControl;
@@ -830,30 +856,7 @@ L.Control.Search = L.Control.extend({
                     },
                     onEachFeature: function(feature, marker) {
                         that._histroyMarkers.push(marker);
-                        var id=feature.id.replace(".","_");
-                        //marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
-                        marker.bindPopup('<table id="grid'+id+'" style="width:200px" ></table>');
-                        marker.on('popupopen',function(e){
-                            easyloader.load('datagrid',function(){
-                                var table=$('#grid'+id);
-                                table.datagrid({
-                                    columns:[[
-                                        {field:'field',title:'属性名',width:98},
-                                        {field:'value',title:'属性值',width:100}
-                                    ]]
-                                });
-                                var data=[];
-                                for(var i=0;i<that.options.propertyName.length;i++){
-                                    var item={};
-                                    item["field"]=that.options.propertyName[i];
-                                    item["value"]=feature.properties[that.options.propertyName[i]];
-                                    data.push(item);
-                                }
-                                table.datagrid('loadData',data)
-
-                            });
-
-                        });
+                        that.makesearchPopup(feature,marker,'search');
                     }
                 });
                 that._map.addLayer(featuresLayer);
