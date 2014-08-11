@@ -169,6 +169,7 @@ L.Control.Search = L.Control.extend({
             url : proxy+wfs_url+"?service=wfs", //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
             featureNS : featurens,//xsdata  zs_csmz
             version:'1.1.0',
+            searchLayer:me,
             featureType : featuretype//*,STP_DW STL_ALL_ROAD  STR_XianJ
     }).addTo(me._map);
 
@@ -182,7 +183,8 @@ L.Control.Search = L.Control.extend({
             polyline:me._selectSearchLayer.shape==='polyline'
         },
         edit: {
-            featureGroup: drawnItems
+            featureGroup: drawnItems,
+            editprops:me.options.propertyName
         }
     });
     me._drawControl=drawControl;
@@ -636,7 +638,8 @@ L.Control.Search = L.Control.extend({
 	_recordsFromLayer: function() {	//return table: key,value from layer
 		var that = this,
 			retRecords = {},
-			propName = this.options.propertyName,
+			//propName = this.options.propertyName,
+			propName = this._searchField,
 			loc;
 		
 		this._layer.eachLayer(function(layer) {
@@ -816,6 +819,7 @@ L.Control.Search = L.Control.extend({
 		}else if(this._searchLayers){
             that=this;
             this._clearHistoryMarkers();
+            this._searchInputText=inputText;
             this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
                 var featuresLayer = new L.GeoJSON(data, {
                     style: function(feature) {
@@ -826,7 +830,30 @@ L.Control.Search = L.Control.extend({
                     },
                     onEachFeature: function(feature, marker) {
                         that._histroyMarkers.push(marker);
-                        marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
+                        var id=feature.id.replace(".","_");
+                        //marker.bindPopup('<h4 style="color:'+feature.properties.color+'">'+ feature.properties.tsmc +'</h4>');
+                        marker.bindPopup('<table id="grid'+id+'" style="width:200px" ></table>');
+                        marker.on('popupopen',function(e){
+                            easyloader.load('datagrid',function(){
+                                var table=$('#grid'+id);
+                                table.datagrid({
+                                    columns:[[
+                                        {field:'field',title:'属性名',width:98},
+                                        {field:'value',title:'属性值',width:100}
+                                    ]]
+                                });
+                                var data=[];
+                                for(var i=0;i<that.options.propertyName.length;i++){
+                                    var item={};
+                                    item["field"]=that.options.propertyName[i];
+                                    item["value"]=feature.properties[that.options.propertyName[i]];
+                                    data.push(item);
+                                }
+                                table.datagrid('loadData',data)
+
+                            });
+
+                        });
                     }
                 });
                 that._map.addLayer(featuresLayer);

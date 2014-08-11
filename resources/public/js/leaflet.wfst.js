@@ -40,7 +40,8 @@ L.WFST = L.GeoJSON.extend({
 
         // Now probably an ajax call to get existing features
         if(this.options.showExisting){
-            this._loadExistingFeatures();
+            //this._loadExistingFeatures();
+            this._loadSearchedFeatures();
         }
         this._loadFeatureDescription();
     },
@@ -435,6 +436,37 @@ L.WFST = L.GeoJSON.extend({
                 this.self.addData(res.features);
             }
         });
+    },
+    _loadSearchedFeatures:function(){
+
+        var searchLayer=this.options.searchLayer;
+        var xml_str='<wfs:GetFeature';
+        xml_str += ' service="WFS" version="1.1.0" '
+            +' outputFormat="JSON"'
+            +' xmlns:wfs="http://www.opengis.net/wfs"'
+            +' xmlns:ogc="http://www.opengis.net/ogc">'
+            +' <wfs:Query typeName="'+searchLayer._selectSearchLayer.layers+'">'
+            + searchLayer._makeFilters({field:searchLayer._searchField,value:searchLayer._searchInputText})
+            +'</wfs:Query>'
+            +'</wfs:GetFeature>';
+
+        var me=this;
+        $.ajax({
+            type: 'POST',
+            contentType: "text/hda; charset=utf-8",
+            url: me.options.url ,
+            processData: false,
+            data: xml_str,
+            success: function(res){
+                //res = JSON.parse(res);
+                for(var i = 0,len = res.features.length;i<len;i++){
+                    res.features[i]._wfstSaved = true;
+                }
+                me.addData(res.features);
+            },
+            dataType: "json"
+        });
+
     },
     /*
     Get the feature description

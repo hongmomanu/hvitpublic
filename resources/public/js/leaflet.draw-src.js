@@ -2398,11 +2398,13 @@ L.EditToolbar = L.Toolbar.extend({
 
 	getModeHandlers: function (map) {
 		var featureGroup = this.options.featureGroup;
+        var editprops=this.options.editprops
 		return [
 			{
 				enabled: this.options.edit,
 				handler: new L.EditToolbar.Edit(map, {
 					featureGroup: featureGroup,
+                    editprops:editprops,
 					selectedPathOptions: this.options.edit.selectedPathOptions
 				}),
 				title: L.drawLocal.edit.toolbar.buttons.edit
@@ -2520,6 +2522,7 @@ L.EditToolbar.Edit = L.Handler.extend({
 
 		// Store the selectable layer group for ease of access
 		this._featureGroup = options.featureGroup;
+        this._editprops=options.editprops;
 
 		if (!(this._featureGroup instanceof L.FeatureGroup)) {
 			throw new Error('options.featureGroup must be a L.FeatureGroup');
@@ -2686,7 +2689,6 @@ L.EditToolbar.Edit = L.Handler.extend({
 	},
 
 	_enableLayerEdit: function (e) {
-        testobj=this;
 		//var layer = e.layer ||e.target ||this._featureGroup.getLayers()[0].getLayers()[0] || e,
 		//var layer = this._featureGroup.getLayers()[0].getLayers()[0],
 		var layer = (e.getLayers&&e.getLayers()[0])||e,
@@ -2735,10 +2737,14 @@ L.EditToolbar.Edit = L.Handler.extend({
 			layer.dragging.enable();
 			layer.on('dragend', this._onMarkerDragEnd);
 		} else {
-            testobjsss=layer;
 			layer.editing.enable();
 		}
+        this._makeEditPopup(e);
 	},
+    _makeEditPopup:function(layer){
+      layer.bindPopup('<h4 style="color:red">12333</h4>');
+      //console.log(layer);
+    },
 
 	_disableLayerEdit: function (e) {
         //console.log(this);
