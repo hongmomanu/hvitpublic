@@ -9,6 +9,7 @@
             [hvit.models.db :as db]
             [noir.response :as resp]
             [noir.session :as session]
+            [noir.cookies :as cookies]
             [noir.validation :as vali]
             [noir.util.crypt :as crypt]
             [clj-http.client :as client]
@@ -22,7 +23,7 @@
             )
   )
 
-
+(def cross-domain (atom {}))
 
 (defn valid? [id pass pass1]
   (vali/rule (vali/has-value? id)
@@ -235,37 +236,135 @@
 
   )
 
-(defn proxylogin [loginurl viewurl loginparams method]
-  (let [my-cs (clj-http.cookies/cookie-store)]
-    (println loginurl viewurl loginparams)
+
+(defn authcrossdomainget [req]
+
+  (let [{:keys [params uri content-length content-type cookies headers]} req
+        url  (last (clojure.string/split uri #"authcrossdomain"))
+        ;geturl (str (:url (session/get :crossdomainlogin)) url)
+
+        ;viewurl (:url (get @cross-domain (last (clojure.string/split (get headers "referer") #"proxylogin\?"))))
+        ;templearr (clojure.string/split viewurl #"/")
+        ;basurl (if (> (count (clojure.string/split viewurl #"/")) 3) (if (> (.indexOf (last templearr) ".") 0)
+        ;                                                               (clojure.string/join "/" (take (- (count templearr) 1) templearr)) viewurl)viewurl)
+        baseurl (:baseurl (session/get :crossdomainlogin) )
+        geturl (str baseurl url)
+
+        h {"User-Agent" "Mozilla/5.0 (Windows NT 6.1;) Gecko/20100101 Firefox/13.0.1"}
+        test (println baseurl url geturl "wwwwwwwwwwwwwwwwwwwwww")
+        content (client/get geturl {:query-params params   :socket-timeout 10000
+                                    :length content-length :content-type  content-type
+                                           :conn-timeout 10000
+                                           :headers h
+                                           :as :stream
+                                           :cookie-store (:cs (session/get :crossdomainlogin))
+                                           })
+        ]
+    (:body content)
+    )
+  )
+(defn authcrossdomainpost [req]
+
+  (let [{:keys [form-params params query-string  body content-length content-type uri cookies headers]} req
+        url  (last (clojure.string/split uri #"authcrossdomain"))
+        ;posturl (str (:url (session/get :crossdomainlogin)) url)
+        h {"User-Agent" "Mozilla/5.0 (Windows NT 6.1;) Gecko/20100101 Firefox/13.0.1"}
+        ;viewurl (:url (get @cross-domain (last (clojure.string/split (get headers "referer") #"proxylogin\?"))))
+        ;templearr (clojure.string/split viewurl #"/")
+        ;basurl (if (> (count (clojure.string/split viewurl #"/")) 3) (if (> (.indexOf (last templearr) ".") 0)
+        ;                                (clojure.string/join "/" (take (- (count templearr) 1) templearr)) viewurl)viewurl)
+        baseurl (:baseurl (session/get :crossdomainlogin) )
+
+        posturl (str baseurl url "?" query-string)
+        test (println posturl "WWWWWWWWWWWWWWWWWWWWWWWWWWWSSSSSSSSSSSSSSSS")
+        content (client/post posturl {
+                                       :length content-length :content-type  content-type
+                                       :socket-timeout 10000
+                                       :conn-timeout 10000
+
+                                       :form-params form-params
+                                       :headers h
+                                       ;:debug true :debug-body true
+                                       :as :auto
+                                       :cookie-store (:cs (session/get :crossdomainlogin))
+                                       })       ;:form-params (dissoc query-params "url")
+        ]
+
+    ;(println (:body content))
+    (:body content)
+    )
+  )
+
+
+(defn proxylogin [loginurl viewurl loginparams method proxykey  baseurl query-string]
+
+
+  (let [my-cs (clj-http.cookies/cookie-store)
+        ;h {"User-Agent" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36" "Cookie" "ASP.NET_SessionId=cvfgvkay4gokjiypy5kraql1"}
+        uuid (str (java.util.UUID/randomUUID))
+        ]
+    ;(println loginurl  loginparams method )
 
     (try
-      (if (= method "get")(client/get loginurl {:query-params (json/read-str loginparams)
+      (if (= method "get")(client/get loginurl {:query-params (json/read-str loginparams )
                                                  :socket-timeout 5000
-                                                 :trace-redirects ["http://192.168.2.112:3000/"]
+                                                 ;;:trace-redirects ["http://192.168.2.112:3000/"]
                                                  ;;:force-redirects true
+                                                 ;:headers h
                                                  :follow-redirects false
-                                                 :body-encoding "GBK"
+                                                 :as :auto
+                                                 ;:body-encoding "UTF-8"
                                                  :conn-timeout 5000
                                                  :cookie-store my-cs})
         (client/post loginurl {:form-params (json/read-str loginparams)
-                               :socket-timeout 5000
-                               ; :trace-redirects ["http://192.168.2.112:3000/map/webmap"]
+                               :socket-timeout 50000
+                               ;:save-request? true
+                               ;:trace-redirects ["http://192.168.2.142:8080/jz"]
                                ;:force-redirects true
-                               :body-encoding "GBK"
-                               :conn-timeout 5000
+                               ;:proxy-host "192.168.2.142"
+                               ;:proxy-port 8000
+                               ;:headers h
+
+                               ;:debug true :debug-body true
+
+                               ;:body-encoding "UTF-8"
+                               :as :auto
+                               :conn-timeout 50000
                                :cookie-store my-cs})
+
+
+
         )
 
-      #_(client/get viewurl {:cookie-store my-cs
-                                                                :as :auto})
 
-      (catch Exception e (resp/json {:success false}))
+
+      (client/get viewurl { :debug true  :debug-body true :as :auto :cookie-store my-cs })
+
+
+
+      (catch Exception e (resp/json {:success false :msg (.getMessage e)}))
       )
 
     )
 
   )
+
+(defn simpleproxy [loginurl method loginparams]
+
+  (let [
+         query-params (json/read-str loginparams)
+          ;test (println  (keys query-params) )
+         params (map #(conj {} {:name  % :value (get query-params %)}) (keys query-params))
+
+         ]
+    ;(println  params )
+      (layout/render "proxyauto.html"
+        {:content {:params params :method method :loginurl loginurl};:login-error  (session/get :login-error)
+         })
+    )
+  )
+
+
 (defn getproxy [req]
   (let [{:keys [params]} req
         content (client/get (:url params) {:query-params (dissoc params :url)  :socket-timeout 10000

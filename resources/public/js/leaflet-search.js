@@ -77,6 +77,7 @@ L.Control.Search = L.Control.extend({
         this._selectSearchLayer=null;
         this._histroyMarkers=[];
         this._searchField=this.options.searchField;
+        this._editIndex=undefined;
 	},
 
 	onAdd: function (map) {
@@ -157,17 +158,33 @@ L.Control.Search = L.Control.extend({
 
 		return this;
 	},
-    makesearchPopup:function(feature,marker,type){
+    propertyclick:function(index,table){
+        var editIndex=this._editIndex;
+        if (editIndex != index){
+            if (this.endEditing(table)){
+                table.datagrid('selectRow', index)
+                    .datagrid('beginEdit', index);
+                this._editIndex = index;
+            } else {
+                table.datagrid('selectRow', editIndex);
+            }
+        }
+    },
+    makesearchPopup:function(feature,marker,type,isediting){
         var that=this;
         var id=feature.id.replace(".","_")+type;
-        marker.bindPopup('<table id="grid'+id+'" style="width:200px" ></table>');
+        var tablestr='<table id="grid'+id+'" style="width:200px" ></table>';
+        marker.bindPopup(tablestr);
         marker.on('popupopen',function(e){
             easyloader.load('datagrid',function(){
                 var table=$('#grid'+id);
                 table.datagrid({
+                    onClickRow:isediting?function(index){that.propertyclick(index,table);}:undefined,
+                    singleSelect: true,
+                    //toolbar: [{}],
                     columns:[[
                         {field:'field',title:'属性名',width:98},
-                        {field:'value',title:'属性值',width:100}
+                        {field:'value',title:'属性值',width:100,editor:(isediting?'text':undefined)}
                     ]]
                 });
                 var data=[];
@@ -182,6 +199,20 @@ L.Control.Search = L.Control.extend({
             });
 
         });
+    },
+    endEditing:function(table){
+        var editIndex=this._editIndex;
+        if (editIndex == undefined){return true}
+        if (table.datagrid('validateRow', editIndex)){
+            //var ed = $('#dg').datagrid('getEditor', {index:editIndex,field:'productid'});
+            //var productname = $(ed.target).combobox('getText');
+            //$('#dg').datagrid('getRows')[editIndex]['productname'] = productname;
+            table.datagrid('endEdit', editIndex);
+            editIndex = undefined;
+            return true;
+        } else {
+            return false;
+        }
     },
     makeDrawEdit:function(){
         var wfs_url=this._selectSearchLayer.value;

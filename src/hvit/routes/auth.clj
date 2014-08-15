@@ -135,10 +135,29 @@
     (auth/uploadfile file)
     )
 
-  (GET "/auth/proxylogin" [loginurl viewurl loginparams method]
-    (auth/proxylogin loginurl viewurl loginparams method)
+  (GET "/auth/proxylogin" req
+    (let [{:keys [params query-string]} req]
+      (auth/proxylogin (:loginurl params) (:viewurl params) (:loginparams params)
+        (:method params) (:proxykey params) (:baseurl params) query-string)
+
+      )
+
 
     )
+  (GET "/authcrossdomain/proxylogin" req
+    (let [{:keys [params query-string]} req]
+      (auth/proxylogin (:loginurl params) (:viewurl params) (:loginparams params)
+        (:method params) (:proxykey params) (:baseurl params) query-string)
+
+      )
+    )
+
+
+
+  (GET "/authcrossdomain/simpleproxy" [loginurl method loginparams]
+    (auth/simpleproxy loginurl method loginparams)
+    )
+
 
 
 

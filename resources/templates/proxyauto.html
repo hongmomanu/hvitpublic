@@ -1,0 +1,19 @@
+{% extends "templates/basesimple.html" %}
+{% block content  %}
+
+<div style="display: none;">
+    <form action="{{content.loginurl}}" method="{{content.method}}">
+        {% for item in content.params %}
+        <input name="{{item.name}}" type="text" value="{{item.value}}">
+        {% endfor %}
+        <input id="test" type="submit" >
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    document.getElementById('test').click();
+</script>
+
+
+{% endblock %}

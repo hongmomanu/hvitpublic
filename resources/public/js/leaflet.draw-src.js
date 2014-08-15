@@ -2739,11 +2739,14 @@ L.EditToolbar.Edit = L.Handler.extend({
 		} else {
 			layer.editing.enable();
 		}
-        this._makeEditPopup(e);
+        this._makeEditPopup(e.feature,layer);
 	},
-    _makeEditPopup:function(layer){
-      layer.bindPopup('<h4 style="color:red">12333</h4>');
+    _makeEditPopup:function(feature,layer){
+
+      //layer.bindPopup('<h4 style="color:red">12333</h4>');
       //console.log(layer);
+        layer.unbindPopup();
+        this._searchlayer.makesearchPopup(feature,layer,'edited',true);
     },
     _deleteEditPopup:function(feature,layer){
 
