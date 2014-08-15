@@ -27,9 +27,10 @@ function initMap(){
                     });
                 }
 
-                if(i===0)display_layers.push(baseMaps[resbase[i].text]);
+                if(i===0)display_layers.push(baseMaps[resbase[i].text]) ;
 
             }
+
             $.ajax({
                 type: 'get',
                 dataType: 'json',
