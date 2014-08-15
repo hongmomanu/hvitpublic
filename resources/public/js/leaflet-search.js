@@ -175,12 +175,16 @@ L.Control.Search = L.Control.extend({
         	table.datagrid('beginEdit', index);
         }
     },
-    updateFeatureProperty:function(feature,table){
+    updateFeatureProperty:function(feature,table,layer){
 		var changedata=table.datagrid('getChanges');
 		table.datagrid('acceptChanges');	
-		for(var i=0;i<changedata.length;i++){
-			feature.properties[changedata[i].field]=changedata[i].value;
+		if(changedata.length>0){
+			layer.edited=true;
+			for(var i=0;i<changedata.length;i++){
+				feature.properties[changedata[i].field]=changedata[i].value;
+			}
 		}
+		
 			 	
     },
 
@@ -202,7 +206,7 @@ L.Control.Search = L.Control.extend({
                     				handler:function(){
                     					//table.datagrid('acceptChanges');
                     					that.endEditing(table);
-                    					that.updateFeatureProperty(feature,table);
+                    					that.updateFeatureProperty(feature,table,marker);
                     				}
                     			
                     			}]:[],
