@@ -176,9 +176,12 @@ L.Control.Search = L.Control.extend({
         }
     },
     updateFeatureProperty:function(feature,table){
-		console.log(feature);   
-		console.log(table.datagrid('getChanges'));
-		table.datagrid('acceptChanges');		 	
+		var changedata=table.datagrid('getChanges');
+		table.datagrid('acceptChanges');	
+		for(var i=0;i<changedata.length;i++){
+			feature.properties[changedata[i].field]=changedata[i].value;
+		}
+			 	
 
     },
 
