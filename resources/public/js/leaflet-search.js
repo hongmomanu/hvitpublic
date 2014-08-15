@@ -159,19 +159,32 @@ L.Control.Search = L.Control.extend({
 		return this;
 	},
     propertyclick:function(index,table){
+
         var editIndex=this._editIndex;
         if (editIndex != index){
             if (this.endEditing(table)){
+            	console.log('edited');
                 table.datagrid('selectRow', index)
                     .datagrid('beginEdit', index);
                 this._editIndex = index;
             } else {
+            	console.log('selected');
                 table.datagrid('selectRow', editIndex);
             }
+        }else{
+        	table.datagrid('beginEdit', index);
         }
     },
+    updateFeatureProperty:function(feature,table){
+		console.log(feature);   
+		console.log(table.datagrid('getChanges'));
+		table.datagrid('acceptChanges');		 	
+
+    },
+
     makesearchPopup:function(feature,marker,type,isediting){
         var that=this;
+        this._map.closePopup();
         var id=feature.id.replace(".","_")+type;
         var tablestr='<table id="grid'+id+'" style="width:200px" ></table>';
         marker.bindPopup(tablestr);
@@ -179,9 +192,18 @@ L.Control.Search = L.Control.extend({
             easyloader.load('datagrid',function(){
                 var table=$('#grid'+id);
                 table.datagrid({
+
                     onClickRow:isediting?function(index){that.propertyclick(index,table);}:undefined,
                     singleSelect: true,
-                    //toolbar: [{}],
+                    toolbar: isediting?[{
+                    				iconCls: 'icon-save',
+                    				handler:function(){
+                    					//table.datagrid('acceptChanges');
+                    					that.endEditing(table);
+                    					that.updateFeatureProperty(feature,table);
+                    				}
+                    			
+                    			}]:[],
                     columns:[[
                         {field:'field',title:'属性名',width:98},
                         {field:'value',title:'属性值',width:100,editor:(isediting?'text':undefined)}
