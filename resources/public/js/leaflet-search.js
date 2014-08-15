@@ -182,7 +182,6 @@ L.Control.Search = L.Control.extend({
 			feature.properties[changedata[i].field]=changedata[i].value;
 		}
 			 	
-
     },
 
     makesearchPopup:function(feature,marker,type,isediting){
