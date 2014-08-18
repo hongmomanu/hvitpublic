@@ -149,8 +149,9 @@ L.Control.Search = L.Control.extend({
                 iconCls:'icon-edit',
                 plain:true,
                 onClick:function(){
-                  //console.log(me._selectSearchLayer);
+                  $("#map_edit_btn").linkbutton('disable');
                   me.makeDrawEdit() ;
+                  
                 },
                 disabled:true
             });
@@ -163,12 +164,12 @@ L.Control.Search = L.Control.extend({
         var editIndex=this._editIndex;
         if (editIndex != index){
             if (this.endEditing(table)){
-            	console.log('edited');
+            	//console.log('edited');
                 table.datagrid('selectRow', index)
                     .datagrid('beginEdit', index);
                 this._editIndex = index;
             } else {
-            	console.log('selected');
+            	//console.log('selected');
                 table.datagrid('selectRow', editIndex);
             }
         }else{

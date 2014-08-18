@@ -48,6 +48,8 @@ L.WFST = L.GeoJSON.extend({
     // Additional functionality for these functions
     addLayer: function(layer,options) {
         this.wfstAdd(layer,options);
+        console.log(this.options.searchLayer);
+        console.log(options);
         // Call to parent addLayer
         L.GeoJSON.prototype.addLayer.call(this,layer);
     },

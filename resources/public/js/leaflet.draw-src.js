@@ -2744,7 +2744,8 @@ L.EditToolbar.Edit = L.Handler.extend({
     _makeEditPopup:function(feature,layer){
 
       //layer.bindPopup('<h4 style="color:red">12333</h4>');
-      //console.log(layer);
+        console.log(layer);
+        console.log(feature);
         layer.unbindPopup();
         this._searchlayer.makesearchPopup(feature,layer,'edited',true);
     },
