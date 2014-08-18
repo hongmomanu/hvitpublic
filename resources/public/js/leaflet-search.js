@@ -27,7 +27,7 @@ L.Control.Search = L.Control.extend({
 									// support dotted format: 'prop.subprop.title'
 		callTip: null,				//function that return row tip html node(or html string), receive text tooltip in first param
 		filterJSON: null,			//callback for filtering data to _recordsCache
-		minLength: 0,				//minimal text length for autocomplete
+		minLength: 1,				//minimal text length for autocomplete
 		initial: true,				//search elements only by initial text
 		autoType: true,				//complete input with first suggested result and select this filled-in text.
 		delayType: 400,				//delay while typing for show tooltip
@@ -44,9 +44,9 @@ L.Control.Search = L.Control.extend({
 		textErr: 'Location not found',	//error message
 		position: 'topleft',
 		maxFeatures:50,
-        searchLayers:[],
-        editLayers:[],
-        searchField:'',
+        	searchLayers:[],
+        	editLayers:[],
+        	searchField:'',
 		animateLocation: true,		//animate a circle over location found
 		circleLocation: true,		//draw a circle in location found
 		markerLocation: false,		//draw a marker in location found
