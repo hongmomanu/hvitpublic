@@ -181,6 +181,7 @@ L.Control.Search = L.Control.extend({
 		table.datagrid('acceptChanges');	
 		if(changedata.length>0){
 			layer.edited=true;
+			if(!feature.properties)feature.properties={};
 			for(var i=0;i<changedata.length;i++){
 				feature.properties[changedata[i].field]=changedata[i].value;
 			}
@@ -220,7 +221,7 @@ L.Control.Search = L.Control.extend({
                 for(var i=0;i<that.options.propertyName.length;i++){
                     var item={};
                     item["field"]=that.options.propertyName[i];
-                    item["value"]=feature.properties[that.options.propertyName[i]];
+                    item["value"]=feature.properties?feature.properties[that.options.propertyName[i]]:"";
                     data.push(item);
                 }
                 table.datagrid('loadData',data)
@@ -278,7 +279,16 @@ L.Control.Search = L.Control.extend({
     me._map.addControl(drawControl);
 
     me._map.on('draw:created', function (e) {
-        drawnItems.addLayer(e.layer,{"success":function(){}});
+	   var layer=e.layer;
+	   
+	  
+        drawnItems.addLayer(layer,{"success":function(){
+               var feature=layer.feature;
+	   		me.makesearchPopup(feature,layer,'edited',true);   
+
+        }});
+
+        
     });
     me._map.on('draw:editstart', function (e) {
         //layers.drawnItems.addLayer(e.layer);
