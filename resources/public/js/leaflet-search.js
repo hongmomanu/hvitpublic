@@ -27,7 +27,7 @@ L.Control.Search = L.Control.extend({
 									// support dotted format: 'prop.subprop.title'
 		callTip: null,				//function that return row tip html node(or html string), receive text tooltip in first param
 		filterJSON: null,			//callback for filtering data to _recordsCache
-		minLength: 1,				//minimal text length for autocomplete
+		minLength: 0,				//minimal text length for autocomplete
 		initial: true,				//search elements only by initial text
 		autoType: true,				//complete input with first suggested result and select this filled-in text.
 		delayType: 400,				//delay while typing for show tooltip
@@ -43,6 +43,7 @@ L.Control.Search = L.Control.extend({
 		textCancel: '取消',		//title in cancel button
 		textErr: 'Location not found',	//error message
 		position: 'topleft',
+		maxFeatures:50,
         searchLayers:[],
         editLayers:[],
         searchField:'',
@@ -78,6 +79,7 @@ L.Control.Search = L.Control.extend({
         this._histroyMarkers=[];
         this._searchField=this.options.searchField;
         this._editIndex=undefined;
+        this._maxFeatures=this.options.maxFeatures;
 	},
 
 	onAdd: function (map) {
@@ -670,6 +672,7 @@ L.Control.Search = L.Control.extend({
         var xml_str='<wfs:GetFeature';
         xml_str += ' service="WFS" version="1.1.0" '
         +' outputFormat="JSON"'
+        +' maxFeatures="'+this._maxFeatures+'"'
         +' xmlns:wfs="http://www.opengis.net/wfs"'
         +' xmlns:ogc="http://www.opengis.net/ogc">'
         +' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
@@ -852,7 +855,7 @@ L.Control.Search = L.Control.extend({
 			case 17://Ctrl
 			//case 32://Space
 			break;
-			case 8://backspace
+			//case 8://backspace
 			case 46://delete
 				this._autoTypeTmp = false;//disable temporarily autoType
 			break;
