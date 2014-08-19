@@ -8,175 +8,97 @@ var proxy="../auth/proxy?url="
 function initMap(){
     // create a map in the "map" div, set the view to a given place and zoom
 
-
+    function makeDisplayLayer(text,defualtlayers,layer){
+        for(var i=0;i<defualtlayers.length;i++){
+         
+            if(defualtlayers[i].value===text){
+                
+                display_layers.push(layer);
+                break;
+            }
+        }
+    }     
     $.ajax({
         type: 'get',
         dataType: 'json',
         url: '../auth/getfuncsbyrole',
-        data: {type:'底图'},
+        data: {type:'底图,覆盖图,图层编辑,默认加载图层'},
         //complete :compfunc,
         //error:errorfunc,
         success: function(resbase){
             var baseMaps={};
-            for(var i=0;i<resbase.length;i++){
-                var layertype=$.evalJSON(resbase[i].imgcss);
+            var overlayMaps={};
+            var editLayers=[];
+            var defaultLayers=resbase['默认加载图层'];
+
+            for(var i=0;i<resbase['底图'].length;i++){
+                var layertype=$.evalJSON(resbase['底图'][i].imgcss);
                 if(layertype.type==='tile'){
-                    baseMaps[resbase[i].text]=L.tileLayer(resbase[i].value, {
+                    var layer=L.tileLayer(resbase['底图'][i].value, {
                         minZoom: layertype.level[0],
                         maxZoom: layertype.level[1]
                     });
+                    baseMaps[resbase['底图'][i].text]=layer;
+                    makeDisplayLayer(resbase['底图'][i].text,defaultLayers,layer);
                 }
 
-                if(i===0)display_layers.push(baseMaps[resbase[i].text]) ;
-
             }
+            for(var i=0;i<resbase['覆盖图'].length;i++){
+                var layertype=$.evalJSON(resbase['覆盖图'][i].imgcss);
 
-            $.ajax({
-                type: 'get',
-                dataType: 'json',
-                url: '../auth/getfuncsbyrole',
-                data: {type:'覆盖图'},
-                success:function(res){
-                   var overlayMaps={};
-                    for(var i=0;i<res.length;i++){
-                        var layertype=$.evalJSON(res[i].imgcss);
-
-                        if(layertype.type==='tile'){
-                            overlayMaps[res[i].text]=L.tileLayer(res[i].value, {
-                                minZoom: layertype.level[0],
-                                maxZoom: layertype.level[1]
-                            });
-                        }
-                        else if(layertype.type==='wms'){
-                            var wms_layer=L.tileLayer.wms(res[i].value+"?service=wms", {
-                                layers: layertype.layers,
-                                format: 'image/png',
-                                transparent: true,
-                                crs:eval(layertype.crs),
+                if(layertype.type==='tile'){
+                    var layer=L.tileLayer(resbase['覆盖图'][i].value, {
+                        minZoom: layertype.level[0],
+                        maxZoom: layertype.level[1]
+                    });
+                    overlayMaps[resbase['覆盖图'][i].text]=layer;
+                    makeDisplayLayer(resbase['覆盖图'][i].text,defaultLayers,layer);
+                }
+                else if(layertype.type==='wms'){
+                    var wms_layer=L.tileLayer.wms(resbase['覆盖图'][i].value+"?service=wms", {
+                        layers: layertype.layers,
+                        format: 'image/png',
+                        transparent: true,
+                        crs:eval(layertype.crs),
                                 //attribution: "CDC",
                                 noWrap: true
                             });
-                            overlayMaps[res[i].text]=wms_layer;
-                            wms_layers.push(
-                                {
-                                    text:res[i].text,
-                                    value:res[i].value,
-                                    layers:layertype.layers,
-                                    searchField:layertype.searchField,
-                                    propertyName:layertype.propertyName,
-                                    shape:layertype.shape,
-                                    zoom:layertype.zoom
-                                });
-                        }
-
-                        if(i===0)display_layers.push(overlayMaps[res[i].text]);
-                    }
-                    var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
-                    if(display_layers.length===0)alert("无地图资源");
-                    map =new L.Map('map', {center:[30,120], zoom: 9,
-                        layers: display_layers});
-
-                    map.addControl(layersControl);
-
-                    $.ajax({
-                        type: 'get',
-                        dataType: 'json',
-                        url: '../auth/getfuncsbyrole',
-                        data: {type:'图层编辑'},
-                        success:function(res){
-                            var editLayers=[];
-                            for(var i=0;i<res.length;i++){
-                                editLayers.push(res[i].value);
-                            }
-                            map.addControl( new L.Control.Search(
-                                {
-                                    searchLayers:wms_layers,
-                                    editLayers:editLayers
-                                })
-                            );
-
-                        }
+                    overlayMaps[resbase['覆盖图'][i].text]=wms_layer;
+                    makeDisplayLayer(resbase['覆盖图'][i].text,defaultLayers,layer);
+                    wms_layers.push(
+                    {
+                        text:resbase['覆盖图'][i].text,
+                        value:resbase['覆盖图'][i].value,
+                        layers:layertype.layers,
+                        searchField:layertype.searchField,
+                        propertyName:layertype.propertyName,
+                        shape:layertype.shape,
+                        zoom:layertype.zoom
                     });
-
-
-
-                    //L.easyButton( "fa-edit" , function(){alert(2)} , "编辑" )
-
-                    /*// Initialize the WFST layer
-                    layers.drawnItems = L.wfst(null,{
-                        // Required
-                        url : proxy+'http://192.168.2.141:8082/geoserver/zs_csmz/wfs', //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
-                        featureNS : 'zs_csmz',//xsdata  zs_csmz
-                        version:'1.1.0',
-                        featureType : 'STR_XianJ'*//*,STP_DW STL_ALL_ROAD  STR_XianJ
-                        primaryKeyField: 'id'*//*
-                    }).addTo(map);
-
-                    // Initialize the draw control and pass it the FeatureGroup of editable layers
-                    var drawControl = new L.Control.Draw({
-                        edit: {
-                            featureGroup: layers.drawnItems
-                        }
-                    });
-
-                    map.addControl(drawControl);
-
-                    map.on('draw:created', function (e) {
-                        layers.drawnItems.addLayer(e.layer,{"success":function(){}});
-                    });
-                    map.on('draw:editstart', function (e) {
-                        //layers.drawnItems.addLayer(e.layer);
-                    });
-                    map.on('draw:edited', function (e) {
-
-                        layers.drawnItems.wfstSave(layers.drawnItems);
-                    });*/
-
-                    L.GeoIP.centerMapOnPosition(map);
-
-
                 }
-            });
+
+                
+            }
+            var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
+            if(display_layers.length===0)alert("无地图资源");
+            map =new L.Map('map', {center:[30,120], zoom: 9,
+                layers: display_layers});
+            L.GeoIP.centerMapOnPosition(map);
+
+            map.addControl(layersControl);
+
+
+            for(var i=0;i<resbase['图层编辑'].length;i++){
+                editLayers.push(resbase['图层编辑'][i].value);
+            }
+            map.addControl( new L.Control.Search(
+            {
+                searchLayers:wms_layers,
+                editLayers:editLayers
+            })
+            );
 
         }
     });
 
-
-
-
-
-    // Set the map background to our WMS layer of the world boundaries
-    // Replace this with your own background layer
-    /*layers.world = L.tileLayer.wms("/geoserver/wfsttest/wms", {
-        layers: 'wfsttest:world',
-        format: 'image/png',
-        transparent: true,
-        attribution: "CDC",
-        noWrap: true
-    }).addTo(map);
-
-    // Initialize the WFST layer 
-    layers.drawnItems = L.wfst(null,{
-        // Required
-        url : '/geoserver/wfsttest/wfs',
-        featureNS : 'wfsttest',
-        featureType : 'doodles',
-        primaryKeyField: 'id'
-    }).addTo(map);
-
-    // Initialize the draw control and pass it the FeatureGroup of editable layers
-    var drawControl = new L.Control.Draw({
-        edit: {
-            featureGroup: layers.drawnItems
-        }
-    });
-
-    map.addControl(drawControl);
-
-    map.on('draw:created', function (e) {
-        layers.drawnItems.addLayer(e.layer);
-    });
-    map.on('draw:edited', function (e) {
-        layers.drawnItems.wfstSave(e.layers);
-    });*/
 }

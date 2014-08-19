@@ -542,7 +542,7 @@
   (let [
     types (clojure.string/split type #",")
     reuslts (if (<= (count types) 1)(getfuncsbyrole type roleid callback)
-           (apply conj  (map #(conj {} {(keyword %) (getfuncsbyrole % roleid callback)}) types))
+           (apply conj  (pmap #(conj {} {(keyword %) (getfuncsbyrole % roleid callback)}) types))
         )
     ]
       
