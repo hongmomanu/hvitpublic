@@ -1,34 +1,32 @@
 L.GeoIP = L.extend({
 
-    getPosition: function (ip) {
+    getPosition: function (ip,callback) {
         var url = "http://freegeoip.net/json/";
-        var result = L.latLng(0, 0);
+        var result = L.latLng(30, 120);
 
         if (ip !== undefined) {
             url = url + ip;
         } else {
             //lookup our own ip address
         }
+        
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status == 200) {
-                var geoip_response = JSON.parse(xhr.responseText);
-                result.lat = geoip_response.latitude;
-                result.lng = geoip_response.longitude;
-            } else {
-                console.log("Leaflet.GeoIP.getPosition failed because its XMLHttpRequest got this response: " + xhr.status);
-            }
-        };
-        xhr.send();
-        return result;
+         $.ajax({ 
+          type : "get", 
+          url : url, 
+          data : {}, 
+          success : function(data){ 
+                result.lat = data.latitude;
+                result.lng = data.longitude;
+                callback(result);
+          } 
+          }); 
+        
     },
 
     centerMapOnPosition: function (map, ip) {
-        var position = L.GeoIP.getPosition(ip);
-        map.setView(position);
+        L.GeoIP.getPosition(ip,function(position){map.setView(position);});
+        
 
     }
 });

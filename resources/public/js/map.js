@@ -14,9 +14,10 @@ function initMap(){
             if(defualtlayers[i].value===text){
 
                 display_layers.push(layer);
-                break;
+                return true;
             }
         }
+        return false;
     }     
     $.ajax({
         type: 'get',
@@ -30,23 +31,26 @@ function initMap(){
             var overlayMaps={};
             var editLayers=[];
             var defaultLayers=resbase['默认加载图层'];
-
+            var miniLayer=null;
             for(var i=0;i<resbase['底图'].length;i++){
                 var layertype=$.evalJSON(resbase['底图'][i].imgcss);
                 if(layertype.type==='tile'){
-                    var layer=L.tileLayer(resbase['底图'][i].value, {
+                    var options={
                         minZoom: layertype.level[0],
                         maxZoom: layertype.level[1]
-                    });
+                    };
+                    var layer=L.tileLayer(resbase['底图'][i].value, options);
                     baseMaps[resbase['底图'][i].text]=layer;
-                    makeDisplayLayer(resbase['底图'][i].text,defaultLayers,layer);
+                    layer.initoptions=options;
+                    var isDisplay=makeDisplayLayer(resbase['底图'][i].text,defaultLayers,layer);
+                    if(isDisplay)miniLayer=L.tileLayer(resbase['底图'][i].value, options);
                 }
 
             }
             for(var i=0;i<resbase['覆盖图'].length;i++){
                 var layertype=$.evalJSON(resbase['覆盖图'][i].imgcss);
 
-                if(layertype.type==='tile'){
+                if( layertype.type==='tile'){
                     var layer=L.tileLayer(resbase['覆盖图'][i].value, {
                         minZoom: layertype.level[0],
                         maxZoom: layertype.level[1]
@@ -81,10 +85,13 @@ function initMap(){
             }
             var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
             if(display_layers.length===0)alert("无地图资源");
-            console.log(display_layers);
+            //console.log(display_layers);
             map =new L.Map('map', {center:[30,120], zoom: 9,
                 layers: display_layers});
             L.GeoIP.centerMapOnPosition(map);
+
+            //var osm2 = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 13, attribution: osmAttrib });
+            var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
 
             map.addControl(layersControl);
 
@@ -98,6 +105,12 @@ function initMap(){
                 editLayers:editLayers
             })
             );
+
+            map.on('baselayerchange',function(e){
+                map.removeControl(miniMap);
+                miniLayer=new L.TileLayer(e.layer._url,e.layer.initoptions);
+                miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
+            })
 
         }
     });
