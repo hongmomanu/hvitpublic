@@ -38,10 +38,10 @@
         (auth/handle-login username password))
 
   (POST "/auth/getfuncsbyrole" [type roleid callback]
-    (auth/getfuncsbyrole type roleid callback))
+    (auth/getfuncsbyroletouter type roleid callback))
 
   (GET "/auth/getfuncsbyrole" [type roleid callback]
-    (auth/getfuncsbyrole type roleid callback))
+    (auth/getfuncsbyroletouter type roleid callback))
 
   (GET "/auth/getenumbytype" [type  callback]
     (auth/getenumbytype type  callback))

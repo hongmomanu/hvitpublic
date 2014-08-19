@@ -522,6 +522,7 @@
 
 
   )
+
 (defn getfuncsbyrole [type roleid callback]
   (let [
          roleid (getroleid roleid)
@@ -531,7 +532,21 @@
          funcstype (if (nil? typepid) [] (db/getfuncsbypid (:id typepid)))
          reuslts (filter (fn [x] (some #(= (:id x) %) funcids)) funcstype)
          ]
-    (if (nil? callback) (resp/json reuslts)(resp/jsonp callback reuslts))
+       reuslts  
+    
+    )
+
+  )
+(defn getfuncsbyroletouter [type roleid callback]
+
+  (let [
+    types (clojure.string/split type #",")
+    reuslts (if (<= (count types) 1)(getfuncsbyrole type roleid callback)
+           (apply conj  (map #(conj {} {(keyword %) (getfuncsbyrole % roleid callback)}) types))
+        )
+    ]
+      
+      (if (nil? callback) (resp/json reuslts)(resp/jsonp callback reuslts))
     )
 
   )
