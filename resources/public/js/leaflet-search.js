@@ -1,7 +1,7 @@
 (function() {
 
-L.Control.Search = L.Control.extend({
-	includes: L.Mixin.Events,
+	L.Control.Search = L.Control.extend({
+		includes: L.Mixin.Events,
 	//
 	//	Name					Data passed			   Description
 	//
@@ -18,7 +18,7 @@ L.Control.Search = L.Control.extend({
 		url: '',					//url for search by ajax request, ex: "search.php?q={s}"
 		jsonpParam: null,			//jsonp param name for search by jsonp service, ex: "callback"
 		layer: null,				//layer where search markers(is a L.LayerGroup)
-        wfslayer:false,
+		wfslayer:false,
 		callData: null,				//function that fill _recordsCache, passed searching text by first param and callback in second
 		//TODO important! implements uniq option 'sourceData' that recognizes source type: url,array,callback or layer		
 		//TODO implement can do research on multiple sources
@@ -44,9 +44,9 @@ L.Control.Search = L.Control.extend({
 		textErr: 'Location not found',	//error message
 		position: 'topleft',
 		maxFeatures:50,
-        	searchLayers:[],
-        	editLayers:[],
-        	searchField:'',
+		searchLayers:[],
+		editLayers:[],
+		searchField:'',
 		animateLocation: true,		//animate a circle over location found
 		circleLocation: true,		//draw a circle in location found
 		markerLocation: false,		//draw a marker in location found
@@ -65,32 +65,32 @@ L.Control.Search = L.Control.extend({
 //TODO change structure of _recordsCache
 //	like this: _recordsCache = {"text-key1": {loc:[lat,lng], ..other attributes.. }, {"text-key2": {loc:[lat,lng]}...}, ...}
 //	in this mode every record can have a free structure of attributes, only 'loc' is required
-	
-	initialize: function(options) {
-		L.Util.setOptions(this, options || {});
-		this._inputMinSize = this.options.text ? this.options.text.length : 10;
-		this._layer = this.options.layer || new L.LayerGroup();
-		this._filterJSON = this.options.filterJSON || this._defaultFilterJSON;
+
+initialize: function(options) {
+	L.Util.setOptions(this, options || {});
+	this._inputMinSize = this.options.text ? this.options.text.length : 10;
+	this._layer = this.options.layer || new L.LayerGroup();
+	this._filterJSON = this.options.filterJSON || this._defaultFilterJSON;
 		this._autoTypeTmp = this.options.autoType;	//useful for disable autoType temporarily in delete/backspace keydown
 		this._countertips = 0;		//number of tips items
 		this._recordsCache = {};	//key,value table! that store locations! format: key,latlng
-        this._searchLayers=this.options.searchLayers;
-        this._selectSearchLayer=null;
-        this._histroyMarkers=[];
-        this._searchField=this.options.searchField;
-        this._editIndex=undefined;
-        this._maxFeatures=this.options.maxFeatures;
+		this._searchLayers=this.options.searchLayers;
+		this._selectSearchLayer=null;
+		this._histroyMarkers=[];
+		this._searchField=this.options.searchField;
+		this._editIndex=undefined;
+		this._maxFeatures=this.options.maxFeatures;
 	},
 
 	onAdd: function (map) {
 		this._map = map;
 		this._container = L.DomUtil.create('div', 'leaflet-control-search');
-        this._searchDiv=this._createSearchDiv(this.options.text,'leaflet-search-div');
+		this._searchDiv=this._createSearchDiv(this.options.text,'leaflet-search-div');
 		this._input = this._createInput(this.options.text, 'search-input');
 
-        this._select = this._createLayersSelect(this.options.text, 'easyui-combobox');
+		this._select = this._createLayersSelect(this.options.text, 'easyui-combobox');
 		this._isedit =this._createIsChecked('easyui-linkbutton');
-        this._tooltip = this._createTooltip('search-tooltip');
+		this._tooltip = this._createTooltip('search-tooltip');
 		this._cancel = this._createCancel(this.options.textCancel, 'search-cancel');
 		this._button = this._createButton(this.options.text, 'search-button');
 		this._alert = this._createAlert('search-alert');
@@ -101,16 +101,16 @@ L.Control.Search = L.Control.extend({
 
 		if(this.options.circleLocation || this.options.markerLocation || this.options.markerIcon)
 			this._markerLoc = new SearchMarker([0,0], {
-					showMarker: this.options.markerLocation,
-					icon: this.options.markerIcon
+				showMarker: this.options.markerLocation,
+				icon: this.options.markerIcon
 				});//see below
 		
 		this.setLayer( this._layer );
-		 map.on({
+		map.on({
 		// 		'layeradd': this._onLayerAddRemove,
 		// 		'layerremove': this._onLayerAddRemove
-		     'resize': this._handleAutoresize
-		 	}, this);
+		'resize': this._handleAutoresize
+	}, this);
 		return this._container;
 	},
 	addTo: function (map) {
@@ -124,118 +124,117 @@ L.Control.Search = L.Control.extend({
 		else
 			L.Control.prototype.addTo.call(this, map);
 
-        var me=this;
-        easyloader.load('combobox',function(){
-            $("#map_search_layers").combobox({
-                width:105,
-                onSelect: function(rec){
-                    if(me._drawControl)me._map.removeControl(me._drawControl);
-                    if(me._drawnItems)me._map.removeLayer(me._drawnItems);
+		var me=this;
+		easyloader.load('combobox',function(){
+			$("#map_search_layers").combobox({
+				width:105,
+				onSelect: function(rec){
+					if(me._drawControl)me._map.removeControl(me._drawControl);
+					if(me._drawnItems)me._map.removeLayer(me._drawnItems);
 
-                    me._selectSearchLayer=rec;
-                    me._searchField=rec.searchField;
-                    me.options.propertyName=rec.propertyName;
-                    me.options.zoom=rec.zoom;
+					me._selectSearchLayer=rec;
+					me._searchField=rec.searchField;
+					me.options.propertyName=rec.propertyName;
+					me.options.zoom=rec.zoom;
 
-                    if($.inArray(rec.text,me.options.editLayers)>-1){
-                        $("#map_edit_btn").linkbutton('enable');
-                    }else{
-                        $("#map_edit_btn").linkbutton('disable');
-                    }
+					if($.inArray(rec.text,me.options.editLayers)>-1){
+						$("#map_edit_btn").linkbutton('enable');
+					}else{
+						$("#map_edit_btn").linkbutton('disable');
+					}
 
-                }
-            });
-        });
-        easyloader.load('linkbutton',function(){
-            $("#map_edit_btn").linkbutton({
-                iconCls:'icon-edit',
-                plain:true,
-                onClick:function(){
-                  $("#map_edit_btn").linkbutton('disable');
-                  me.makeDrawEdit() ;
-                  
-                },
-                disabled:true
-            });
-        });
+				}
+			});
+		});
+		easyloader.load('linkbutton',function(){
+			$("#map_edit_btn").linkbutton({
+				iconCls:'icon-edit',
+				plain:true,
+				onClick:function(){
+					$("#map_edit_btn").linkbutton('disable');
+					me.makeDrawEdit() ;
+				},
+				disabled:true
+			});
+		});
 
 		return this;
 	},
-    propertyclick:function(index,table){
+	propertyclick:function(index,table){
 
-        var editIndex=this._editIndex;
-        if (editIndex != index){
-            if (this.endEditing(table)){
+		var editIndex=this._editIndex;
+		if (editIndex != index){
+			if (this.endEditing(table)){
             	//console.log('edited');
-                table.datagrid('selectRow', index)
-                    .datagrid('beginEdit', index);
-                this._editIndex = index;
+            	table.datagrid('selectRow', index)
+            	.datagrid('beginEdit', index);
+            	this._editIndex = index;
             } else {
             	//console.log('selected');
-                table.datagrid('selectRow', editIndex);
+            	table.datagrid('selectRow', editIndex);
             }
         }else{
         	table.datagrid('beginEdit', index);
         }
     },
     updateFeatureProperty:function(feature,table,layer){
-		var changedata=table.datagrid('getChanges');
-		table.datagrid('acceptChanges');	
-		if(changedata.length>0){
-			layer.edited=true;
-			if(!feature.properties)feature.properties={};
-			for(var i=0;i<changedata.length;i++){
-				feature.properties[changedata[i].field]=changedata[i].value;
-			}
-		}
-		
-			 	
+    	var changedata=table.datagrid('getChanges');
+    	table.datagrid('acceptChanges');	
+    	if(changedata.length>0){
+    		layer.edited=true;
+    		if(!feature.properties)feature.properties={};
+    		for(var i=0;i<changedata.length;i++){
+    			feature.properties[changedata[i].field]=changedata[i].value;
+    		}
+    	}
+
+
     },
 
     makesearchPopup:function(feature,marker,type,isediting){
-        var that=this;
-        this._map.closePopup();
-        var id=feature.id.replace(".","_")+type;
-        var tablestr='<table id="grid'+id+'" style="width:200px" ></table>';
-        marker.bindPopup(tablestr);
-        marker.on('popupopen',function(e){
-            easyloader.load('datagrid',function(){
-                var table=$('#grid'+id);
-                table.datagrid({
+    	var that=this;
+    	this._map.closePopup();
+    	var id=feature.id.replace(".","_")+type;
+    	var tablestr='<table id="grid'+id+'" style="width:200px" ></table>';
+    	marker.bindPopup(tablestr);
+    	marker.on('popupopen',function(e){
+    		easyloader.load('datagrid',function(){
+    			var table=$('#grid'+id);
+    			table.datagrid({
 
-                    onClickRow:isediting?function(index){that.propertyclick(index,table);}:undefined,
-                    singleSelect: true,
-                    toolbar: isediting?[{
-                    				iconCls: 'icon-save',
-                    				handler:function(){
+    				onClickRow:isediting?function(index){that.propertyclick(index,table);}:undefined,
+    				singleSelect: true,
+    				toolbar: isediting?[{
+    					iconCls: 'icon-save',
+    					handler:function(){
                     					//table.datagrid('acceptChanges');
                     					that.endEditing(table);
                     					that.updateFeatureProperty(feature,table,marker);
                     				}
-                    			
+
                     			}]:[],
-                    columns:[[
-                        {field:'field',title:'属性名',width:98},
-                        {field:'value',title:'属性值',width:100,editor:(isediting?'text':undefined)}
-                    ]]
-                });
-                var data=[];
-                for(var i=0;i<that.options.propertyName.length;i++){
-                    var item={};
-                    item["field"]=that.options.propertyName[i];
-                    item["value"]=feature.properties?feature.properties[that.options.propertyName[i]]:"";
-                    data.push(item);
-                }
-                table.datagrid('loadData',data)
+                    			columns:[[
+                    			{field:'field',title:'属性名',width:98},
+                    			{field:'value',title:'属性值',width:100,editor:(isediting?'text':undefined)}
+                    			]]
+                    		});
+    			var data=[];
+    			for(var i=0;i<that.options.propertyName.length;i++){
+    				var item={};
+    				item["field"]=that.options.propertyName[i];
+    				item["value"]=feature.properties?feature.properties[that.options.propertyName[i]]:"";
+    				data.push(item);
+    			}
+    			table.datagrid('loadData',data)
 
-            });
+    		});
 
-        });
-    },
-    endEditing:function(table){
-        var editIndex=this._editIndex;
-        if (editIndex == undefined){return true}
-        if (table.datagrid('validateRow', editIndex)){
+});
+},
+endEditing:function(table){
+	var editIndex=this._editIndex;
+	if (editIndex == undefined){return true}
+		if (table.datagrid('validateRow', editIndex)){
             //var ed = $('#dg').datagrid('getEditor', {index:editIndex,field:'productid'});
             //var productname = $(ed.target).combobox('getText');
             //$('#dg').datagrid('getRows')[editIndex]['productname'] = productname;
@@ -243,16 +242,16 @@ L.Control.Search = L.Control.extend({
             editIndex = undefined;
             return true;
         } else {
-            return false;
+        	return false;
         }
     },
     makeDrawEdit:function(){
-        var wfs_url=this._selectSearchLayer.value;
-        var layers=this._selectSearchLayer.layers.split(":");
-        var featurens=layers[0];
-        var featuretype=layers[layers.length-1];
-        var me=this;
-        var drawnItems = L.wfst(null,{
+    	var wfs_url=this._selectSearchLayer.value;
+    	var layers=this._selectSearchLayer.layers.split(":");
+    	var featurens=layers[0];
+    	var featuretype=layers[layers.length-1];
+    	var me=this;
+    	var drawnItems = L.wfst(null,{
             // Required
             url : proxy+wfs_url+"?service=wfs", //'http://192.168.2.142:8080/geoserver/zsmz/wfs'
             featureNS : featurens,//xsdata  zs_csmz
@@ -260,58 +259,58 @@ L.Control.Search = L.Control.extend({
             searchLayer:me,
             onEachFeature: function (feature,marker){return me.makesearchPopup(feature,marker,'edit');},
             featureType : featuretype//*,STP_DW STL_ALL_ROAD  STR_XianJ
-    }).addTo(me._map);
+        }).addTo(me._map);
 
     // Initialize the draw control and pass it the FeatureGroup of editable layers
     var drawControl = new L.Control.Draw({
-        draw: {
-            polygon: me._selectSearchLayer.shape==='polygon',
-            marker: me._selectSearchLayer.shape==='marker',
-            rectangle:me._selectSearchLayer.shape==='rectangle',
-            circle:me._selectSearchLayer.shape==='circle',
-            polyline:me._selectSearchLayer.shape==='polyline'
-        },
-        edit: {
-            featureGroup: drawnItems,
-            searchlayer:me
-        }
+    	draw: {
+    		polygon: me._selectSearchLayer.shape==='polygon',
+    		marker: me._selectSearchLayer.shape==='marker',
+    		rectangle:me._selectSearchLayer.shape==='rectangle',
+    		circle:me._selectSearchLayer.shape==='circle',
+    		polyline:me._selectSearchLayer.shape==='polyline'
+    	},
+    	edit: {
+    		featureGroup: drawnItems,
+    		searchlayer:me
+    	}
     });
     me._drawControl=drawControl;
     me._drawnItems=drawnItems;
     me._map.addControl(drawControl);
 
     me._map.on('draw:created', function (e) {
-	   var layer=e.layer;
-	   
-	  
-        drawnItems.addLayer(layer,{"success":function(){
-               var feature=layer.feature;
-	   		me.makesearchPopup(feature,layer,'edited',true);   
+    	var layer=e.layer;
 
-        }});
 
-        
+    	drawnItems.addLayer(layer,{"success":function(){
+    		var feature=layer.feature;
+    		me.makesearchPopup(feature,layer,'edited',true);   
+
+    	}});
+
+
     });
     me._map.on('draw:editstart', function (e) {
         //layers.drawnItems.addLayer(e.layer);
     });
     me._map.on('draw:edited', function (e) {
-        drawnItems.wfstSave(e.layers);
+    	drawnItems.wfstSave(e.layers);
     });
     me._map.on('draw:deleted',function(e){
 
-        drawnItems.removeLayerFromWFS(e.layers.getLayers());
+    	drawnItems.removeLayerFromWFS(e.layers.getLayers());
     });
 
 },
 
-	onRemove: function(map) {
-		this._recordsCache = {};
+onRemove: function(map) {
+	this._recordsCache = {};
 		// map.off({
 		// 		'layeradd': this._onLayerAddRemove,
 		// 		'layerremove': this._onLayerAddRemove
 		// 	}, this);
-	},
+},
 
 	// _onLayerAddRemove: function(e) {
 	// 	//console.info('_onLayerAddRemove');
@@ -323,18 +322,18 @@ L.Control.Search = L.Control.extend({
 
 	_getPath: function(obj, prop) {
 		var parts = prop.split('.'),
-			last = parts.pop(),
-			len = parts.length,
-			cur = parts[0],
-			i = 1;
+		last = parts.pop(),
+		len = parts.length,
+		cur = parts[0],
+		i = 1;
 
 		if(len > 0)
 			while((obj = obj[cur]) && i < len)
 				cur = parts[i++];
 
-		if(obj)
-			return obj[last];
-	},
+			if(obj)
+				return obj[last];
+		},
 
 	setLayer: function(layer) {	//set search layer at runtime
 		//this.options.layer = layer; //setting this, run only this._recordsFromLayer()
@@ -361,7 +360,7 @@ L.Control.Search = L.Control.extend({
 		this._alert.style.display = 'none';
 		return this;
 	},
-		
+
 	cancel: function() {
 		this._input.value = '';
 		this._handleKeypress({keyCode:8});//simulate backspace keypress
@@ -372,7 +371,7 @@ L.Control.Search = L.Control.extend({
 	},
 	
 	expand: function() {
-        $(this._searchDiv).show();
+		$(this._searchDiv).show();
 		L.DomUtil.addClass(this._container, 'search-exp');
 		this._input.focus();
 		this._map.on('dragstart click', this.collapse, this); //拖动地图隐藏搜索栏
@@ -386,7 +385,7 @@ L.Control.Search = L.Control.extend({
 		this._input.blur();
 		if(this.options.collapsed)
 		{
-            $(this._searchDiv).hide();
+			$(this._searchDiv).hide();
 			this._cancel.style.display = 'none';
 			L.DomUtil.removeClass(this._container, 'search-exp');		
 			//this._markerLoc.hide();//maybe unuseful
@@ -412,83 +411,83 @@ L.Control.Search = L.Control.extend({
 	},
 
 ////start DOM creations
-	_createAlert: function(className) {
-		var alert = L.DomUtil.create('div', className, this._container);
-		alert.style.display = 'none';
+_createAlert: function(className) {
+	var alert = L.DomUtil.create('div', className, this._container);
+	alert.style.display = 'none';
 
-		L.DomEvent
-			.on(alert, 'click', L.DomEvent.stop, this)
-			.on(alert, 'click', this.hideAlert, this);
+	L.DomEvent
+	.on(alert, 'click', L.DomEvent.stop, this)
+	.on(alert, 'click', this.hideAlert, this);
 
-		return alert;
-	},
+	return alert;
+},
 
-	_createInput: function (text, className) {
-		var input = L.DomUtil.create('input', className, this._searchDiv);
-		input.type = 'text';
-		input.size = this._inputMinSize;
-		input.value = '';
-		input.autocomplete = 'off';
-		input.placeholder = text;
+_createInput: function (text, className) {
+	var input = L.DomUtil.create('input', className, this._searchDiv);
+	input.type = 'text';
+	input.size = this._inputMinSize;
+	input.value = '';
+	input.autocomplete = 'off';
+	input.placeholder = text;
 		//input.style.display = 'none';
 		
 		L.DomEvent
-			.disableClickPropagation(input)
-			.on(input, 'keyup', this._handleKeypress, this)
-			.on(input, 'keydown', this._handleAutoresize, this)
-			.on(input, 'blur', this.collapseDelayed, this)
-			.on(input, 'focus', this.collapseDelayedStop, this);
+		.disableClickPropagation(input)
+		.on(input, 'keyup', this._handleKeypress, this)
+		.on(input, 'keydown', this._handleAutoresize, this)
+		.on(input, 'blur', this.collapseDelayed, this)
+		.on(input, 'focus', this.collapseDelayedStop, this);
 		
 		return input;
 	},
-    _createSearchDiv:function(text,className){
-        var div=L.DomUtil.create('div', className,this._container);
-        div.style.display = 'none';
-        L.DomEvent
-            .disableClickPropagation(div)
+	_createSearchDiv:function(text,className){
+		var div=L.DomUtil.create('div', className,this._container);
+		div.style.display = 'none';
+		L.DomEvent
+		.disableClickPropagation(div)
             //.on(input, 'keyup', this._handleKeypress, this)
             //.on(input, 'keydown', this._handleAutoresize, this)
             .on(div, 'blur', this.collapseDelayed, this)
             .on(div, 'focus', this.collapseDelayedStop, this);
-        return div;
-    },
-    _createIsChecked:function(className){
-        var input = L.DomUtil.create('a', className, this._searchDiv);
-        $(input).attr("id","map_edit_btn");
+            return div;
+        },
+        _createIsChecked:function(className){
+        	var input = L.DomUtil.create('a', className, this._searchDiv);
+        	$(input).attr("id","map_edit_btn");
 
-        return input;
+        	return input;
 
-    },
-    _createLayersSelect: function (text, className) {
+        },
+        _createLayersSelect: function (text, className) {
 		var input = L.DomUtil.create('input', className, this._searchDiv); //this._container
 
-        $(input).attr("id","map_search_layers");
-        $(input).attr("data-options",
-                "data:"+ $.toJSON(this._searchLayers)
-                +""
-        );
+		$(input).attr("id","map_search_layers");
+		$(input).attr("data-options",
+			"data:"+ $.toJSON(this._searchLayers)
+			+""
+			);
 
 		L.DomEvent
-			.disableClickPropagation(input)
+		.disableClickPropagation(input)
 			//.on(input, 'keyup', this._handleKeypress, this)
 			//.on(input, 'keydown', this._handleAutoresize, this)
 			.on(input, 'blur', this.collapseDelayed, this)
 			.on(input, 'focus', this.collapseDelayedStop, this);
 
-		return input;
-	},
+			return input;
+		},
 
 
-	_createCancel: function (title, className) {
-		var cancel = L.DomUtil.create('a', className, this._container);
-		cancel.href = '#';
-		cancel.title = title;
-		cancel.style.display = 'none';
+		_createCancel: function (title, className) {
+			var cancel = L.DomUtil.create('a', className, this._container);
+			cancel.href = '#';
+			cancel.title = title;
+			cancel.style.display = 'none';
 		cancel.innerHTML = "<span>&otimes;</span>";//imageless(see css)
 
 		L.DomEvent
-			.on(cancel, 'click', L.DomEvent.stop, this)
-			.on(cancel, 'click', this.cancel, this);
+		.on(cancel, 'click', L.DomEvent.stop, this)
+		.on(cancel, 'click', this.cancel, this);
 
 		return cancel;
 	},
@@ -499,10 +498,10 @@ L.Control.Search = L.Control.extend({
 		button.title = title;
 
 		L.DomEvent
-			.on(button, 'click', L.DomEvent.stop, this)
-			.on(button, 'click', this._handleSubmit, this)			
-			.on(button, 'focus', this.collapseDelayedStop, this)
-			.on(button, 'blur', this.collapseDelayed, this);
+		.on(button, 'click', L.DomEvent.stop, this)
+		.on(button, 'click', this._handleSubmit, this)			
+		.on(button, 'focus', this.collapseDelayedStop, this)
+		.on(button, 'blur', this.collapseDelayed, this);
 
 		return button;
 	},
@@ -513,20 +512,22 @@ L.Control.Search = L.Control.extend({
 
 		var that = this;
 		L.DomEvent
-			.disableClickPropagation(tool)
-			.on(tool, 'blur', this.collapseDelayed, this)
-			.on(tool, 'mousewheel', function(e) {
-				that.collapseDelayedStop();
+		.disableClickPropagation(tool)
+		.on(tool, 'blur', this.collapseDelayed, this)
+		.on(tool, 'mousewheel', function(e) {
+			that.collapseDelayedStop();
 				L.DomEvent.stopPropagation(e);//disable zoom map
 			}, this)
-			.on(tool, 'mouseover', function(e) {
-				that.collapseDelayedStop();
-			}, this);
+		.on(tool, 'mouseover', function(e) {
+			that.collapseDelayedStop();
+		}, this);
 		return tool;
 	},
 
 	_createTip: function(text, val) {//val is object in recordCache, usually is Latlng
 		var tip;
+		console.log(val);
+		text=val.layer.feature.properties[this._searchField];
 		
 		if(this.options.callTip)
 		{
@@ -549,13 +550,14 @@ L.Control.Search = L.Control.extend({
 		tip._text = text; //value replaced in this._input and used by _autoType
 
 		L.DomEvent
-			.disableClickPropagation(tip)		
-			.on(tip, 'click', L.DomEvent.stop, this)
-			.on(tip, 'click', function(e) {
-				this._input.value = text;
-				this._handleAutoresize();
-				this._input.focus();
-				this._hideTooltip();	
+		.disableClickPropagation(tip)		
+		.on(tip, 'click', L.DomEvent.stop, this)
+		.on(tip, 'click', function(e) {
+			this._input.value = text;
+			this._input.layerdata=val;
+			this._handleAutoresize();
+			this._input.focus();
+			this._hideTooltip();	
 				if(this.options.tipAutoSubmit)//go to location at once
 					this._handleSubmit();
 			}, this);
@@ -566,10 +568,10 @@ L.Control.Search = L.Control.extend({
 //////end DOM creations
 
 	_filterRecords: function(text) {	//Filter this._recordsCache case insensitive and much more..
-	
+
 		var regFilter = new RegExp("^[.]$|[\[\]|()*]",'g'),	//remove . * | ( ) ] [
-			I, regSearch,
-			frecords = {};
+		I, regSearch,
+		frecords = {};
 
 		text = text.replace(regFilter,'');	  //sanitize text
 		I = this.options.initial ? '^' : '';  //search only initial text
@@ -580,22 +582,22 @@ L.Control.Search = L.Control.extend({
 		for(var key in this._recordsCache)
 			if( regSearch.test(key) )
 				frecords[key]= this._recordsCache[key];
-		
-		return frecords;
-	},
 
-	showTooltip: function() {
-		var filteredRecords, newTip;
+			return frecords;
+		},
 
-		this._countertips = 0;
-		
+		showTooltip: function() {
+			var filteredRecords, newTip;
+
+			this._countertips = 0;
+
 	//FIXME problem with jsonp/ajax when remote filter has different behavior of this._filterRecords
-		if(this.options.layer)
-			filteredRecords = this._filterRecords( this._input.value );
-		else
-			filteredRecords = this._recordsCache;
-			
-		this._tooltip.innerHTML = '';
+	if(this.options.layer)
+		filteredRecords = this._filterRecords( this._input.value );
+	else
+		filteredRecords = this._recordsCache;
+
+	this._tooltip.innerHTML = '';
 		this._tooltip.currentSelection = -1;  //inizialized for _handleArrowSelect()
 
 		for(var key in filteredRecords)//fill tooltip
@@ -632,12 +634,12 @@ L.Control.Search = L.Control.extend({
 			//propName = this.options.propertyName,
 			propName = this._searchField,
 			propLoc = this.options.propertyLoc;
-		if( L.Util.isArray(propLoc) )
-			for(i in json)
-				jsonret[ this._getPath(json[i],propName) ]= L.latLng( json[i][ propLoc[0] ], json[i][ propLoc[1] ] );
-		else
-			for(i in json)
-				jsonret[ this._getPath(json[i],propName) ]= L.latLng( this._getPath(json[i],propLoc) );
+			if( L.Util.isArray(propLoc) )
+				for(i in json)
+					jsonret[ this._getPath(json[i],propName) ]= L.latLng( json[i][ propLoc[0] ], json[i][ propLoc[1] ] );
+				else
+					for(i in json)
+						jsonret[ this._getPath(json[i],propName) ]= L.latLng( this._getPath(json[i],propLoc) );
 		//TODO throw new Error("propertyName '"+propName+"' not found in JSON data");
 		return jsonret;
 	},
@@ -653,56 +655,56 @@ L.Control.Search = L.Control.extend({
 			url = L.Util.template(this.options.url+'&'+this.options.jsonpParam+'=L.Control.Search.callJsonp', {s: text}); //parsing url
 			//rnd = '&_='+Math.floor(Math.random()*10000);
 			//TODO add rnd param or randomize callback name! in recordsFromJsonp
-		script.type = 'text/javascript';
-		script.src = url;
-		return this;
+			script.type = 'text/javascript';
+			script.src = url;
+			return this;
 		//may be return {abort: function() { script.parentNode.removeChild(script); } };
 	},
 
-    _recordsFromWfs:function(text,callAfter){
-        this._selectSearchLayer;
-        if(this._selectSearchLayer==null){
-            easyloader.load('messager',function(){
-                $.messager.alert('警告!','请选择要查询的图层!');
-            });
-           return;
-        }
+	_recordsFromWfs:function(text,callAfter){
+		this._selectSearchLayer;
+		if(this._selectSearchLayer==null){
+			easyloader.load('messager',function(){
+				$.messager.alert('警告!','请选择要查询的图层!');
+			});
+			return;
+		}
 
 
-        var xml_str='<wfs:GetFeature';
-        xml_str += ' service="WFS" version="1.1.0" '
-        +' outputFormat="JSON"'
-        +' maxFeatures="'+this._maxFeatures+'"'
-        +' xmlns:wfs="http://www.opengis.net/wfs"'
-        +' xmlns:ogc="http://www.opengis.net/ogc">'
-        +' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
-        + this._makeFilters({field:this._searchField,value:text})
-        +'</wfs:Query>'
-        +'</wfs:GetFeature>';
+		var xml_str='<wfs:GetFeature';
+		xml_str += ' service="WFS" version="1.1.0" '
+		+' outputFormat="JSON"'
+		+' maxFeatures="'+this._maxFeatures+'"'
+		+' xmlns:wfs="http://www.opengis.net/wfs"'
+		+' xmlns:ogc="http://www.opengis.net/ogc">'
+		+' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
+		+ this._makeFilters({field:this._searchField,value:text})
+		+'</wfs:Query>'
+		+'</wfs:GetFeature>';
 
 
-        $.ajax({
-            type: 'POST',
-            contentType: "text/hda; charset=utf-8",
-            url: proxy+this._selectSearchLayer.value,
-            processData: false,
-            data: xml_str,
-            success: callAfter,
-            dataType: "json"
-        });
+		$.ajax({
+			type: 'POST',
+			contentType: "text/hda; charset=utf-8",
+			url: proxy+this._selectSearchLayer.value,
+			processData: false,
+			data: xml_str,
+			success: callAfter,
+			dataType: "json"
+		});
 
 
-    },
-    _makeFilters:function(fieldValue){
-        var str="<ogc:Filter>"
-            + "<ogc:PropertyIsLike wildCard='*' singleChar='.' escape='!'>"
-            + "<ogc:PropertyName>"+fieldValue.field+"</ogc:PropertyName>"
-            + "<ogc:Literal>*"+fieldValue.value+"*</ogc:Literal>"
-            + "</ogc:PropertyIsLike>"
-            + "</ogc:Filter>";
-        return str;
+	},
+	_makeFilters:function(fieldValue){
+		var str="<ogc:Filter>"
+		+ "<ogc:PropertyIsLike wildCard='*' singleChar='.' escape='!'>"
+		+ "<ogc:PropertyName>"+fieldValue.field+"</ogc:PropertyName>"
+		+ "<ogc:Literal>*"+fieldValue.value+"*</ogc:Literal>"
+		+ "</ogc:PropertyIsLike>"
+		+ "</ogc:Filter>";
+		return str;
 
-    },
+	},
 	_recordsFromAjax: function(text, callAfter) {	//Ajax request
 		if (window.XMLHttpRequest === undefined) {
 			window.XMLHttpRequest = function() {
@@ -718,17 +720,17 @@ L.Control.Search = L.Control.extend({
 			//rnd = '&_='+Math.floor(Math.random()*10000);
 			//TODO add rnd param or randomize callback name! in recordsFromAjax			
 			response = {};
-		
-		request.open("GET", url);
-		var that = this;
-		request.onreadystatechange = function() {
-		    if(request.readyState === 4 && request.status === 200) {
-		    	response = JSON.parse(request.responseText);
+
+			request.open("GET", url);
+			var that = this;
+			request.onreadystatechange = function() {
+				if(request.readyState === 4 && request.status === 200) {
+					response = JSON.parse(request.responseText);
 		    	var fdata = that._filterJSON(response);//_filterJSON defined in inizialize...
-		        callAfter(fdata);
+		    	callAfter(fdata);
 		    }else{
-                L.DomUtil.removeClass(that._container, 'search-load');
-            }
+		    	L.DomUtil.removeClass(that._container, 'search-load');
+		    }
 		};
 		request.send();
 		return this;   
@@ -736,57 +738,44 @@ L.Control.Search = L.Control.extend({
 
 	_recordsFromLayer: function() {	//return table: key,value from layer
 		var that = this,
-			retRecords = {},
+		retRecords = {},
 			//propName = this.options.propertyName,
 			propName = this._searchField,
 			loc;
-		
-		this._layer.eachLayer(function(layer) {
 
-			if(layer instanceof SearchMarker) return;
+			this._layer.eachLayer(function(layer) {
 
-			if(layer instanceof L.Marker)
-			{
-				if(that._getPath(layer.options,propName))
+				if(layer instanceof SearchMarker) return;
+
+				if(layer instanceof L.Marker)
 				{
+					
 					loc = layer.getLatLng();
 					loc.layer = layer;
-					retRecords[ that._getPath(layer.options,propName) ] = loc;			
-					
-				}else if(that._getPath(layer.feature.properties,propName)){
+					retRecords[ layer.feature.id] = loc;
 
-					loc = layer.getLatLng();
-					loc.layer = layer;
-					retRecords[ that._getPath(layer.feature.properties,propName) ] = loc;
-					
-				}else{
-					console.log("propertyName '"+propName+"' not found in marker", layer);
 				}
-			}
 			else if(layer.hasOwnProperty('feature'))//GeoJSON layer
 			{
-				if(layer.feature.properties.hasOwnProperty(propName))
-				{
+				
 					loc = layer.getBounds().getCenter();
 					loc.layer = layer;
-					retRecords[ layer.feature.properties[propName] ] = loc;
-				}
-				else
-					console.log("propertyName '"+propName+"' not found in feature", layer);			
+					retRecords[ layer.feature.id] = loc;
+					
 			}
 			
 		},this);
-		
-		return retRecords;
-	},
+			return retRecords;
 
-	_autoType: function() {
-		
+		},
+
+		_autoType: function() {
+
 		//TODO implements autype without selection(useful for mobile device)
 		
 		var start = this._input.value.length,
-			firstRecord = this._tooltip.firstChild._text,
-			end = firstRecord.length;
+		firstRecord = this._tooltip.firstChild._text,
+		end = firstRecord.length;
 
 		if (firstRecord.indexOf(this._input.value) === 0) { // If prefix match
 			this._input.value = firstRecord;
@@ -836,18 +825,18 @@ L.Control.Search = L.Control.extend({
 		switch(e.keyCode)
 		{
 			case 27: //Esc
-				this.collapse();
+			this.collapse();
 			break;
 			case 13: //Enter
-				if(this._countertips == 1)
-					this._handleArrowSelect(1);
+			if(this._countertips == 1)
+				this._handleArrowSelect(1);
 				this._handleSubmit();	//do search
-			break;
+				break;
 			case 38://Up
-				this._handleArrowSelect(-1);
+			this._handleArrowSelect(-1);
 			break;
 			case 40://Down
-				this._handleArrowSelect(1);
+			this._handleArrowSelect(1);
 			break;
 			case 37://Left
 			case 39://Right
@@ -858,36 +847,36 @@ L.Control.Search = L.Control.extend({
 			//case 8://backspace
 			case 46://delete
 				this._autoTypeTmp = false;//disable temporarily autoType
-			break;
+				break;
 			default://All keys
 
-				if(this._input.value.length)
-					this._cancel.style.display = 'inline-block';
-				else
-					this._cancel.style.display = 'none';
+			if(this._input.value.length)
+				this._cancel.style.display = 'inline-block';
+			else
+				this._cancel.style.display = 'none';
 
-				if(this._input.value.length >= this.options.minLength)
-				{
+			if(this._input.value.length >= this.options.minLength)
+			{
 
-                    var that = this;
+				var that = this;
 					clearTimeout(this.timerKeypress);	//cancel last search request while type in				
 					this.timerKeypress = setTimeout(function() {	//delay before request, for limit jsonp/ajax request
 
 						that._fillRecordsCache();
-					
+
 					}, this.options.delayType);
 				}
 				else
 					this._hideTooltip();
-		}
-	},
-	_clearHistoryMarkers:function(){
-       for(var i=0;i<this._histroyMarkers.length;i++){
-           this._map.removeLayer(this._histroyMarkers[i]);
-       }
-       this._histroyMarkers=[];
-    },
-	_fillRecordsCache: function() {
+			}
+		},
+		_clearHistoryMarkers:function(){
+			for(var i=0;i<this._histroyMarkers.length;i++){
+				this._map.removeLayer(this._histroyMarkers[i]);
+			}
+			this._histroyMarkers=[];
+		},
+		_fillRecordsCache: function() {
 //TODO important optimization!!! always append data in this._recordsCache
 //  now _recordsCache content is emptied and replaced with new data founded
 //  always appending data on _recordsCache give the possibility of caching ajax, jsonp and layersearch!
@@ -898,11 +887,11 @@ L.Control.Search = L.Control.extend({
 //TODO change structure of _recordsCache
 //	like this: _recordsCache = {"text-key1": {loc:[lat,lng], ..other attributes.. }, {"text-key2": {loc:[lat,lng]}...}, ...}
 //	in this mode every record can have a free structure of attributes, only 'loc' is required
-	
-		var inputText = this._input.value,
-			that;
-		
-		L.DomUtil.addClass(this._container, 'search-load');
+
+var inputText = this._input.value,
+that;
+
+L.DomUtil.addClass(this._container, 'search-load');
 
 		if(this.options.callData)	//CUSTOM SEARCH CALLBACK
 		{
@@ -916,25 +905,25 @@ L.Control.Search = L.Control.extend({
 				L.DomUtil.removeClass(that._container, 'search-load');
 			});
 		}else if(this._searchLayers){
-            that=this;
-            this._clearHistoryMarkers();
-            this._searchInputText=inputText;
+			that=this;
+			this._clearHistoryMarkers();
+			this._searchInputText=inputText;
             this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
-                var featuresLayer = new L.GeoJSON(data, {
-                    style: function(feature) {
-                        return {color: feature.properties.color };
-                    },
-                    coordsToLatLng:function(a){
-                        return a;
-                    },
-                    onEachFeature: function(feature, marker) {
-                        that._histroyMarkers.push(marker);
-                        that.makesearchPopup(feature,marker,'search');
-                    }
-                });
-                that._map.addLayer(featuresLayer);
-                that._layer=featuresLayer;
-                that._geojson=data;
+            	var featuresLayer = new L.GeoJSON(data, {
+            		style: function(feature) {
+            			return {color: feature.properties.color };
+            		},
+            		coordsToLatLng:function(a){
+            			return a;
+            		},
+            		onEachFeature: function(feature, marker) {
+            			that._histroyMarkers.push(marker);
+            			that.makesearchPopup(feature,marker,'search');
+            		}
+            	});
+            	that._map.addLayer(featuresLayer);
+            	that._layer=featuresLayer;
+            	that._geojson=data;
                 that._recordsCache = that._recordsFromLayer();	//fill table key,value from markers into layer
                 that.showTooltip();
                 L.DomUtil.removeClass(that._container, 'search-load');
@@ -962,9 +951,9 @@ L.Control.Search = L.Control.extend({
 				});
 			}
 		}
-        else if(this.wfslayer){
+		else if(this.wfslayer){
 
-        }
+		}
 		else if(this.options.layer)	//SEARCH ELEMENTS IN PRELOADED LAYER
 		{
 			this._recordsCache = this._recordsFromLayer();	//fill table key,value from markers into layer				
@@ -976,16 +965,16 @@ L.Control.Search = L.Control.extend({
 	_handleAutoresize: function() {	//autoresize this._input
 	    //TODO refact _handleAutoresize now is not accurate
 	    if (this._input.style.maxWidth != this._map._container.offsetWidth) //If maxWidth isn't the same as when first set, reset to current Map width
-	        this._input.style.maxWidth = L.DomUtil.getStyle(this._map._container, 'width');
+	    	this._input.style.maxWidth = L.DomUtil.getStyle(this._map._container, 'width');
 
-		if(this.options.autoResize && (this._container.offsetWidth + 45 < this._map._container.offsetWidth))
-			this._input.size = this._input.value.length<this._inputMinSize ? this._inputMinSize : this._input.value.length;
+	    if(this.options.autoResize && (this._container.offsetWidth + 45 < this._map._container.offsetWidth))
+	    	this._input.size = this._input.value.length<this._inputMinSize ? this._inputMinSize : this._input.value.length;
 	},
 
 	_handleArrowSelect: function(velocity) {
-	
+
 		var searchTips = this._tooltip.hasChildNodes() ? this._tooltip.childNodes : [];
-			
+
 		for (i=0; i<searchTips.length; i++)
 			L.DomUtil.removeClass(searchTips[i], 'search-tip-select');
 		
@@ -1029,7 +1018,8 @@ L.Control.Search = L.Control.extend({
 				this.collapse();
 			else
 			{
-                var loc = this._getLocation(this._input.value);
+				
+				var loc = this._getLocation(this._input.layerdata.layer.feature.id);
 				if(loc===false)
 					this.showAlert();
 				else
@@ -1037,10 +1027,10 @@ L.Control.Search = L.Control.extend({
 
 					this.showLocation(loc, this._input.value);
 					this.fire('search_locationfound', {
-							latlng: loc,
-							text: this._input.value,
-							layer: loc.layer ? loc.layer : null
-						});
+						latlng: loc,
+						text: this._input.value,
+						layer: loc.layer ? loc.layer : null
+					});
 				}
 				//this.collapse();
 				//FIXME if collapse in _handleSubmit hide _markerLoc!
@@ -1156,7 +1146,7 @@ var SearchMarker = L.Marker.extend({
 
 	animate: function() {
 	//TODO refact animate() more smooth! like this: http://goo.gl/DDlRs
-		var circle = this._circleLoc,
+	var circle = this._circleLoc,
 			tInt = 200,	//time interval
 			ss = 10,	//frames
 			mr = parseInt(circle._radius/ss),
@@ -1164,8 +1154,8 @@ var SearchMarker = L.Marker.extend({
 			newrad = circle._radius * 2.5,
 			acc = 0;
 
-		circle._timerAnimLoc = setInterval(function() {
-			acc += 0.5;
+			circle._timerAnimLoc = setInterval(function() {
+				acc += 0.5;
 			mr += acc;	//adding acceleration
 			newrad -= mr;
 			
@@ -1178,22 +1168,22 @@ var SearchMarker = L.Marker.extend({
 				//if(typeof afterAnimCall == 'function')
 					//afterAnimCall();
 					//TODO use create event 'animateEnd' in SearchMarker 
-			}
-		}, tInt);
-		
-		return this;
+				}
+			}, tInt);
+
+			return this;
+		}
+	});
+
+L.Map.addInitHook(function () {
+	if (this.options.searchControl) {
+		this.searchControl = L.control.search(this.options.searchControl);
+		this.addControl(this.searchControl);
 	}
 });
 
-L.Map.addInitHook(function () {
-    if (this.options.searchControl) {
-        this.searchControl = L.control.search(this.options.searchControl);
-        this.addControl(this.searchControl);
-    }
-});
-
 L.control.search = function (options) {
-    return new L.Control.Search(options);
+	return new L.Control.Search(options);
 };
 
 }).call(this);
