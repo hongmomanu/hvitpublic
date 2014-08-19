@@ -23,7 +23,7 @@ function initMap(){
         type: 'get',
         dataType: 'json',
         url: '../auth/getfuncsbyrole',
-        data: {type:'底图,覆盖图,图层编辑,默认加载图层'},
+        data: {type:'底图,覆盖图,图层编辑,默认加载图层,地图插件'},
         //complete :compfunc,
         //error:errorfunc,
         success: function(resbase){
@@ -31,7 +31,10 @@ function initMap(){
             var overlayMaps={};
             var editLayers=[];
             var defaultLayers=resbase['默认加载图层'];
+            var plugins=resbase['地图插件'];
             var miniLayer=null;
+
+            //init base layer
             for(var i=0;i<resbase['底图'].length;i++){
                 var layertype=$.evalJSON(resbase['底图'][i].imgcss);
                 if(layertype.type==='tile'){
@@ -47,6 +50,7 @@ function initMap(){
                 }
 
             }
+            //init over layer
             for(var i=0;i<resbase['覆盖图'].length;i++){
                 var layertype=$.evalJSON(resbase['覆盖图'][i].imgcss);
 
@@ -83,19 +87,17 @@ function initMap(){
 
 
             }
+
+            // init basemap 
             var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
             if(display_layers.length===0)alert("无地图资源");
-            //console.log(display_layers);
             map =new L.Map('map', {center:[30,120], zoom: 9,
                 layers: display_layers});
             L.GeoIP.centerMapOnPosition(map);
-
-            //var osm2 = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 13, attribution: osmAttrib });
-            var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
-
             map.addControl(layersControl);
 
 
+            //load search layers
             for(var i=0;i<resbase['图层编辑'].length;i++){
                 editLayers.push(resbase['图层编辑'][i].value);
             }
@@ -105,12 +107,22 @@ function initMap(){
                 editLayers:editLayers
             })
             );
+            
+            //load plugins
+            for(var i=0;i<plugins.length;i++){
+                if(plugins[i].text=="小地图"){
+                    var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
+                    map.on('baselayerchange',function(e){
+                        map.removeControl(miniMap);
+                        miniLayer=new L.TileLayer(e.layer._url,e.layer.initoptions);
+                        miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
+                    });
 
-            map.on('baselayerchange',function(e){
-                map.removeControl(miniMap);
-                miniLayer=new L.TileLayer(e.layer._url,e.layer.initoptions);
-                miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
-            })
+                }
+
+            }
+
+            
 
         }
     });
