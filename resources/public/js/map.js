@@ -7,7 +7,6 @@ var proxy="../auth/proxy?url="
 
 function initMap(){
     // create a map in the "map" div, set the view to a given place and zoom
-
     function makeDisplayLayer(text,defualtlayers,layer){
         for(var i=0;i<defualtlayers.length;i++){
 
@@ -117,12 +116,8 @@ function initMap(){
                         miniLayer=new L.TileLayer(e.layer._url,e.layer.initoptions);
                         miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
                     });
-
                 }
-
             }
-
-            
 
         }
     });
