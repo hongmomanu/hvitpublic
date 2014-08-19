@@ -10,9 +10,9 @@ function initMap(){
 
     function makeDisplayLayer(text,defualtlayers,layer){
         for(var i=0;i<defualtlayers.length;i++){
-         
+
             if(defualtlayers[i].value===text){
-                
+
                 display_layers.push(layer);
                 break;
             }
@@ -64,7 +64,7 @@ function initMap(){
                                 noWrap: true
                             });
                     overlayMaps[resbase['覆盖图'][i].text]=wms_layer;
-                    makeDisplayLayer(resbase['覆盖图'][i].text,defaultLayers,layer);
+                    makeDisplayLayer(resbase['覆盖图'][i].text,defaultLayers,wms_layer);
                     wms_layers.push(
                     {
                         text:resbase['覆盖图'][i].text,
@@ -77,10 +77,11 @@ function initMap(){
                     });
                 }
 
-                
+
             }
             var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
             if(display_layers.length===0)alert("无地图资源");
+            console.log(display_layers);
             map =new L.Map('map', {center:[30,120], zoom: 9,
                 layers: display_layers});
             L.GeoIP.centerMapOnPosition(map);
