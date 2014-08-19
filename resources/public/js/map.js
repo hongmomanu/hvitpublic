@@ -43,7 +43,6 @@ function initMap(){
                     };
                     var layer=L.tileLayer(resbase['底图'][i].value, options);
                     baseMaps[resbase['底图'][i].text]=layer;
-                    layer.initoptions=options;
                     var isDisplay=makeDisplayLayer(resbase['底图'][i].text,defaultLayers,layer);
                     if(isDisplay)miniLayer=L.tileLayer(resbase['底图'][i].value, options);
                 }
@@ -113,7 +112,7 @@ function initMap(){
                     var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
                     map.on('baselayerchange',function(e){
                         map.removeControl(miniMap);
-                        miniLayer=new L.TileLayer(e.layer._url,e.layer.initoptions);
+                        miniLayer=new L.TileLayer(e.layer._url,e.layer.options);
                         miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
                     });
                 }
