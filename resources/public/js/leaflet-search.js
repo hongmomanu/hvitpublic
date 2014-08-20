@@ -758,10 +758,10 @@ _createInput: function (text, className) {
 			else if(layer.hasOwnProperty('feature'))//GeoJSON layer
 			{
 				
-					loc = layer.getBounds().getCenter();
-					loc.layer = layer;
-					retRecords[ layer.feature.id] = loc;
-					
+				loc = layer.getBounds().getCenter();
+				loc.layer = layer;
+				retRecords[ layer.feature.id] = loc;
+
 			}
 			
 		},this);
@@ -908,7 +908,7 @@ L.DomUtil.addClass(this._container, 'search-load');
 			that=this;
 			this._clearHistoryMarkers();
 			this._searchInputText=inputText;
-            this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
+            	this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
             	var featuresLayer = new L.GeoJSON(data, {
             		/*style: function(feature) {
             			return {color: feature.properties.color };
