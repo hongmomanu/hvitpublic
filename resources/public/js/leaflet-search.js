@@ -526,7 +526,7 @@ _createInput: function (text, className) {
 
 	_createTip: function(text, val) {//val is object in recordCache, usually is Latlng
 		var tip;
-		console.log(val);
+		//console.log(val);
 		text=val.layer.feature.properties[this._searchField];
 		
 		if(this.options.callTip)
@@ -910,13 +910,14 @@ L.DomUtil.addClass(this._container, 'search-load');
 			this._searchInputText=inputText;
             this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
             	var featuresLayer = new L.GeoJSON(data, {
-            		style: function(feature) {
+            		/*style: function(feature) {
             			return {color: feature.properties.color };
-            		},
+            		},*/
             		coordsToLatLng:function(a){
             			return a;
             		},
             		onEachFeature: function(feature, marker) {
+            			//console.log(feature);
             			that._histroyMarkers.push(marker);
             			that.makesearchPopup(feature,marker,'search');
             		}

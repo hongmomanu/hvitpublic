@@ -86,14 +86,32 @@ function initMap(){
 
             }
 
+            // init plugins
+            var hasminimap=false;
+            var hasfullmap=false;
+            for(var i=0;i<plugins.length;i++){
+                if(plugins[i].text=="小地图"){
+                    hasminimap=true;
+                }
+                else if(plugins[i].text=="地图全屏"){
+                    hasfullmap=true;
+                }
+            }
+
             // init basemap 
             var layersControl = new L.Control.Layers(baseMaps, overlayMaps);
             if(display_layers.length===0)alert("无地图资源");
-            map =new L.Map('map', {center:[30,120], zoom: 9,
-                layers: display_layers});
+            map =new L.Map('map', {
+                center:[30,120], 
+                zoom: 9,
+                fullscreenControl: hasfullmap,
+                fullscreenControlOptions: {
+                    position: 'topleft'
+                },
+                layers: display_layers
+            });
             L.GeoIP.centerMapOnPosition(map);
             map.addControl(layersControl);
-
 
             //load search layers
             for(var i=0;i<resbase['图层编辑'].length;i++){
@@ -106,16 +124,14 @@ function initMap(){
             })
             );
             
-            //load plugins
-            for(var i=0;i<plugins.length;i++){
-                if(plugins[i].text=="小地图"){
-                    var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
-                    map.on('baselayerchange',function(e){
-                        map.removeControl(miniMap);
-                        miniLayer=new L.TileLayer(e.layer._url,e.layer.options);
-                        miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
-                    });
-                }
+               //load plugins
+               if(hasminimap){
+                var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
+                map.on('baselayerchange',function(e){
+                    map.removeControl(miniMap);
+                    miniLayer=new L.TileLayer(e.layer._url,e.layer.options);
+                    miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
+                });
             }
 
         }
