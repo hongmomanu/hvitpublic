@@ -27,7 +27,7 @@ L.Path.include(
                 return xml;
             } else if (this instanceof L.Polyline) {
                 testobject=this;
-                console.log("GML TODO: L.Polyline making");
+                //console.log("GML TODO: L.Polyline making");
                 //Polygon
                 xml += '<gml:MultiLineString srsName="EPSG:4326">';
                 xml +='<gml:lineStringMember><gml:LineString>';

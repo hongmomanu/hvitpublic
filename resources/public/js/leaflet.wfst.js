@@ -51,6 +51,9 @@ L.WFST = L.GeoJSON.extend({
         // Call to parent addLayer
         L.GeoJSON.prototype.addLayer.call(this,layer);
     },
+    addDefualtLayer:function(layer,options){
+        L.GeoJSON.prototype.addLayer.call(this,layer);
+    },
     removeLayer: function(layer,options) {
         //this.wfstRemove(layer,options);
         // Call to parent removeLayer
@@ -172,7 +175,7 @@ L.WFST = L.GeoJSON.extend({
         xml += "</wfs:Insert>";
         xml += "</wfs:Transaction>";
 
-        this._ajax( L.extend({method:'POST', data:xml},options));
+        this._ajax( L.extend({type:'POST', data:xml},options));
     },
 
     // Remove a layers with WFS-T
@@ -219,7 +222,7 @@ L.WFST = L.GeoJSON.extend({
         xml += "</wfs:Delete>";
         xml += "</wfs:Transaction>";
 
-        this._ajax( L.extend({method:'POST', data:xml},options));
+        this._ajax( L.extend({type:'POST', data:xml},options));
     },
 
 
@@ -262,7 +265,7 @@ L.WFST = L.GeoJSON.extend({
         xml += "</wfs:Update>";
         xml += "</wfs:Transaction>";
 
-        this._ajax( L.extend({method:'POST', data:xml},options));
+        this._ajax( L.extend({type:'POST', data:xml},options));
     },
 
 
@@ -395,19 +398,26 @@ L.WFST = L.GeoJSON.extend({
     */
     _ajax: function(options){
         options = L.extend({
-            method: 'GET',
+            type: 'GET',
             success: function(r){
                 //console.log(r);
             },
             failure: function(r){
                 //console.log("AJAX Failure!");console.log(r);
             },
+            dataType: this.options.dataType,
             self: this,
-            url: this.options.url
+            contentType: "text/hda; charset=utf-8",
+            url: this.options.url,
+            processData:this.options.processData,
+            data:this.options.data
         },options);
 
         self = this;
-        var xmlhttpreq = (window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'));
+        $.ajax(options); 
+    
+
+        /*var xmlhttpreq = (window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'));
         xmlhttpreq.onreadystatechange=function() {
             if(xmlhttpreq.readyState==4){
                 if(xmlhttpreq.status==200){
@@ -418,7 +428,7 @@ L.WFST = L.GeoJSON.extend({
             }
         };
         xmlhttpreq.open(options.method,options.url,true);
-        xmlhttpreq.send(options.data);
+        xmlhttpreq.send(options.data);*/
     },
     /*
     Get all existing objects from the WFS service and draw them
@@ -429,13 +439,14 @@ L.WFST = L.GeoJSON.extend({
         this._ajax({
             url: geoJsonUrl,
             success: function(res){
-                res = JSON.parse(res);
+                //res = $.evalJSON(res);
                 for(var i = 0,len = res.features.length;i<len;i++){
                     res.features[i]._wfstSaved = true;
                 }
                 this.self.addData(res.features);
             }
         });
+
     },
     _loadSearchedFeatures:function(){
 
@@ -451,7 +462,7 @@ L.WFST = L.GeoJSON.extend({
             +'</wfs:GetFeature>';
 
         var me=this;
-        $.ajax({
+        this._ajax({
             type: 'POST',
             contentType: "text/hda; charset=utf-8",
             url: me.options.url ,
@@ -524,13 +535,14 @@ L.WFST = L.GeoJSON.extend({
 
     // A compatibility layer because browsers argue about the right way to do getElementsByTagName when namespaces are involved
     _getElementsByTagName : function(xml,name){
+        
         var tag = xml.getElementsByTagName(name);
         if(!tag || tag === null || tag.length === 0){
             tag = xml.getElementsByTagName(name.replace(/.*:/,''));
         }
-        if(!tag || tag === null || tag.length === 0){
+        /*if(!tag || tag === null || tag.length === 0){
             tag = xml.getElementsByTagNameNS('', name.replace(/.*:/,''));
-        }
+        }*/
         return tag;
     },
 

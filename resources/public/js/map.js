@@ -3,7 +3,9 @@ var layers = {};
 var wms_layers = [];
 var drawControl;
 var display_layers=[];
-var proxy="../auth/proxy?url="
+var proxy="../auth/proxy?url=";
+var self=null;
+
 
 function initMap(){
     // create a map in the "map" div, set the view to a given place and zoom

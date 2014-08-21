@@ -131,6 +131,8 @@ initialize: function(options) {
 				onSelect: function(rec){
 					if(me._drawControl)me._map.removeControl(me._drawControl);
 					if(me._drawnItems)me._map.removeLayer(me._drawnItems);
+					me._drawControl=null;
+					me._drawnItems=null;
 
 					me._selectSearchLayer=rec;
 					me._searchField=rec.searchField;
@@ -279,31 +281,36 @@ endEditing:function(table){
     me._drawnItems=drawnItems;
     me._map.addControl(drawControl);
 
-    me._map.on('draw:created', function (e) {
+    me._map.on('draw:created', me.drawcreated,me);
+    me._map.on('draw:editstart', function (e) {
+        //layers.drawnItems.addLayer(e.layer);
+    });
+    me._map.on('draw:edited',me.drawedited,me);
+    me._map.on('draw:deleted',me.drawdeleted,me);
+
+},
+
+drawdeleted:function(e){
+    this._drawnItems.removeLayerFromWFS(e.layers.getLayers());
+},
+
+drawedited: function (e) {
+    	this._drawnItems.wfstSave(e.layers);
+ }
+,
+drawcreated:function (e) {
     	var layer=e.layer;
 
-
-    	drawnItems.addLayer(layer,{"success":function(){
+     var me=this;
+    	this._drawnItems.addLayer(layer,{"success":function(){
     		var feature=layer.feature;
     		me.makesearchPopup(feature,layer,'edited',true);   
 
     	}});
 
 
-    });
-    me._map.on('draw:editstart', function (e) {
-        //layers.drawnItems.addLayer(e.layer);
-    });
-    me._map.on('draw:edited', function (e) {
-    	drawnItems.wfstSave(e.layers);
-    });
-    me._map.on('draw:deleted',function(e){
-
-    	drawnItems.removeLayerFromWFS(e.layers.getLayers());
-    });
-
-},
-
+    }
+,
 onRemove: function(map) {
 	this._recordsCache = {};
 		// map.off({
@@ -851,7 +858,7 @@ _createInput: function (text, className) {
 			default://All keys
 
 			if(this._input.value.length)
-				this._cancel.style.display = 'inline-block';
+				this._cancel.style.display ='none' ;//'inline-block';
 			else
 				this._cancel.style.display = 'none';
 
@@ -910,19 +917,35 @@ L.DomUtil.addClass(this._container, 'search-load');
 			this._searchInputText=inputText;
             	this._recordsFromWfs(inputText,function(data) {// is async request then it need callback
             	var featuresLayer = new L.GeoJSON(data, {
-            		/*style: function(feature) {
-            			return {color: feature.properties.color };
-            		},*/
+            		style: function(feature) {
+            			return {color: "pink" };
+            		},
             		coordsToLatLng:function(a){
             			return a;
             		},
             		onEachFeature: function(feature, marker) {
-            			//console.log(feature);
             			that._histroyMarkers.push(marker);
             			that.makesearchPopup(feature,marker,'search');
+                           
+            			
             		}
             	});
+            	//that._map.removeLayer(that._layer);
             	that._map.addLayer(featuresLayer);
+            	that._map.off('draw:created', that.drawcreated,that);
+		     that._map.off('draw:edited',that.drawedited,that);
+    			that._map.off('draw:deleted',that.drawdeleted,that);
+		     
+		     if(that._drawControl){
+
+		     	   that._map.removeControl(that._drawControl);
+		        
+    			   that._map.removeLayer(that._drawnItems);
+		     	   that.makeDrawEdit() ;
+		     }
+
+
+
             	that._layer=featuresLayer;
             	that._geojson=data;
                 that._recordsCache = that._recordsFromLayer();	//fill table key,value from markers into layer
