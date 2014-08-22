@@ -76,7 +76,8 @@ function initMap(){
                     wms_layers.push(
                     {
                         text:resbase['覆盖图'][i].text,
-                        value:resbase['覆盖图'][i].value,
+                        value:resbase['覆盖图'][i].text,
+                        url:resbase['覆盖图'][i].value,
                         layers:layertype.layers,
                         searchField:layertype.searchField,
                         propertyName:layertype.propertyName,

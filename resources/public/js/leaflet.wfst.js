@@ -334,7 +334,9 @@ L.WFST = L.GeoJSON.extend({
                 elems[p].getAttribute('type') === 'gml:GeometryPropertyType' || 
                 elems[p].getAttribute('type') === 'gml:PointPropertyType' || 
                 elems[p].getAttribute('type') === 'gml:MultiLineStringPropertyType' ||
+                 //elems[p].getAttribute('type') === 'gml:LineStringPropertyType' ||
                 elems[p].getAttribute('type') === 'gml:MultiPolygonPropertyType' ||
+                //elems[p].getAttribute('type') === 'gml:PolygonPropertyType' ||
                 elems[p].getAttribute('type') === 'gml:MultiSurfacePropertyType' ||
                 elems[p].getAttribute('type') === 'gml:SurfacePropertyType' 
             ){
@@ -484,7 +486,7 @@ L.WFST = L.GeoJSON.extend({
     */
     _loadFeatureDescription: function(){
         //var describeFeatureUrl = this.options.url + '?service=WFS&version=' + this.options.version + '&request=DescribeFeatureType&typename=' + this.options.featureNS + ':' + this.options.featureType;
-        var describeFeatureUrl = this.options.url + '&service=WFS&version=' + this.options.version + '&request=DescribeFeatureType&typename=' + this.options.featureNS + ':' + this.options.featureType;
+        var describeFeatureUrl = this.options.url + '&version=' + this.options.version + '&request=DescribeFeatureType&typename=' + this.options.featureNS + ':' + this.options.featureType;
         this._ajax({
             url: describeFeatureUrl,
             success: function(res){
