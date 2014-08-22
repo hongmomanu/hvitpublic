@@ -3,7 +3,7 @@ var layers = {};
 var wms_layers = [];
 var drawControl;
 var display_layers=[];
-var proxy="../auth/proxy?url=";
+var proxy="../auth/proxy?url="; //wfs wms getfeature proxy
 var self=null;
 
 
@@ -89,7 +89,7 @@ function initMap(){
 
             }
 
-            // init plugins
+            // init plugins (Mini Map , FullScreen Map)
             var hasminimap=false;
             var hasfullmap=false;
             for(var i=0;i<plugins.length;i++){
@@ -113,6 +113,8 @@ function initMap(){
                 },
                 layers: display_layers
             });
+
+            //make location from pc ip
             L.GeoIP.centerMapOnPosition(map);
             map.addControl(layersControl);
 
@@ -121,14 +123,14 @@ function initMap(){
                 editLayers.push(resbase['图层编辑'][i].value);
             }
             map.addControl( new L.Control.Search(
-            {
-                searchLayers:wms_layers,
-                editLayers:editLayers
-            })
+                {
+                    searchLayers:wms_layers,
+                    editLayers:editLayers
+                })
             );
             
-               //load plugins
-               if(hasminimap){
+               //load plugins (Mini Map)
+            if(hasminimap){
                 var miniMap = new L.Control.MiniMap(miniLayer, { toggleDisplay: true }).addTo(map);
                 map.on('baselayerchange',function(e){
                     map.removeControl(miniMap);

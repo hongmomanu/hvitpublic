@@ -17,18 +17,18 @@ L.drawLocal = {
 		toolbar: {
 			actions: {
 				title: 'Cancel drawing',
-				text: 'Cancel'
+				text: '取消'//'Cancel'
 			},
 			undo: {
 				title: 'Delete last point drawn',
-				text: 'Delete last point'
+				text: '删除最后一个点'//'Delete last point'
 			},
 			buttons: {
-				polyline: 'Draw a polyline',
-				polygon: 'Draw a polygon',
+				polyline: '画一条线',//'Draw a polyline',
+				polygon: '画一个面',//Draw a polygon',
 				rectangle: 'Draw a rectangle',
 				circle: 'Draw a circle',
-				marker: 'Draw a marker'
+				marker: '画一个点'//'Draw a marker'
 			}
 		},
 		handlers: {
@@ -39,22 +39,22 @@ L.drawLocal = {
 			},
 			marker: {
 				tooltip: {
-					start: 'Click map to place marker.'
+					start: '点击地图放置一个点'//'Click map to place marker.'
 				}
 			},
 			polygon: {
 				tooltip: {
-					start: 'Click to start drawing shape.',
-					cont: 'Click to continue drawing shape.',
-					end: 'Click first point to close this shape.'
+					start: '点击开始画面',//'Click to start drawing shape.',
+					cont: '点击继续画面',//Click to continue drawing shape.',
+					end: '点击第一个点完成'//'Click first point to close this shape.'
 				}
 			},
 			polyline: {
-				error: '<strong>Error:</strong> shape edges cannot cross!',
+				error: '<strong>错误:</strong> shape edges cannot cross!',
 				tooltip: {
-					start: 'Click to start drawing line.',
-					cont: 'Click to continue drawing line.',
-					end: 'Click last point to finish line.'
+					start: '单击开始画线',//'Click to start drawing line.',
+					cont: '单击继续画线',//'Click to continue drawing line.',
+					end: '单击最后一个点完成'//'Click last point to finish line.'
 				}
 			},
 			rectangle: {
@@ -73,31 +73,31 @@ L.drawLocal = {
 		toolbar: {
 			actions: {
 				save: {
-					title: 'Save changes.',
-					text: 'Save'
+					title: '保存变更',//'Save changes.',
+					text: '保存'//'Save'
 				},
 				cancel: {
-					title: 'Cancel editing, discards all changes.',
-					text: 'Cancel'
+					title: '取消编辑，放弃所有的更改',//'Cancel editing, discards all changes.',
+					text: '取消'//'Cancel'
 				}
 			},
 			buttons: {
-				edit: 'Edit layers.',
-				editDisabled: 'No layers to edit.',
-				remove: 'Delete layers.',
-				removeDisabled: 'No layers to delete.'
+				edit: '编辑图层',//'Edit layers.',
+				editDisabled: '无图层可编辑',//'No layers to edit.',
+				remove: '删除图层',//'Delete layers.',
+				removeDisabled: '无图层可删除'//'No layers to delete.'
 			}
 		},
 		handlers: {
 			edit: {
 				tooltip: {
-					text: 'Drag handles, or marker to edit feature.',
-					subtext: 'Click cancel to undo changes.'
+					text: '移动点以编辑要素',//'Drag handles, or marker to edit feature.',
+					subtext: '点击取消来放弃变更'//'Click cancel to undo changes.'
 				}
 			},
 			remove: {
 				tooltip: {
-					text: 'Click on a feature to remove'
+					text: '点击一个要素来删除'//'Click on a feature to remove'
 				}
 			}
 		}
