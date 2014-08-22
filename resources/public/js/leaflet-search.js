@@ -2,17 +2,7 @@
 
 	L.Control.Search = L.Control.extend({
 		includes: L.Mixin.Events,
-	//
-	//	Name					Data passed			   Description
-	//
-	//Managed Events:
-	//	search_locationfound	{latlng, title, layer} fired after moved and show markerLocation
-	//  search_collapsed		{}					   fired after control was collapsed
-	//
-	//Public methods:
-	//  setLayer()				L.LayerGroup()         set layer search at runtime
-	//  showAlert()             'Text message'         Show alert message
-	//
+	
 	options: {
 		wrapper: '',				//container id to insert Search Control
 		url: '',					//url for search by ajax request, ex: "search.php?q={s}"
@@ -52,19 +42,7 @@
 		markerLocation: false,		//draw a marker in location found
 		markerIcon: new L.Icon.Default()//custom icon for maker location
 	},
-//FIXME option condition problem {autoCollapse: true, markerLocation: true} not show location
-//FIXME option condition problem {autoCollapse: false }
-//
-//TODO important optimization!!! always append data in this._recordsCache
-//  now _recordsCache content is emptied and replaced with new data founded
-//  always appending data on _recordsCache give the possibility of caching ajax, jsonp and layersearch!
-//
-//TODO here insert function that search inputText FIRST in _recordsCache keys and if not find results.. 
-//  run one of callbacks search(callData,jsonpUrl or options.layer) and run this.showTooltip
-//
-//TODO change structure of _recordsCache
-//	like this: _recordsCache = {"text-key1": {loc:[lat,lng], ..other attributes.. }, {"text-key2": {loc:[lat,lng]}...}, ...}
-//	in this mode every record can have a free structure of attributes, only 'loc' is required
+
 
 initialize: function(options) {
 	L.Util.setOptions(this, options || {});
@@ -162,8 +140,9 @@ initialize: function(options) {
 
 		return this;
 	},
-	
-	propertyclick:function(index,table){
+
+//单击属性
+propertyclick:function(index,table){
 
 		var editIndex=this._editIndex;
 		if (editIndex != index){
@@ -180,7 +159,8 @@ initialize: function(options) {
         	table.datagrid('beginEdit', index);
         }
     },
-    updateFeatureProperty:function(feature,table,layer){
+ // 更新要素属性   
+ updateFeatureProperty:function(feature,table,layer){
     	var changedata=table.datagrid('getChanges');
     	table.datagrid('acceptChanges');	
     	if(changedata.length>0){
@@ -193,8 +173,8 @@ initialize: function(options) {
 
 
     },
-
-    makesearchPopup:function(feature,marker,type,isediting){
+//生成要素popup
+ makesearchPopup:function(feature,marker,type,isediting){
     	var that=this;
     	this._map.closePopup();
     	var id=feature.id.replace(".","_")+type;
@@ -234,13 +214,11 @@ initialize: function(options) {
 
 });
 },
+//属性表结束编辑
 endEditing:function(table){
 	var editIndex=this._editIndex;
 	if (editIndex == undefined){return true}
 		if (table.datagrid('validateRow', editIndex)){
-            //var ed = $('#dg').datagrid('getEditor', {index:editIndex,field:'productid'});
-            //var productname = $(ed.target).combobox('getText');
-            //$('#dg').datagrid('getRows')[editIndex]['productname'] = productname;
             table.datagrid('endEdit', editIndex);
             editIndex = undefined;
             return true;
@@ -248,7 +226,8 @@ endEditing:function(table){
         	return false;
         }
     },
-    makeDrawEdit:function(){
+ // 生成编辑控制模块
+makeDrawEdit:function(){
     	var wfs_url=this._selectSearchLayer.url;
     	var layers=this._selectSearchLayer.layers.split(":");
     	var featurens=layers[0];
@@ -264,7 +243,7 @@ endEditing:function(table){
             featureType : featuretype//*,STP_DW STL_ALL_ROAD  STR_XianJ
         }).addTo(me._map);
 
-    // Initialize the draw control and pass it the FeatureGroup of editable layers
+    // Initialize the draw control and pass it the FeatureGroup of editable layers,marker means [point]
     var drawControl = new L.Control.Draw({
     	draw: {
     		polygon: me._selectSearchLayer.shape==='polygon',
@@ -290,15 +269,16 @@ endEditing:function(table){
     me._map.on('draw:deleted',me.drawdeleted,me);
 
 },
-
+//删除完成后触发事件
 drawdeleted:function(e){
     this._drawnItems.removeLayerFromWFS(e.layers.getLayers());
 },
-
+//编辑完成后触发事件
 drawedited: function (e) {
     	this._drawnItems.wfstSave(e.layers);
  }
 ,
+//新增完成后触发事件
 drawcreated:function (e) {
     	var layer=e.layer;
 
@@ -312,6 +292,7 @@ drawcreated:function (e) {
 
     }
 ,
+//删除缓存清空
 onRemove: function(map) {
 	this._recordsCache = {};
 		// map.off({
@@ -327,98 +308,98 @@ onRemove: function(map) {
 	// 		if( L.stamp(e.layer) != L.stamp(this._layer) )
 	// 			this.setLayer(e.layer);
 	// },
+//获取路径
+_getPath: function(obj, prop) {
+	var parts = prop.split('.'),
+	last = parts.pop(),
+	len = parts.length,
+	cur = parts[0],
+	i = 1;
 
-	_getPath: function(obj, prop) {
-		var parts = prop.split('.'),
-		last = parts.pop(),
-		len = parts.length,
-		cur = parts[0],
-		i = 1;
+	if(len > 0)
+		while((obj = obj[cur]) && i < len)
+			cur = parts[i++];
 
-		if(len > 0)
-			while((obj = obj[cur]) && i < len)
-				cur = parts[i++];
-
-			if(obj)
-				return obj[last];
-		},
-
-	setLayer: function(layer) {	//set search layer at runtime
-		//this.options.layer = layer; //setting this, run only this._recordsFromLayer()
-		this._layer = layer;
-		this._layer.addTo(this._map);
-		if(this._markerLoc)
-			this._layer.addLayer(this._markerLoc);
-		return this;
+		if(obj)
+			return obj[last];
 	},
-	
-	showAlert: function(text) {
-		text = text || this.options.textErr;
-		this._alert.style.display = 'block';
-		this._alert.innerHTML = text;
-		clearTimeout(this.timerAlert);
-		var that = this;		
-		this.timerAlert = setTimeout(function() {
-			that.hideAlert();
-		},this.options.autoCollapseTime);
-		return this;
-	},
-	
-	hideAlert: function() {
-		this._alert.style.display = 'none';
-		return this;
-	},
-
-	cancel: function() {
-		this._input.value = '';
-		this._handleKeypress({keyCode:8});//simulate backspace keypress
-		this._input.size = this._inputMinSize;
-		this._input.focus();
+//设置指定图层
+setLayer: function(layer) {	//set search layer at runtime
+	//this.options.layer = layer; //setting this, run only this._recordsFromLayer()
+	this._layer = layer;
+	this._layer.addTo(this._map);
+	if(this._markerLoc)
+		this._layer.addLayer(this._markerLoc);
+	return this;
+},
+//警告
+showAlert: function(text) {
+	text = text || this.options.textErr;
+	this._alert.style.display = 'block';
+	this._alert.innerHTML = text;
+	clearTimeout(this.timerAlert);
+	var that = this;		
+	this.timerAlert = setTimeout(function() {
+		that.hideAlert();
+	},this.options.autoCollapseTime);
+	return this;
+},
+//hide 警告
+hideAlert: function() {
+	this._alert.style.display = 'none';
+	return this;
+},
+//取消（暂时放弃）
+cancel: function() {
+	this._input.value = '';
+	this._handleKeypress({keyCode:8});//simulate backspace keypress
+	this._input.size = this._inputMinSize;
+	this._input.focus();
+	this._cancel.style.display = 'none';
+	return this;
+},
+//搜索展开
+expand: function() {
+	$(this._searchDiv).show();
+	L.DomUtil.addClass(this._container, 'search-exp');
+	this._input.focus();
+	this._map.on('dragstart click', this.collapse, this); //拖动地图隐藏搜索栏
+	return this;	
+},
+//搜索收缩
+collapse: function() {
+	this._hideTooltip();
+	this.cancel();
+	this._alert.style.display = 'none';
+	this._input.blur();
+	if(this.options.collapsed)
+	{
+		$(this._searchDiv).hide();
 		this._cancel.style.display = 'none';
-		return this;
-	},
-	
-	expand: function() {
-		$(this._searchDiv).show();
-		L.DomUtil.addClass(this._container, 'search-exp');
-		this._input.focus();
-		this._map.on('dragstart click', this.collapse, this); //拖动地图隐藏搜索栏
-		return this;	
-	},
+		L.DomUtil.removeClass(this._container, 'search-exp');		
+		//this._markerLoc.hide();//maybe unuseful
+		this._map.off('dragstart click', this.collapse, this);
+	}
+	this.fire('search_collapsed');
+	return this;
+},
 
-	collapse: function() {
-		this._hideTooltip();
-		this.cancel();
-		this._alert.style.display = 'none';
-		this._input.blur();
-		if(this.options.collapsed)
-		{
-			$(this._searchDiv).hide();
-			this._cancel.style.display = 'none';
-			L.DomUtil.removeClass(this._container, 'search-exp');		
-			//this._markerLoc.hide();//maybe unuseful
-			this._map.off('dragstart click', this.collapse, this);
-		}
-		this.fire('search_collapsed');
-		return this;
-	},
-	
-	collapseDelayed: function() {	//collapse after delay, used on_input blur
-		if (!this.options.autoCollapse) return this;
-		var that = this;
-		clearTimeout(this.timerCollapse);
-		this.timerCollapse = setTimeout(function() {
-			that.collapse();
-		}, this.options.autoCollapseTime);
-		return this;		
-	},
+collapseDelayed: function() {	//collapse after delay, used on_input blur
+	if (!this.options.autoCollapse) return this;
+	var that = this;
+	clearTimeout(this.timerCollapse);
+	this.timerCollapse = setTimeout(function() {
+		that.collapse();
+	}, this.options.autoCollapseTime);
+	return this;		
+},
 
-	collapseDelayedStop: function() {
-		clearTimeout(this.timerCollapse);
-		return this;		
-	},
+collapseDelayedStop: function() {
+	clearTimeout(this.timerCollapse);
+	return this;		
+},
 
-////start DOM creations
+////start DOM creations 以下几个create 是search的控件生成，不一一重复
 _createAlert: function(className) {
 	var alert = L.DomUtil.create('div', className, this._container);
 	alert.style.display = 'none';
@@ -575,316 +556,324 @@ _createInput: function (text, className) {
 
 //////end DOM creations
 
-	_filterRecords: function(text) {	//Filter this._recordsCache case insensitive and much more..
+// 过滤搜索结果
+_filterRecords: function(text) {	//Filter this._recordsCache case insensitive and much more..
 
-		var regFilter = new RegExp("^[.]$|[\[\]|()*]",'g'),	//remove . * | ( ) ] [
-		I, regSearch,
-		frecords = {};
+	var regFilter = new RegExp("^[.]$|[\[\]|()*]",'g'),	//remove . * | ( ) ] [
+	I, regSearch,
+	frecords = {};
 
-		text = text.replace(regFilter,'');	  //sanitize text
-		I = this.options.initial ? '^' : '';  //search only initial text
-		//TODO add option for case sesitive search, also showLocation
-		regSearch = new RegExp(I + text,'i');
+	text = text.replace(regFilter,'');	  //sanitize text
+	I = this.options.initial ? '^' : '';  //search only initial text
+	//TODO add option for case sesitive search, also showLocation
+	regSearch = new RegExp(I + text,'i');
 
-		//TODO use .filter or .map
-		for(var key in this._recordsCache)
-			if( regSearch.test(key) )
-				frecords[key]= this._recordsCache[key];
+	//TODO use .filter or .map
+	for(var key in this._recordsCache)
+		if( regSearch.test(key) )
+			frecords[key]= this._recordsCache[key];
 
-			return frecords;
-		},
+		return frecords;
+	},
 
-		showTooltip: function() {
-			var filteredRecords, newTip;
+	showTooltip: function() {
+		var filteredRecords, newTip;
 
-			this._countertips = 0;
+		this._countertips = 0;
 
-	//FIXME problem with jsonp/ajax when remote filter has different behavior of this._filterRecords
-	if(this.options.layer)
-		filteredRecords = this._filterRecords( this._input.value );
+//FIXME problem with jsonp/ajax when remote filter has different behavior of this._filterRecords
+if(this.options.layer)
+	filteredRecords = this._filterRecords( this._input.value );
+else
+	filteredRecords = this._recordsCache;
+
+this._tooltip.innerHTML = '';
+	this._tooltip.currentSelection = -1;  //inizialized for _handleArrowSelect()
+
+	for(var key in filteredRecords)//fill tooltip
+	{
+		if(++this._countertips == this.options.tooltipLimit) break;
+
+		newTip = this._createTip(key, filteredRecords[key] );
+
+		this._tooltip.appendChild(newTip);
+	}
+	
+	if(this._countertips > 0)
+	{
+		this._tooltip.style.display = 'block';
+		if(this._autoTypeTmp)
+			this._autoType();
+		this._autoTypeTmp = this.options.autoType;//reset default value
+	}
 	else
-		filteredRecords = this._recordsCache;
+		this._hideTooltip();
 
+	this._tooltip.scrollTop = 0;
+	return this._countertips;
+},
+//隐藏toolTip
+_hideTooltip: function() {
+	this._tooltip.style.display = 'none';
 	this._tooltip.innerHTML = '';
-		this._tooltip.currentSelection = -1;  //inizialized for _handleArrowSelect()
-
-		for(var key in filteredRecords)//fill tooltip
-		{
-			if(++this._countertips == this.options.tooltipLimit) break;
-
-			newTip = this._createTip(key, filteredRecords[key] );
-
-			this._tooltip.appendChild(newTip);
-		}
-		
-		if(this._countertips > 0)
-		{
-			this._tooltip.style.display = 'block';
-			if(this._autoTypeTmp)
-				this._autoType();
-			this._autoTypeTmp = this.options.autoType;//reset default value
-		}
-		else
-			this._hideTooltip();
-
-		this._tooltip.scrollTop = 0;
-		return this._countertips;
-	},
-
-	_hideTooltip: function() {
-		this._tooltip.style.display = 'none';
-		this._tooltip.innerHTML = '';
-		return 0;
-	},
-
-	_defaultFilterJSON: function(json) {	//default callback for filter data
-		var jsonret = {}, i,
-			//propName = this.options.propertyName,
-			propName = this._searchField,
-			propLoc = this.options.propertyLoc;
-			if( L.Util.isArray(propLoc) )
+	return 0;
+},
+//默认过滤效果
+_defaultFilterJSON: function(json) {	//default callback for filter data
+	var jsonret = {}, i,
+		//propName = this.options.propertyName,
+		propName = this._searchField,
+		propLoc = this.options.propertyLoc;
+		if( L.Util.isArray(propLoc) )
+			for(i in json)
+				jsonret[ this._getPath(json[i],propName) ]= L.latLng( json[i][ propLoc[0] ], json[i][ propLoc[1] ] );
+			else
 				for(i in json)
-					jsonret[ this._getPath(json[i],propName) ]= L.latLng( json[i][ propLoc[0] ], json[i][ propLoc[1] ] );
-				else
-					for(i in json)
-						jsonret[ this._getPath(json[i],propName) ]= L.latLng( this._getPath(json[i],propLoc) );
-		//TODO throw new Error("propertyName '"+propName+"' not found in JSON data");
-		return jsonret;
-	},
+					jsonret[ this._getPath(json[i],propName) ]= L.latLng( this._getPath(json[i],propLoc) );
+	//TODO throw new Error("propertyName '"+propName+"' not found in JSON data");
+	return jsonret;
+},
+//读取数据 json
+_recordsFromJsonp: function(text, callAfter) {  //extract searched records from remote jsonp service
+	//TODO remove script node after call run
+	var that = this;
+	L.Control.Search.callJsonp = function(data) {	//jsonp callback
+		var fdata = that._filterJSON(data);//_filterJSON defined in inizialize...
+		callAfter(fdata);
+	}
+	var script = L.DomUtil.create('script','search-jsonp', document.getElementsByTagName('body')[0] ),			
+		url = L.Util.template(this.options.url+'&'+this.options.jsonpParam+'=L.Control.Search.callJsonp', {s: text}); //parsing url
+		//rnd = '&_='+Math.floor(Math.random()*10000);
+		//TODO add rnd param or randomize callback name! in recordsFromJsonp
+		script.type = 'text/javascript';
+		script.src = url;
+		return this;
+	//may be return {abort: function() { script.parentNode.removeChild(script); } };
+},
 
-	_recordsFromJsonp: function(text, callAfter) {  //extract searched records from remote jsonp service
-		//TODO remove script node after call run
-		var that = this;
-		L.Control.Search.callJsonp = function(data) {	//jsonp callback
-			var fdata = that._filterJSON(data);//_filterJSON defined in inizialize...
-			callAfter(fdata);
-		}
-		var script = L.DomUtil.create('script','search-jsonp', document.getElementsByTagName('body')[0] ),			
-			url = L.Util.template(this.options.url+'&'+this.options.jsonpParam+'=L.Control.Search.callJsonp', {s: text}); //parsing url
-			//rnd = '&_='+Math.floor(Math.random()*10000);
-			//TODO add rnd param or randomize callback name! in recordsFromJsonp
-			script.type = 'text/javascript';
-			script.src = url;
-			return this;
-		//may be return {abort: function() { script.parentNode.removeChild(script); } };
-	},
-
-	_recordsFromWfs:function(text,callAfter){
-		this._selectSearchLayer;
-		if(this._selectSearchLayer==null){
-			easyloader.load('messager',function(){
-				$.messager.alert('警告!','请选择要查询的图层!');
-			});
-			return;
-		}
-
-
-		var xml_str='<wfs:GetFeature';
-		xml_str += ' service="WFS" version="1.1.0" '
-		+' outputFormat="JSON"'
-		+' maxFeatures="'+this._maxFeatures+'"'
-		+' xmlns:wfs="http://www.opengis.net/wfs"'
-		+' xmlns:ogc="http://www.opengis.net/ogc">'
-		+' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
-		+ this._makeFilters({field:this._searchField,value:text})
-		+'</wfs:Query>'
-		+'</wfs:GetFeature>';
-
-
-		$.ajax({
-			type: 'POST',
-			contentType: "text/hda; charset=utf-8",
-			url: proxy+this._selectSearchLayer.url,
-			processData: false,
-			data: xml_str,
-			success: callAfter,
-			dataType: "json"
+//读取数据 wfs server
+_recordsFromWfs:function(text,callAfter){
+	this._selectSearchLayer;
+	if(this._selectSearchLayer==null){
+		easyloader.load('messager',function(){
+			$.messager.alert('警告!','请选择要查询的图层!');
 		});
+		return;
+	}
 
 
-	},
-	_makeFilters:function(fieldValue){
-		var str="<ogc:Filter>"
-		+ "<ogc:PropertyIsLike wildCard='*' singleChar='.' escape='!'>"
-		+ "<ogc:PropertyName>"+fieldValue.field+"</ogc:PropertyName>"
-		+ "<ogc:Literal>*"+fieldValue.value+"*</ogc:Literal>"
-		+ "</ogc:PropertyIsLike>"
-		+ "</ogc:Filter>";
-		return str;
+	var xml_str='<wfs:GetFeature';
+	xml_str += ' service="WFS" version="1.1.0" '
+	+' outputFormat="JSON"'
+	+' maxFeatures="'+this._maxFeatures+'"'
+	+' xmlns:wfs="http://www.opengis.net/wfs"'
+	+' xmlns:ogc="http://www.opengis.net/ogc">'
+	+' <wfs:Query typeName="'+this._selectSearchLayer.layers+'">'
+	+ this._makeFilters({field:this._searchField,value:text})
+	+'</wfs:Query>'
+	+'</wfs:GetFeature>';
 
-	},
-	_recordsFromAjax: function(text, callAfter) {	//Ajax request
-		if (window.XMLHttpRequest === undefined) {
-			window.XMLHttpRequest = function() {
-				try { return new ActiveXObject("Microsoft.XMLHTTP.6.0"); }
-				catch  (e1) {
-					try { return new ActiveXObject("Microsoft.XMLHTTP.3.0"); }
-					catch (e2) { throw new Error("XMLHttpRequest is not supported"); }
-				}
-			};
-		}
-		var request = new XMLHttpRequest(),
-			url = L.Util.template(this.options.url, {s: text}), //parsing url
-			//rnd = '&_='+Math.floor(Math.random()*10000);
-			//TODO add rnd param or randomize callback name! in recordsFromAjax			
-			response = {};
 
-			request.open("GET", url);
-			var that = this;
-			request.onreadystatechange = function() {
-				if(request.readyState === 4 && request.status === 200) {
-					response = JSON.parse(request.responseText);
-		    	var fdata = that._filterJSON(response);//_filterJSON defined in inizialize...
-		    	callAfter(fdata);
-		    }else{
-		    	L.DomUtil.removeClass(that._container, 'search-load');
-		    }
+	$.ajax({
+		type: 'POST',
+		contentType: "text/hda; charset=utf-8",
+		url: proxy+this._selectSearchLayer.url,
+		processData: false,
+		data: xml_str,
+		success: callAfter,
+		dataType: "json"
+	});
+
+
+},
+// ogc 标准过滤条件 
+_makeFilters:function(fieldValue){
+	var str="<ogc:Filter>"
+	+ "<ogc:PropertyIsLike wildCard='*' singleChar='.' escape='!'>"
+	+ "<ogc:PropertyName>"+fieldValue.field+"</ogc:PropertyName>"
+	+ "<ogc:Literal>*"+fieldValue.value+"*</ogc:Literal>"
+	+ "</ogc:PropertyIsLike>"
+	+ "</ogc:Filter>";
+	return str;
+
+},
+//  数据从ajax
+_recordsFromAjax: function(text, callAfter) {	//Ajax request
+	if (window.XMLHttpRequest === undefined) {
+		window.XMLHttpRequest = function() {
+			try { return new ActiveXObject("Microsoft.XMLHTTP.6.0"); }
+			catch  (e1) {
+				try { return new ActiveXObject("Microsoft.XMLHTTP.3.0"); }
+				catch (e2) { throw new Error("XMLHttpRequest is not supported"); }
+			}
 		};
-		request.send();
-		return this;   
-	},	
+	}
+	var request = new XMLHttpRequest(),
+		url = L.Util.template(this.options.url, {s: text}), //parsing url
+		//rnd = '&_='+Math.floor(Math.random()*10000);
+		//TODO add rnd param or randomize callback name! in recordsFromAjax			
+		response = {};
 
-	_recordsFromLayer: function() {	//return table: key,value from layer
-		var that = this,
-		retRecords = {},
-			//propName = this.options.propertyName,
-			propName = this._searchField,
-			loc;
+		request.open("GET", url);
+		var that = this;
+		request.onreadystatechange = function() {
+			if(request.readyState === 4 && request.status === 200) {
+				response = JSON.parse(request.responseText);
+	    	var fdata = that._filterJSON(response);//_filterJSON defined in inizialize...
+	    	callAfter(fdata);
+	    }else{
+	    	L.DomUtil.removeClass(that._container, 'search-load');
+	    }
+	};
+	request.send();
+	return this;   
+},	
+// 数据从layer
+_recordsFromLayer: function() {	//return table: key,value from layer
+	var that = this,
+	retRecords = {},
+		//propName = this.options.propertyName,
+		propName = this._searchField,
+		loc;
 
-			this._layer.eachLayer(function(layer) {
+		this._layer.eachLayer(function(layer) {
 
-				if(layer instanceof SearchMarker) return;
+			if(layer instanceof SearchMarker) return;
 
-				if(layer instanceof L.Marker)
-				{
-					
-					loc = layer.getLatLng();
-					loc.layer = layer;
-					retRecords[ layer.feature.id] = loc;
-
-				}
-			else if(layer.hasOwnProperty('feature'))//GeoJSON layer
+			if(layer instanceof L.Marker)
 			{
 				
-				loc = layer.getBounds().getCenter();
+				loc = layer.getLatLng();
 				loc.layer = layer;
 				retRecords[ layer.feature.id] = loc;
 
 			}
-			
-		},this);
-			return retRecords;
-
-		},
-
-		_autoType: function() {
-
-		//TODO implements autype without selection(useful for mobile device)
-		
-		var start = this._input.value.length,
-		firstRecord = this._tooltip.firstChild._text,
-		end = firstRecord.length;
-
-		if (firstRecord.indexOf(this._input.value) === 0) { // If prefix match
-			this._input.value = firstRecord;
-			this._handleAutoresize();
-
-			if (this._input.createTextRange) {
-				var selRange = this._input.createTextRange();
-				selRange.collapse(true);
-				selRange.moveStart('character', start);
-				selRange.moveEnd('character', end);
-				selRange.select();
-			}
-			else if(this._input.setSelectionRange) {
-				this._input.setSelectionRange(start, end);
-			}
-			else if(this._input.selectionStart) {
-				this._input.selectionStart = start;
-				this._input.selectionEnd = end;
-			}
-		}
-	},
-
-	_hideAutoType: function() {	// deselect text:
-
-		var sel;
-		if ((sel = this._input.selection) && sel.empty) {
-			sel.empty();
-		}
-		else if (this._input.createTextRange) {
-			sel = this._input.createTextRange();
-			sel.collapse(true);
-			var end = this._input.value.length;
-			sel.moveStart('character', end);
-			sel.moveEnd('character', end);
-			sel.select();
-		}
-		else {
-			if (this._input.getSelection) {
-				this._input.getSelection().removeAllRanges();
-			}
-			this._input.selectionStart = this._input.selectionEnd;
-		}
-	},
-	
-	_handleKeypress: function (e) {	//run _input keyup event
-		
-		switch(e.keyCode)
+		else if(layer.hasOwnProperty('feature'))//GeoJSON layer
 		{
-			case 27: //Esc
-			this.collapse();
-			break;
-			case 13: //Enter
-			if(this._countertips == 1)
-				this._handleArrowSelect(1);
-				this._handleSubmit();	//do search
-				break;
-			case 38://Up
-			this._handleArrowSelect(-1);
-			break;
-			case 40://Down
+			
+			loc = layer.getBounds().getCenter();
+			loc.layer = layer;
+			retRecords[ layer.feature.id] = loc;
+
+		}
+		
+	},this);
+		return retRecords;
+
+	},
+
+	_autoType: function() {
+
+	//TODO implements autype without selection(useful for mobile device)
+	
+	var start = this._input.value.length,
+	firstRecord = this._tooltip.firstChild._text,
+	end = firstRecord.length;
+
+	if (firstRecord.indexOf(this._input.value) === 0) { // If prefix match
+		this._input.value = firstRecord;
+		this._handleAutoresize();
+
+		if (this._input.createTextRange) {
+			var selRange = this._input.createTextRange();
+			selRange.collapse(true);
+			selRange.moveStart('character', start);
+			selRange.moveEnd('character', end);
+			selRange.select();
+		}
+		else if(this._input.setSelectionRange) {
+			this._input.setSelectionRange(start, end);
+		}
+		else if(this._input.selectionStart) {
+			this._input.selectionStart = start;
+			this._input.selectionEnd = end;
+		}
+	}
+},
+
+_hideAutoType: function() {	// deselect text:
+
+	var sel;
+	if ((sel = this._input.selection) && sel.empty) {
+		sel.empty();
+	}
+	else if (this._input.createTextRange) {
+		sel = this._input.createTextRange();
+		sel.collapse(true);
+		var end = this._input.value.length;
+		sel.moveStart('character', end);
+		sel.moveEnd('character', end);
+		sel.select();
+	}
+	else {
+		if (this._input.getSelection) {
+			this._input.getSelection().removeAllRanges();
+		}
+		this._input.selectionStart = this._input.selectionEnd;
+	}
+},
+
+//搜索键盘事件
+_handleKeypress: function (e) {	//run _input keyup event
+	
+	switch(e.keyCode)
+	{
+		case 27: //Esc
+		this.collapse();
+		break;
+		case 13: //Enter
+		if(this._countertips == 1)
 			this._handleArrowSelect(1);
+			this._handleSubmit();	//do search
 			break;
-			case 37://Left
-			case 39://Right
-			case 16://Shift
-			case 17://Ctrl
-			//case 32://Space
+		case 38://Up
+		this._handleArrowSelect(-1);
+		break;
+		case 40://Down
+		this._handleArrowSelect(1);
+		break;
+		case 37://Left
+		case 39://Right
+		case 16://Shift
+		case 17://Ctrl
+		//case 32://Space
+		break;
+		//case 8://backspace
+		case 46://delete
+			this._autoTypeTmp = false;//disable temporarily autoType
 			break;
-			//case 8://backspace
-			case 46://delete
-				this._autoTypeTmp = false;//disable temporarily autoType
-				break;
-			default://All keys
+		default://All keys
 
-			if(this._input.value.length)
-				this._cancel.style.display ='none' ;//'inline-block';
+		if(this._input.value.length)
+			this._cancel.style.display ='none' ;//'inline-block';
+		else
+			this._cancel.style.display = 'none';
+
+		if(this._input.value.length >= this.options.minLength)
+		{
+
+			var that = this;
+				clearTimeout(this.timerKeypress);	//cancel last search request while type in				
+				this.timerKeypress = setTimeout(function() {	//delay before request, for limit jsonp/ajax request
+
+					that._fillRecordsCache();
+
+				}, this.options.delayType);
+			}
 			else
-				this._cancel.style.display = 'none';
+				this._hideTooltip();
+		}
+	},
+	//删除历史要素
+	_clearHistoryMarkers:function(){
+		for(var i=0;i<this._histroyMarkers.length;i++){
+			this._map.removeLayer(this._histroyMarkers[i]);
+		}
+		this._histroyMarkers=[];
+	},
 
-			if(this._input.value.length >= this.options.minLength)
-			{
-
-				var that = this;
-					clearTimeout(this.timerKeypress);	//cancel last search request while type in				
-					this.timerKeypress = setTimeout(function() {	//delay before request, for limit jsonp/ajax request
-
-						that._fillRecordsCache();
-
-					}, this.options.delayType);
-				}
-				else
-					this._hideTooltip();
-			}
-		},
-		_clearHistoryMarkers:function(){
-			for(var i=0;i<this._histroyMarkers.length;i++){
-				this._map.removeLayer(this._histroyMarkers[i]);
-			}
-			this._histroyMarkers=[];
-		},
-		_fillRecordsCache: function() {
+	//缓存数据
+	_fillRecordsCache: function() {
 //TODO important optimization!!! always append data in this._recordsCache
 //  now _recordsCache content is emptied and replaced with new data founded
 //  always appending data on _recordsCache give the possibility of caching ajax, jsonp and layersearch!
@@ -1027,7 +1016,8 @@ L.DomUtil.addClass(this._container, 'search-load');
 			}
 		}
 	},
-
+     
+     //搜索提交
 	_handleSubmit: function() {	//button and tooltip click and enter submit
 
 		this._hideAutoType();
@@ -1062,7 +1052,7 @@ L.DomUtil.addClass(this._container, 'search-load');
 			}
 		}
 	},
-
+      //获取位置
 	_getLocation: function(key) {	//extract latlng from _recordsCache
 
 		if( this._recordsCache.hasOwnProperty(key) )
@@ -1070,7 +1060,7 @@ L.DomUtil.addClass(this._container, 'search-load');
 		else
 			return false;
 	},
-
+      // 显示位置
 	showLocation: function(latlng, title) {	//set location on map from _recordsCache
 
 
