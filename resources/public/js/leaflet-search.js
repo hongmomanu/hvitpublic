@@ -162,6 +162,7 @@ initialize: function(options) {
 
 		return this;
 	},
+	
 	propertyclick:function(index,table){
 
 		var editIndex=this._editIndex;
@@ -248,7 +249,7 @@ endEditing:function(table){
         }
     },
     makeDrawEdit:function(){
-    	var wfs_url=this._selectSearchLayer.value;
+    	var wfs_url=this._selectSearchLayer.url;
     	var layers=this._selectSearchLayer.layers.split(":");
     	var featurens=layers[0];
     	var featuretype=layers[layers.length-1];
@@ -693,7 +694,7 @@ _createInput: function (text, className) {
 		$.ajax({
 			type: 'POST',
 			contentType: "text/hda; charset=utf-8",
-			url: proxy+this._selectSearchLayer.value,
+			url: proxy+this._selectSearchLayer.url,
 			processData: false,
 			data: xml_str,
 			success: callAfter,
