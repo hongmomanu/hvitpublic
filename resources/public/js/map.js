@@ -1,3 +1,7 @@
+/**
+@author jack 
+@date 2014-08-21
+**/
 var map; // the map object
 var layers = {};
 var wms_layers = [];
@@ -8,7 +12,7 @@ var self=null;
 
 
 function initMap(){
-    // create a map in the "map" div, set the view to a given place and zoom
+    // 初始化地图 create a map in the "map" div, set the view to a given place and zoom
     function makeDisplayLayer(text,defualtlayers,layer){
         for(var i=0;i<defualtlayers.length;i++){
 
