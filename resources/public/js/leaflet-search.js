@@ -1085,7 +1085,7 @@ L.DomUtil.addClass(this._container, 'search-load');
 		return this;
 	}
 });
-
+// SearchMarker extend from L.Marker
 var SearchMarker = L.Marker.extend({
 
 	includes: L.Mixin.Events,
