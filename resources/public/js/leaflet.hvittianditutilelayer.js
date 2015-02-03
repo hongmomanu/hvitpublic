@@ -66,7 +66,8 @@ L.tileLayer.hvittianditufunctional = function (tiandiurl, options) {
   return new L.TileLayer.Functional(function (view) {
     
 
-			var level = map.getZoom();
+			var level = view.zoom;
+			
 			var bounds=view.bbox.split(",");
 			var topTileFromX= -180;
     var topTileFromY= 90;
