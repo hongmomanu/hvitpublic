@@ -80,6 +80,7 @@ L.tileLayer.hvittianditufunctional = function (tiandiurl, options) {
         .replace('{z}', view.zoom)
         .replace('{y}', y_num)
         .replace('{x}', x_num)
+        .replace('{n}',view.subdomain)
         ;
 
     return url;
